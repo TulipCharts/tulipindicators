@@ -2,9 +2,9 @@ CC ?= gcc
 AR ?= ar
 RANLIB ?= ranlib
 
-#CCFLAGS = -Wall -Wextra -Werror -Wshadow -Wconversion -O2 -g -pg -fprofile-arcs -ftest-coverage -lm
-#CCFLAGS = -Wall -Wextra -Werror -Wshadow -Wconversion -O2 -g -pedantic -std=c99 -lm
-CCFLAGS = -Wall -Wextra -Wshadow -Wconversion -O2 -g -lm
+#CCFLAGS = -Wall -Wextra -Werror -Wshadow -Wconversion -O2 -g -pg -fprofile-arcs -ftest-coverage
+#CCFLAGS = -Wall -Wextra -Werror -Wshadow -Wconversion -O2 -g -pedantic -std=c99
+CCFLAGS = -Wall -Wextra -Wshadow -Wconversion -O2 -g
 
 SRCS=$(wildcard indicators/*.c)
 SRCS+=$(wildcard utils/*.c)
@@ -22,26 +22,23 @@ indicators_index.o: indicators.h
 
 
 smoke: smoke.o libindicators.a
-	$(CC) $(CCFLAGS) -o $@ $^
+	$(CC) $(CCFLAGS) -o $@ $^ -lm
 	./$@
 
 example1: example1.o libindicators.a
-	$(CC) $(CCFLAGS) -o $@ $^
+	$(CC) $(CCFLAGS) -o $@ $^ -lm
 
 example2: example2.o libindicators.a
-	$(CC) $(CCFLAGS) -o $@ $^
+	$(CC) $(CCFLAGS) -o $@ $^ -lm
 
 fuzzer: fuzzer.o libindicators.a
-	$(CC) $(CCFLAGS) -o $@ $^
+	$(CC) $(CCFLAGS) -o $@ $^ -lm
 
 benchmark: benchmark.o libindicators.a
-	$(CC) $(CCFLAGS) -o $@ $^ -lta_lib
+	$(CC) $(CCFLAGS) -o $@ $^ -lta_lib -lm
 
 sample: sample.o libindicators.a
-	$(CC) $(CCFLAGS) -o $@ $^
-
-tulipind.dll: interface.c libindicators.a interface.def
-	$(CC) $(CCFLAGS) -o $@ $^ -shared
+	$(CC) $(CCFLAGS) -o $@ $^ -lm
 
 .c.o:
 	$(CC) -c $(CCFLAGS) $< -o $@
