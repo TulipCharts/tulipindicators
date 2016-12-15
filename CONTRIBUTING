@@ -1,0 +1,55 @@
+Lewis Van Winkle
+Tulip Charts LLC
+LV@tulipcharts.org
+
+
+##Basics and Formalities
+
+You'd like to help contribute to this project? Excellent!
+
+If your contribution is going to be more than a simple typo fix or a couple
+lines of code, I'll need a few things from you first:
+
+1) You should contact me and we can discuss the changes you propose. Bug fixes
+are always welcome and appreciated! Generally, I'll also welcome new indicator
+contributions if they have at least some history of real world usage. This
+isn't the place to put completely new or untested indicators. I'll also require
+at least some published reference material on how the indicator works.
+
+2) You'll need to assign your copyright to Tulip Charts LLC. Email me for the
+assignment form. This is so we can enforce the free software license terms
+against infringements in the future. If you are employed in the software
+industry, we may also need a copyright release from your employer. I know this
+is a pain, but it's how all the big free software projects do it. I am trying
+to take this very seriously from day one. I don't want to have to track down a
+bunch of contributions many years from now to clean up the legal paperwork.
+
+3) Try to follow the established coding convention present in the files. Spaces,
+not tabs. Unix line endings.
+
+4) Add your name to AUTHORS if your contribution is more than a few lines.
+
+5) Consider providing documentation.
+
+6) You can get the code to me on Github or by emailing a patch. Whatever works.
+
+7) When in doubt, ask. I'm friendly.
+
+
+##New Indicator Contributions
+
+A) If you're contributing a new indicator, you'll need to add it to
+indicators.tcl first. Try to make a good choice for the category, input,
+options, and output names. Use the same option names and order of existing
+indicators if possible. If you add an entirely new option name, some of the
+testing code will also need updated (e.g. in doc.tcl). You'll need Tcl
+installed to run indicators.tcl. When you run it, it will generate a NAME.c
+file in the indicators directory that you can put your code in.
+indicators.tcl also automatically updates the header files and the
+indicator index.
+
+B) For new indicators, please add some tests to extra.txt. If possible, use
+published numbers from the indicator author. Add some comments.
+
+C) Make sure you can get past the fuzzer without crashing.
+
