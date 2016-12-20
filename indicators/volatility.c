@@ -22,8 +22,6 @@
  */
 
 #include "../indicators.h"
-#include <math.h>
-#include <assert.h>
 
 #define CHANGE(i) (input[i]/input[i-1]-1.0)
 

@@ -43,7 +43,7 @@ set license "/*
  */
 "
 
-set version 0.8.0
+set version 0.8.1
 set build [clock seconds]
 
 
@@ -221,22 +221,25 @@ puts $h "$license
   *
   */
 
-  #ifndef $guard
-  #define $guard
+#ifndef $guard
+#define $guard
 
 
-  #define TI_VERSION \"$version\"
-  #define TI_BUILD $build
+#define TI_VERSION \"$version\"
+#define TI_BUILD $build
+
+#ifndef TI_SKIP_SYSTEM_HEADERS
+#include <math.h>
+#include <assert.h>
+#include <string.h>
+#include <stdlib.h>
+#endif
+
+#ifdef __cplusplus
+extern \"C\" {
+#endif
 
 
-  #ifdef __cplusplus
-  extern \"C\" {
-  #endif
-
-
-
-      #include <math.h>
-      #include <assert.h>
 
 "
 
@@ -401,7 +404,6 @@ puts $idx "$license
 
 
 puts $idx "#include \"indicators.h\""
-puts $idx "#include <string.h>"
 puts $idx "\n\n\nstruct ti_indicator_info ti_indicators\[\] = {"
 
 set func_names {}

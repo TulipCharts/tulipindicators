@@ -24,8 +24,8 @@
 
 /*
  *
- * Version 0.8.0
- * Header Build 1481831503
+ * Version 0.8.1
+ * Header Build 1482259567
  *
  */
 
@@ -35,22 +35,25 @@
   *
   */
 
-  #ifndef __TI_INDICATORS_H__
-  #define __TI_INDICATORS_H__
+#ifndef __TI_INDICATORS_H__
+#define __TI_INDICATORS_H__
 
 
-  #define TI_VERSION "0.8.0"
-  #define TI_BUILD 1481831503
+#define TI_VERSION "0.8.1"
+#define TI_BUILD 1482259567
+
+#ifndef TI_SKIP_SYSTEM_HEADERS
+#include <math.h>
+#include <assert.h>
+#include <string.h>
+#include <stdlib.h>
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
-  #ifdef __cplusplus
-  extern "C" {
-  #endif
-
-
-
-      #include <math.h>
-      #include <assert.h>
 
 
 

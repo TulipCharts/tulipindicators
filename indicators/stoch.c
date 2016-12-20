@@ -23,7 +23,6 @@
 
 #include "../indicators.h"
 #include "../utils/buffer.h"
-#include <stdio.h>
 
 
 int ti_stoch_start(TI_REAL const *options) {

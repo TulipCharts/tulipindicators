@@ -8,8 +8,12 @@ CCFLAGS = -Wall -Wextra -Wshadow -Wconversion -O2 -g
 
 SRCS=$(wildcard indicators/*.c)
 SRCS+=$(wildcard utils/*.c)
+HDRS=$(wildcard indicators/*.h)
+HDRS+=$(wildcard utils/*.h)
 OBJS=$(SRCS:%.c=%.o)
+AMAL=$(SRCS:%.c=%.ca)
 
+.SUFFIXES: .c .o .h .ca
 
 all: libindicators.a sample example1 example2 fuzzer smoke
 
@@ -34,14 +38,23 @@ example2: example2.o libindicators.a
 fuzzer: fuzzer.o libindicators.a
 	$(CC) $(CCFLAGS) -o $@ $^ -lm
 
-benchmark: benchmark.o libindicators.a
-	$(CC) $(CCFLAGS) -o $@ $^ -lta_lib -lm
-
 sample: sample.o libindicators.a
 	$(CC) $(CCFLAGS) -o $@ $^ -lm
 
+#Optional benchmark program. Requires TA-Lib.
+benchmark: benchmark.o libindicators.a
+	$(CC) $(CCFLAGS) -o $@ $^ -lta_lib -lm
+
+#This will build all of Tulip Indicators into one .c file.
+tiamalgamation.c: $(AMAL) indicators_index.ca indicators.h
+	echo -e "/*\n * TULIP INDICATROS AMALGAMATION\n * This is all of Tulip Indicators in one file.\n * To get the origional sources, go to https://tulipindicators.org\n */\n\n" \
+	    | cat - indicators.h utils/buffer.h utils/minmax.h $(AMAL) indicators_index.ca > $@
+
 .c.o:
 	$(CC) -c $(CCFLAGS) $< -o $@
+
+.c.ca:
+	$(CC) -E -P $(CCFLAGS) $< -o $@ -D TI_SKIP_SYSTEM_HEADERS -D __TI_INDICATORS_H__ -D __BUFFER_H__ -D __MINMAX_H__
 
 
 clean:
@@ -50,4 +63,8 @@ clean:
 	rm -f *.o
 	rm -f indicators/*.o
 	rm -f utils/*.o
+	rm -f *.ca
+	rm -f indicators/*.ca
+	rm -f utils/*.ca
+	rm -f tiamalgamation.c
 	#rm -f -r docs

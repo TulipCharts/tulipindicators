@@ -25,8 +25,8 @@
 
 /*
  *
- * Version 0.8.0
- * Header Build 1481831503
+ * Version 0.8.1
+ * Header Build 1482259567
  *
  */
 
@@ -38,7 +38,6 @@
 
 
 #include "indicators.h"
-#include <string.h>
 
 
 

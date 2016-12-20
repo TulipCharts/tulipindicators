@@ -25,9 +25,6 @@
 #define __BUFFER_H__
 
 
-#include "../indicators.h"
-
-
 typedef struct {
     int size, pushes, index;
     TI_REAL sum;

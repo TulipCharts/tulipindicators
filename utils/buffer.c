@@ -22,8 +22,8 @@
  */
 
 
+#include "../indicators.h"
 #include "buffer.h"
-#include <stdlib.h>
 
 
 ti_buffer *ti_buffer_new(int size) {
