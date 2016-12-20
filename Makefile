@@ -8,8 +8,6 @@ CCFLAGS = -Wall -Wextra -Wshadow -Wconversion -O2 -g
 
 SRCS=$(wildcard indicators/*.c)
 SRCS+=$(wildcard utils/*.c)
-HDRS=$(wildcard indicators/*.h)
-HDRS+=$(wildcard utils/*.h)
 OBJS=$(SRCS:%.c=%.o)
 AMAL=$(SRCS:%.c=%.ca)
 
