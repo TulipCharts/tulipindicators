@@ -45,7 +45,7 @@ benchmark: benchmark.o libindicators.a
 
 #This will build all of Tulip Indicators into one .c file.
 tiamalgamation.c: $(AMAL) indicators_index.ca indicators.h
-	echo -e "/*\n * TULIP INDICATROS AMALGAMATION\n * This is all of Tulip Indicators in one file.\n * To get the original sources, go to https://tulipindicators.org\n */\n\n" \
+	echo -e "/*\n * TULIP INDICATORS AMALGAMATION\n * This is all of Tulip Indicators in one file.\n * To get the original sources, go to https://tulipindicators.org\n */\n\n" \
 	    | cat - indicators.h utils/buffer.h utils/minmax.h $(AMAL) indicators_index.ca > $@
 
 .c.o:
