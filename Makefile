@@ -2,9 +2,9 @@ CC ?= gcc
 AR ?= ar
 RANLIB ?= ranlib
 
-#CCFLAGS = -Wall -Wextra -Werror -Wshadow -Wconversion -O2 -g -pg -fprofile-arcs -ftest-coverage
-#CCFLAGS = -Wall -Wextra -Werror -Wshadow -Wconversion -O2 -g -pedantic -std=c99
-CCFLAGS = -Wall -Wextra -Wshadow -Wconversion -O2 -g
+#CCFLAGS ?= -Wall -Wextra -Werror -Wshadow -Wconversion -O2 -g -pg -fprofile-arcs -ftest-coverage
+#CCFLAGS ?= -Wall -Wextra -Werror -Wshadow -Wconversion -O2 -g -pedantic -std=c99
+CCFLAGS ?= -Wall -Wextra -Wshadow -Wconversion -O2 -g
 
 SRCS=$(wildcard indicators/*.c)
 SRCS+=$(wildcard utils/*.c)
