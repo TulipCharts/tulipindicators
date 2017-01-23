@@ -9,6 +9,8 @@ Tulip Indicators is a library of technical analysis functions written in ANSI C.
 Lots of information is available on the website:
 [https://tulipindicators.org](https://tulipindicators.org)
 
+High quality bindings are available for [Node.js](https://github.com/TulipCharts/tulipnode)
+and [Python](https://github.com/cirla/tulipy).
 
 ##Features
 
