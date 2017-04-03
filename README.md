@@ -1,8 +1,8 @@
 [![Build Status](https://travis-ci.org/TulipCharts/tulipindicators.svg?branch=master)](https://travis-ci.org/TulipCharts/tulipindicators)
 
-#Tulip Indicators
+# Tulip Indicators
 
-##Introduction
+## Introduction
 
 Tulip Indicators is a library of technical analysis functions written in ANSI C.
 
@@ -12,7 +12,7 @@ Lots of information is available on the website:
 High quality bindings are available for [Node.js](https://github.com/TulipCharts/tulipnode)
 and [Python](https://github.com/cirla/tulipy).
 
-##Features
+## Features
 
  - **ANSI C with no dependecies**.
  - Uses fast algorithms.
@@ -20,7 +20,7 @@ and [Python](https://github.com/cirla/tulipy).
  - Release under LGPL license.
 
 
-##Building
+## Building
 
 Building is easy. You only need a decent C compiler. Tulip Indicators has no
 other dependencies.
@@ -36,13 +36,13 @@ make
 You should get a static library, `libindicators.a`. You'll need that library
 and the header file `indicators.h` to use Tulip Indicators in your code.
 
-##Usage
+## Usage
 
 For usage information, please see:
 [https://tulipindicators.org/usage](https://tulipindicators.org/usage)
 
 
-##Indicator Listing
+## Indicator Listing
 ```
 103 total indicators
 
