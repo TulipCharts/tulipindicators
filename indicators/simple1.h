@@ -38,7 +38,7 @@
 
 #define SIMPLE1(START, FUN, OP) \
 int START(TI_REAL const *options) { \
-    options = options; \
+    (void)options; \
     return 0; \
 } \
  \
@@ -46,7 +46,7 @@ int START(TI_REAL const *options) { \
 int FUN(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) { \
     const TI_REAL *in1 = inputs[0]; \
  \
-    options = options; \
+    (void)options; \
  \
     TI_REAL *output = outputs[0]; \
  \

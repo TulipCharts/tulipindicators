@@ -26,7 +26,7 @@
 
 
 int ti_pvi_start(TI_REAL const *options) {
-    options=options;
+    (void)options;
     return 0;
 }
 
@@ -35,7 +35,7 @@ int ti_pvi(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_RE
     const TI_REAL *close = inputs[0];
     const TI_REAL *volume = inputs[1];
 
-    options=options;
+    (void)options;
 
     TI_REAL *output = outputs[0];
 

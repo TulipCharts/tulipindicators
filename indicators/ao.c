@@ -25,7 +25,7 @@
 
 
 int ti_ao_start(TI_REAL const *options) {
-    options = options;
+    (void)options;
     return 33;
 }
 

@@ -26,7 +26,7 @@
 
 
 int ti_emv_start(TI_REAL const *options) {
-    options=options;
+    (void)options;
     return 1;
 }
 
@@ -36,7 +36,7 @@ int ti_emv(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_RE
     const TI_REAL *low = inputs[1];
     const TI_REAL *volume = inputs[2];
 
-    options=options;
+    (void)options;
 
     TI_REAL *output = outputs[0];
 

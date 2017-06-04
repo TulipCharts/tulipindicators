@@ -27,7 +27,7 @@
 
 
 int ti_wad_start(TI_REAL const *options) {
-    options = options;
+    (void)options;
     return 1;
 }
 
@@ -37,7 +37,7 @@ int ti_wad(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_RE
     const TI_REAL *low = inputs[1];
     const TI_REAL *close = inputs[2];
 
-    options = options;
+    (void)options;
 
     if (size <= ti_wad_start(options)) return TI_OKAY;
 

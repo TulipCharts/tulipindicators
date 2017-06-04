@@ -26,7 +26,7 @@
 
 
 int ti_apo_start(TI_REAL const *options) {
-    options=options;
+    (void)options;
     return 1;
 }
 

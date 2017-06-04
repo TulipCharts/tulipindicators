@@ -26,7 +26,7 @@
 
 
 int ti_avgprice_start(TI_REAL const *options) {
-    options=options;
+    (void)options;
     return 0;
 }
 
@@ -37,7 +37,7 @@ int ti_avgprice(int size, TI_REAL const * const *inputs, TI_REAL const *options,
     const TI_REAL *low = inputs[2];
     const TI_REAL *close = inputs[3];
 
-    options=options;
+    (void)options;
 
     TI_REAL *output = outputs[0];
     int i;

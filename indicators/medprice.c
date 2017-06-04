@@ -26,7 +26,7 @@
 
 
 int ti_medprice_start(TI_REAL const *options) {
-    options=options;
+    (void)options;
     return 0;
 }
 
@@ -35,7 +35,7 @@ int ti_medprice(int size, TI_REAL const * const *inputs, TI_REAL const *options,
     const TI_REAL *high = inputs[0];
     const TI_REAL *low = inputs[1];
 
-    options=options;
+    (void)options;
 
     TI_REAL *output = outputs[0];
 

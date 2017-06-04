@@ -26,7 +26,7 @@
 
 
 int ti_crossover_start(TI_REAL const *options) {
-    options=options;
+    (void)options;
     return 1;
 }
 
@@ -35,7 +35,7 @@ int ti_crossover(int size, TI_REAL const *const *inputs, TI_REAL const *options,
     const TI_REAL *a = inputs[0];
     const TI_REAL *b = inputs[1];
 
-    options=options;
+    (void)options;
 
     TI_REAL *output = outputs[0];
 
