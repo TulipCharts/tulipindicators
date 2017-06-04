@@ -37,7 +37,7 @@ int ti_dpo(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_RE
     const int back = period / 2 + 1;
 
     TI_REAL *output = outputs[0];
-    const TI_REAL div = 1.0 / period;
+    const TI_REAL scale = 1.0 / period;
 
     if (period < 1) return TI_INVALID_OPTION;
     if (size <= ti_dpo_start(options)) return TI_OKAY;
@@ -49,12 +49,12 @@ int ti_dpo(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_RE
         sum += input[i];
     }
 
-    *output++ = input[period-1-back] - (sum * div);
+    *output++ = input[period-1-back] - (sum * scale);
 
     for (i = period; i < size; ++i) {
         sum += input[i];
         sum -= input[i-period];
-        *output++ = input[i-back] - (sum * div);
+        *output++ = input[i-back] - (sum * scale);
     }
 
     assert(output - outputs[0] == size - ti_dpo_start(options));

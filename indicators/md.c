@@ -34,7 +34,7 @@ int ti_md(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REA
     const int period = (int)options[0];
     TI_REAL *output = outputs[0];
 
-    const TI_REAL div = 1.0 / period;
+    const TI_REAL scale = 1.0 / period;
 
     if (period < 1) return TI_INVALID_OPTION;
     if (size <= ti_md_start(options)) return TI_OKAY;
@@ -48,7 +48,7 @@ int ti_md(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REA
         sum += today;
         if (i >= period) sum -= input[i-period];
 
-        const TI_REAL avg = sum * div;
+        const TI_REAL avg = sum * scale;
 
         if (i >= period - 1) {
             TI_REAL acc = 0;
@@ -56,7 +56,7 @@ int ti_md(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REA
                 acc += fabs(avg - input[i-j]);
             }
 
-            *output++ = acc * div;
+            *output++ = acc * scale;
         }
     }
 

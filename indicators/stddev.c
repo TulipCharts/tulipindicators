@@ -33,7 +33,7 @@ int ti_stddev(int size, TI_REAL const * const *inputs, TI_REAL const *options, T
     const TI_REAL *input = inputs[0];
     const int period = (int)options[0];
     TI_REAL *output = outputs[0];
-    const TI_REAL div = 1.0 / period;
+    const TI_REAL scale = 1.0 / period;
 
     if (period < 1) return TI_INVALID_OPTION;
     if (size <= ti_stddev_start(options)) return TI_OKAY;
@@ -48,7 +48,7 @@ int ti_stddev(int size, TI_REAL const * const *inputs, TI_REAL const *options, T
     }
 
     {
-        TI_REAL s2s2 = (sum2 * div - (sum * div) * (sum * div));
+        TI_REAL s2s2 = (sum2 * scale - (sum * scale) * (sum * scale));
         if (s2s2 > 0.0) s2s2 = sqrt(s2s2);
         *output++ = s2s2;
     }
@@ -60,7 +60,7 @@ int ti_stddev(int size, TI_REAL const * const *inputs, TI_REAL const *options, T
         sum -= input[i-period];
         sum2 -= input[i-period] * input[i-period];
 
-        TI_REAL s2s2 = (sum2 * div - (sum * div) * (sum * div));
+        TI_REAL s2s2 = (sum2 * scale - (sum * scale) * (sum * scale));
         if (s2s2 > 0.0) s2s2 = sqrt(s2s2);
         *output++ = s2s2;
     }

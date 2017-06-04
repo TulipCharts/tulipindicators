@@ -34,7 +34,7 @@ int ti_sma(int size, TI_REAL const * const *inputs, TI_REAL const *options, TI_R
     const TI_REAL *input = inputs[0];
     const int period = (int)options[0];
     TI_REAL *output = outputs[0];
-    const TI_REAL div = 1.0 / period;
+    const TI_REAL scale = 1.0 / period;
 
     if (period < 1) return TI_INVALID_OPTION;
     if (size <= ti_sma_start(options)) return TI_OKAY;
@@ -46,12 +46,12 @@ int ti_sma(int size, TI_REAL const * const *inputs, TI_REAL const *options, TI_R
         sum += input[i];
     }
 
-    *output++ = sum * div;
+    *output++ = sum * scale;
 
     for (i = period; i < size; ++i) {
         sum += input[i];
         sum -= input[i-period];
-        *output++ = sum * div;
+        *output++ = sum * scale;
     }
 
     assert(output - outputs[0] == size - ti_sma_start(options));

@@ -36,7 +36,7 @@ int ti_volatility(int size, TI_REAL const * const *inputs, TI_REAL const *option
     const TI_REAL *input = inputs[0];
     TI_REAL *output = outputs[0];
     const int period = (int)options[0];
-    const TI_REAL div = 1.0 / period;
+    const TI_REAL scale = 1.0 / period;
     const TI_REAL annual = sqrt(252); /* Multiplier, number of trading days in year. */
 
     if (period < 1) return TI_INVALID_OPTION;
@@ -52,7 +52,7 @@ int ti_volatility(int size, TI_REAL const * const *inputs, TI_REAL const *option
         sum2 += c * c;
     }
 
-    *output++ = sqrt(sum2 * div - (sum * div) * (sum * div)) * annual;
+    *output++ = sqrt(sum2 * scale - (sum * scale) * (sum * scale)) * annual;
 
     for (i = period+1; i < size; ++i) {
         const TI_REAL c = CHANGE(i);
@@ -63,7 +63,7 @@ int ti_volatility(int size, TI_REAL const * const *inputs, TI_REAL const *option
         sum -= cp;
         sum2 -= cp * cp;
 
-        *output++ = sqrt(sum2 * div - (sum * div) * (sum * div)) * annual;
+        *output++ = sqrt(sum2 * scale - (sum * scale) * (sum * scale)) * annual;
     }
 
     assert(output - outputs[0] == size - ti_volatility_start(options));

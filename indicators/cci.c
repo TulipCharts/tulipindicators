@@ -40,7 +40,7 @@ int ti_cci(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_RE
 
     const int period = (int)options[0];
 
-    const TI_REAL div = 1.0 / period;
+    const TI_REAL scale = 1.0 / period;
 
     if (period < 1) return TI_INVALID_OPTION;
     if (size <= ti_cci_start(options)) return TI_OKAY;
@@ -53,7 +53,7 @@ int ti_cci(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_RE
     for (i = 0; i < size; ++i) {
         const TI_REAL today = TYPPRICE(i);
         ti_buffer_push(sum, today);
-        const TI_REAL avg = sum->sum * div;
+        const TI_REAL avg = sum->sum * scale;
 
         if (i >= period * 2 - 2) {
             TI_REAL acc = 0;
@@ -61,7 +61,7 @@ int ti_cci(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_RE
                 acc += fabs(avg - sum->vals[j]);
             }
 
-            TI_REAL cci = acc * div;
+            TI_REAL cci = acc * scale;
             cci *= .015;
             cci = (today-avg)/cci;
             *output++ = cci;

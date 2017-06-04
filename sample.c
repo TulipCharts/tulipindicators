@@ -187,7 +187,7 @@ int main(int argc, char **argv) {
     if (ret == TI_OKAY) {
 
         int i, k;
-        int nan = 0;
+        int bad = 0;
 
         printf("date        ");
         if (o) printf(" open   ");
@@ -217,14 +217,14 @@ int main(int argc, char **argv) {
             if (i >= start) {
                 for (k = 0; k < info->outputs; ++k)
                 {
-                    if (out[k][i-start] != out[k][i-start]) nan = 1;
+                    if (out[k][i-start] != out[k][i-start]) bad = 1;
                     printf(" %8.3f", out[k][i-start]);
                 }
             }
             printf("\n");
         }
 
-        if (nan) {
+        if (bad) {
             printf("\nERROR NaN in outputs (%s).\n", info->name);
             return 1;
         }

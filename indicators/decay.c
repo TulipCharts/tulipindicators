@@ -35,13 +35,13 @@ int ti_decay(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_
     const TI_REAL *input = inputs[0];
     TI_REAL *output = outputs[0];
     const int period = (int)options[0];
-    const TI_REAL div = 1.0 / period;
+    const TI_REAL scale = 1.0 / period;
 
     *output++ = input[0];
 
     int i;
     for (i = 1; i < size; ++i) {
-        TI_REAL d = output[-1] - div;
+        TI_REAL d = output[-1] - scale;
         *output++ = input[i] > d ? input[i] : d;
     }
 
