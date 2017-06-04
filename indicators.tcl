@@ -1,6 +1,6 @@
 # Tulip Indicators
 # https://tulipindicators.org/
-# Copyright (c) 2010-2016 Tulip Charts LLC
+# Copyright (c) 2010-2017 Tulip Charts LLC
 # Lewis Van Winkle (LV@tulipcharts.org)
 #
 # This file is part of Tulip Indicators.
@@ -22,7 +22,7 @@
 set license "/*
  * Tulip Indicators
  * https://tulipindicators.org/
- * Copyright (c) 2010-2016 Tulip Charts LLC
+ * Copyright (c) 2010-2017 Tulip Charts LLC
  * Lewis Van Winkle (LV@tulipcharts.org)
  *
  * This file is part of Tulip Indicators.
