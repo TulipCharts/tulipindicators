@@ -60,7 +60,7 @@ extern "C" {
 
 #define TI_REAL double
 
-#define TI_INDICATOR_COUNT 103 /* Total number of indicators. */
+#define TI_INDICATOR_COUNT 104 /* Total number of indicators. */
 
 #define TI_OKAY                    0
 #define TI_INVALID_OPTION          1
@@ -229,6 +229,22 @@ int ti_adx(int size,
 /* Outputs: dx */
 int ti_adxr_start(TI_REAL const *options);
 int ti_adxr(int size,
+      TI_REAL const *const *inputs,
+      TI_REAL const *options,
+      TI_REAL *const *outputs);
+
+
+
+
+
+/* Arnaud Legoux Moving Average */
+/* Type: indicator */
+/* Input arrays: 1    Options: 3    Output arrays: 1 */
+/* Inputs: real */
+/* Options: period, offset, sigma */
+/* Outputs: alma */
+int ti_alma_start(TI_REAL const *options);
+int ti_alma(int size,
       TI_REAL const *const *inputs,
       TI_REAL const *options,
       TI_REAL *const *outputs);
