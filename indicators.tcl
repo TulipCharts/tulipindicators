@@ -64,6 +64,7 @@ set indicators {}
 #type name func_name inputs options outputs extra_features
 
 #Moving averages
+lappend indicators [list overlay "Arnaud Legoux Moving Average" alma 1 3 1 {real} {period offset sigma} {alma}]
 lappend indicators [list overlay "Double Exponential Moving Average" dema 1 1 1 {real} {period} {dema}]
 lappend indicators [list overlay "Exponential Moving Average" ema 1 1 1 {real} {period} {ema}]
 lappend indicators [list overlay "Hull Moving Average" hma 1 1 1 {real} {period} {hma}]
