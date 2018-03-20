@@ -179,6 +179,12 @@ void test(const char *fname, int count) {
 }
 
 
+void test_version() {
+    lok(strcmp(TI_VERSION, ti_version()) == 0);
+    lok(TI_BUILD == ti_build());
+}
+
+
 void test_buffer() {
     ti_buffer *b = ti_buffer_new(3);
     ti_buffer_push(b, 5.0); lfequal(b->sum, 5.0);
@@ -204,6 +210,7 @@ int main() {
 
     printf("TI TEST SUITE\n");
     lrun("buffer", test_buffer());
+    lrun("version", test_version());
     test("tests/untest.txt", 0);
     test("tests/atoz.txt", 1);
     test("tests/extra.txt", 1);

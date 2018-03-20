@@ -1,6 +1,6 @@
 # Tulip Indicators
 # https://tulipindicators.org/
-# Copyright (c) 2010-2017 Tulip Charts LLC
+# Copyright (c) 2010-2018 Tulip Charts LLC
 # Lewis Van Winkle (LV@tulipcharts.org)
 #
 # This file is part of Tulip Indicators.
@@ -22,7 +22,7 @@
 set license "/*
  * Tulip Indicators
  * https://tulipindicators.org/
- * Copyright (c) 2010-2017 Tulip Charts LLC
+ * Copyright (c) 2010-2018 Tulip Charts LLC
  * Lewis Van Winkle (LV@tulipcharts.org)
  *
  * This file is part of Tulip Indicators.
@@ -228,6 +228,9 @@ puts $h "$license
 #define TI_VERSION \"$version\"
 #define TI_BUILD $build
 
+const char* ti_version();
+long int ti_build();
+
 #ifndef TI_SKIP_SYSTEM_HEADERS
 #include <math.h>
 #include <assert.h>
@@ -403,7 +406,12 @@ puts $idx "$license
 "
 
 
-puts $idx "#include \"indicators.h\""
+puts $idx "#include \"indicators.h\"\n\n"
+puts $idx "
+const char* ti_version() {return TI_VERSION;}
+long int ti_build() {return TI_BUILD;}
+"
+
 puts $idx "\n\n\nstruct ti_indicator_info ti_indicators\[\] = {"
 
 set func_names {}
