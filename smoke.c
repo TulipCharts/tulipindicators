@@ -85,7 +85,7 @@ int get_array(FILE *fp, TI_REAL *s) {
         ++inp;
     } while ((num = strtok(0, ",}\r\n")));
 
-    return inp - s;
+    return (int)(inp - s);
 }
 
 /*Read in options, inputs, answers, and test.*/
@@ -101,7 +101,7 @@ void test_ind_name(FILE *fp, const char *name, int count) {
     }
 
 
-    const int ind_num = info - ti_indicators;
+    const int ind_num = (int)(info - ti_indicators);
     if (count)
         tested[ind_num] = 1;
 
@@ -114,7 +114,7 @@ void test_ind_name(FILE *fp, const char *name, int count) {
         ++o;
     }
 
-    lequal(o-options, info->options);
+    lequal((int)(o-options), info->options);
 
     int i;
 
