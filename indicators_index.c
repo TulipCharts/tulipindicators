@@ -25,8 +25,8 @@
 
 /*
  *
- * Version 0.8.1
- * Header Build 1521563493
+ * Version 0.8.2
+ * Header Build 1521563742
  *
  */
 
