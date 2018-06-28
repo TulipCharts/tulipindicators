@@ -1,7 +1,7 @@
 /*
  * Tulip Indicators
  * https://tulipindicators.org/
- * Copyright (c) 2010-2017 Tulip Charts LLC
+ * Copyright (c) 2010-2018 Tulip Charts LLC
  * Lewis Van Winkle (LV@tulipcharts.org)
  *
  * This file is part of Tulip Indicators.
@@ -27,8 +27,8 @@
 
 
 ti_buffer *ti_buffer_new(int size) {
-    const int s = (int)sizeof(ti_buffer) + size * (int)sizeof(TI_REAL);
-    ti_buffer *ret = malloc((unsigned int)s);
+    const int s = (int)sizeof(ti_buffer) + (size-1) * (int)sizeof(TI_REAL);
+    ti_buffer *ret = (ti_buffer*)malloc((unsigned int)s);
     ret->size = size;
     ret->pushes = 0;
     ret->index = 0;

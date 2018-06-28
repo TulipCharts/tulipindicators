@@ -28,7 +28,7 @@
 typedef struct {
     int size, pushes, index;
     TI_REAL sum;
-    TI_REAL vals[];
+    TI_REAL vals[1];
 } ti_buffer;
 
 
