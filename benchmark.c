@@ -275,7 +275,7 @@ int run_ti(const ti_indicator_info *info, double *options, int goal) {
         ind_offset = info->start(options);
 
         /* Run it. */
-        const int ret = info->indicator(INSIZE, (TI_REAL const * const *)inputs, options, outputs);
+        const int ret = info->indicator(INSIZE, (TI_REAL const *const *)inputs, options, outputs);
         if (ret != TI_OKAY) {
             printf("   *ERROR* (%d)\n", ret);
             printf("options:\n");

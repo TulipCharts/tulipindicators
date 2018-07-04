@@ -63,7 +63,7 @@ do { \
 } while (0)
 
 
-void check_output(const ti_indicator_info *info, int size, TI_REAL const * const *inputs, TI_REAL const * options, TI_REAL * const *outputs) {
+void check_output(const ti_indicator_info *info, int size, TI_REAL const *const *inputs, TI_REAL const * options, TI_REAL *const *outputs) {
 
     int s;
     s = info->start(options);

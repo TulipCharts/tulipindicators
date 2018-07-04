@@ -135,7 +135,7 @@ void test_ind_name(FILE *fp, const char *name, int count) {
         answer_size = get_array(fp, answers[i]);
     }
 
-    const int ret = info->indicator(input_size, (TI_REAL const * const *)inputs, options, outputs);
+    const int ret = info->indicator(input_size, (TI_REAL const *const *)inputs, options, outputs);
     lok(ret == TI_OKAY);
 
     int output_size = input_size - info->start(options);
