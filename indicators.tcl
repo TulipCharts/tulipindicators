@@ -228,8 +228,6 @@ puts $h "$license
 #define TI_VERSION \"$version\"
 #define TI_BUILD $build
 
-const char* ti_version();
-long int ti_build();
 
 #ifndef TI_SKIP_SYSTEM_HEADERS
 #include <math.h>
@@ -242,6 +240,9 @@ long int ti_build();
 extern \"C\" {
 #endif
 
+
+const char* ti_version();
+long int ti_build();
 
 
 "
