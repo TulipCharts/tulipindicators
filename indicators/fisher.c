@@ -94,7 +94,7 @@ int ti_fisher(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI
         if (val1 > 0.99) val1 = .999;
         if (val1 < -0.99) val1 = -.999;
 
-        *signal ++ = fish;
+        *signal++ = fish;
         fish = 0.5 * log((1.0+val1)/(1.0-val1)) + 0.5 * fish;
         *fisher++ = fish;
     }
