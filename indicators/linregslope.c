@@ -26,7 +26,7 @@
 #define INIT() do{}while(0)
 
 #define FINAL(forecast) do { \
-        *(output)++ = b; \
+        *output++ = b; \
 } while (0)
 
 #include "trend.h"

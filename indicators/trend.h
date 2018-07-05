@@ -35,7 +35,7 @@
 
 #define FINAL(forecast) do { \
         const TI_REAL a = (y - b * x) * p; \
-        *(output)++ = POSTPROC(a + b * (forecast)); \
+        *output++ = POSTPROC(a + b * (forecast)); \
 } while (0)
 
 #endif
