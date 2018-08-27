@@ -24,8 +24,8 @@
 
 /*
  *
- * Version 0.8.2
- * Header Build 1535400050
+ * Version 0.8.3
+ * Header Build 1535408446
  *
  */
 
@@ -39,8 +39,8 @@
 #define __TI_INDICATORS_H__
 
 
-#define TI_VERSION "0.8.2"
-#define TI_BUILD 1535400050
+#define TI_VERSION "0.8.3"
+#define TI_BUILD 1535408446
 
 
 #ifndef TI_SKIP_SYSTEM_HEADERS
