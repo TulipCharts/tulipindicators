@@ -361,6 +361,14 @@ void stoch_option_setter(double period, double *options, int ti) {
     }
 }
 
+void stochrsi_option_setter(double period, double *options, int ti) {
+    ti=ti;
+    options[0] = period;
+    options[1] = period;
+    options[2] = period;
+    options[3] = 1;
+}
+
 void ultosc_option_setter(double period, double *options, int ti) {
     ti=ti;
     options[0] = period;
@@ -373,6 +381,11 @@ void vidya_option_setter(double period, double *options, int ti) {
     options[0] = period;
     options[1] = period + 10;
     options[2] = .2;
+}
+
+double stochrsi_output_adjust(double a) {
+    /* ta-lib uses stochrsi * 100 */
+    return a * 0.01;
 }
 
 
@@ -410,10 +423,13 @@ void bench(FILE *log, const ti_indicator_info *info) {
     if (strcmp(info->name, "adosc") == 0) options_setter = fast_slow_option_setter;
     if (strcmp(info->name, "kvo") == 0) options_setter = fast_slow_option_setter;
     if (strcmp(info->name, "stoch") == 0) options_setter = stoch_option_setter;
+    if (strcmp(info->name, "stochrsi") == 0) options_setter = stochrsi_option_setter;
     if (strcmp(info->name, "ultosc") == 0) options_setter = ultosc_option_setter;
     if (strcmp(info->name, "vosc") == 0) options_setter = fast_slow_option_setter;
     if (strcmp(info->name, "vidya") == 0) options_setter = vidya_option_setter;
 
+    double (*output_adjust)(double period) = 0;
+    if (strcmp(info->name, "stochrsi") == 0) output_adjust = stochrsi_output_adjust;
 
     if (info) {
         if (log) fprintf(log, ",\n  \"%s\" => array(\n", info->name);
@@ -540,6 +556,7 @@ void bench(FILE *log, const ti_indicator_info *info) {
                 double a = out[j][INSIZE-1-i-ind_offset];
                 double b = outta[remap[j]][INSIZE-1-i-ta_offset];
 
+                if (output_adjust) b = output_adjust(b);
 
                 double diff = fabs(a-b);
                 if (diff > 0.0001) {

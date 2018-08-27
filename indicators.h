@@ -25,7 +25,7 @@
 /*
  *
  * Version 0.8.2
- * Header Build 1530750383
+ * Header Build 1535400050
  *
  */
 
@@ -40,7 +40,7 @@
 
 
 #define TI_VERSION "0.8.2"
-#define TI_BUILD 1530750383
+#define TI_BUILD 1535400050
 
 
 #ifndef TI_SKIP_SYSTEM_HEADERS
@@ -64,7 +64,7 @@ long int ti_build();
 
 #define TI_REAL double
 
-#define TI_INDICATOR_COUNT 103 /* Total number of indicators. */
+#define TI_INDICATOR_COUNT 104 /* Total number of indicators. */
 
 #define TI_OKAY                    0
 #define TI_INVALID_OPTION          1
@@ -1353,6 +1353,22 @@ int ti_stderr(int size,
 /* Outputs: stoch_k, stoch_d */
 int ti_stoch_start(TI_REAL const *options);
 int ti_stoch(int size,
+      TI_REAL const *const *inputs,
+      TI_REAL const *options,
+      TI_REAL *const *outputs);
+
+
+
+
+
+/* Stochastic RSI */
+/* Type: indicator */
+/* Input arrays: 1    Options: 1    Output arrays: 1 */
+/* Inputs: real */
+/* Options: period */
+/* Outputs: stochrsi */
+int ti_stochrsi_start(TI_REAL const *options);
+int ti_stochrsi(int size,
       TI_REAL const *const *inputs,
       TI_REAL const *options,
       TI_REAL *const *outputs);

@@ -113,6 +113,7 @@ lappend indicators [list indicator "Positive Volume Index" pvi 2 0 1 {close volu
 lappend indicators [list indicator "Qstick" qstick 2 1 1 {open close} {period} {qstick}]
 lappend indicators [list indicator "Relative Strength Index" rsi 1 1 1 {real} {period} {rsi}]
 lappend indicators [list indicator "Stochastic Oscillator" stoch 3 3 2 {high low close} {{%k period} {%k slowing period} {%d period}} {stoch_k stoch_d}]
+lappend indicators [list indicator "Stochastic RSI" stochrsi 1 1 1 {real} {period} {stochrsi}]
 lappend indicators [list indicator "Trix" trix 1 1 1 {real} {period} {trix}]
 lappend indicators [list indicator "Williams Accumulation/Distribution" wad 3 0 1 {high low close} {} {wad}]
 lappend indicators [list indicator "Williams %R" willr 3 1 1 {high low close} {period} {willr}]
