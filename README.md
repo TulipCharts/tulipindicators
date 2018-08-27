@@ -158,3 +158,8 @@ Simple
    torad               Vector Radian Conversion
    trunc               Vector Truncate
 ```
+
+
+## Special Thanks
+
+The stochrsi indicator was sponsored by: [Gunthy](https://gunthy.org).
