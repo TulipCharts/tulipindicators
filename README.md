@@ -44,7 +44,7 @@ For usage information, please see:
 
 ## Indicator Listing
 ```
-103 total indicators
+104 total indicators
 
 Overlay
    avgprice            Average Price
@@ -108,6 +108,7 @@ Indicator
    rocr                Rate of Change Ratio
    rsi                 Relative Strength Index
    stoch               Stochastic Oscillator
+   stochrsi            Stochastic RSI
    tr                  True Range
    trix                Trix
    ultosc              Ultimate Oscillator
