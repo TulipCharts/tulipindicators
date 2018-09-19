@@ -102,7 +102,12 @@ int ti_stochrsi(int size, TI_REAL const *const *inputs, TI_REAL const *options, 
         ti_buffer_qpush(rsi, r);
 
         if (i > period*2 - 2) {
-            *output++ = (r - min) / (max - min);
+            const TI_REAL diff = max - min;
+            if (diff == 0.0) {
+                *output++ = 0.0;
+            } else {
+                *output++ = (r - min) / (diff);
+            }
         }
     }
 
