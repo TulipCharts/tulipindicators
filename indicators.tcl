@@ -43,7 +43,7 @@ set license "/*
  */
 "
 
-set version 0.8.3
+set version 0.8.4
 set build [clock seconds]
 
 
