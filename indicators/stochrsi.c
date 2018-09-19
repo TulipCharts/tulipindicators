@@ -24,7 +24,6 @@
 #include "../indicators.h"
 #include "../utils/buffer.h"
 
-
 int ti_stochrsi_start(TI_REAL const *options) {
     return ((int)options[0]) * 2 - 1;
 }
@@ -74,7 +73,7 @@ int ti_stochrsi(int size, TI_REAL const *const *inputs, TI_REAL const *options, 
             max = r;
             maxi = rsi->index;
         } else if (maxi == rsi->index) {
-            max = 0.0;
+            max = r;
             int j;
             for (j = 0; j < rsi->size; ++j) {
                 if (j == rsi->index) continue;
@@ -89,7 +88,7 @@ int ti_stochrsi(int size, TI_REAL const *const *inputs, TI_REAL const *options, 
             min = r;
             mini = rsi->index;
         } else if (mini == rsi->index) {
-            min = 100.0;
+            min = r;
             int j;
             for (j = 0; j < rsi->size; ++j) {
                 if (j == rsi->index) continue;
