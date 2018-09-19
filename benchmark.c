@@ -355,9 +355,9 @@ void stoch_option_setter(double period, double *options, int ti) {
     } else {
         options[0] = period;
         options[1] = 3;
-        options[2] = 1;
+        options[2] = TA_MAType_SMA;
         options[3] = 4;
-        options[4] = 1;
+        options[4] = TA_MAType_SMA;
     }
 }
 
