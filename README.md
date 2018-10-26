@@ -14,7 +14,7 @@ and [Python](https://github.com/cirla/tulipy).
 
 ## Features
 
- - **ANSI C with no dependecies**.
+ - **ANSI C with no dependencies**.
  - Uses fast algorithms.
  - Easy to use programming interface.
  - Release under LGPL license.
