@@ -44,15 +44,11 @@ int ti_dx(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REA
 
     const TI_REAL per = ((TI_REAL)period-1) / ((TI_REAL)period);
 
-    TI_REAL atr = 0;
     TI_REAL dmup = 0;
     TI_REAL dmdown = 0;
 
     int i;
     for (i = 1; i < period; ++i) {
-        TI_REAL truerange;
-        CALC_TRUERANGE();
-        atr += truerange;
 
         TI_REAL dp, dm;
         CALC_DIRECTION(dp, dm);
@@ -63,8 +59,8 @@ int ti_dx(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REA
 
 
     {
-        TI_REAL di_up = dmup / atr;
-        TI_REAL di_down = dmdown / atr;
+        TI_REAL di_up = dmup;
+        TI_REAL di_down = dmdown;
         TI_REAL dm_diff = fabs(di_up - di_down);
         TI_REAL dm_sum = di_up + di_down;
         TI_REAL dx = dm_diff / dm_sum * 100;
@@ -74,10 +70,6 @@ int ti_dx(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REA
 
 
     for (i = period; i < size; ++i) {
-        TI_REAL truerange;
-        CALC_TRUERANGE();
-        atr = atr * per + truerange;
-
 
         TI_REAL dp, dm;
         CALC_DIRECTION(dp, dm);
@@ -87,8 +79,8 @@ int ti_dx(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REA
         dmdown = dmdown * per + dm;
 
 
-        TI_REAL di_up = dmup / atr;
-        TI_REAL di_down = dmdown / atr;
+        TI_REAL di_up = dmup;
+        TI_REAL di_down = dmdown;
         TI_REAL dm_diff = fabs(di_up - di_down);
         TI_REAL dm_sum = di_up + di_down;
         TI_REAL dx = dm_diff / dm_sum * 100;
