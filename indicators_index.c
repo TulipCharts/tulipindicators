@@ -26,7 +26,7 @@
 /*
  *
  * Version 0.8.4
- * Header Build 1537377628
+ * Header Build 1540671090
  *
  */
 
@@ -88,6 +88,7 @@ struct ti_indicator_info ti_indicators[] = {
     {"floor", "Vector Floor", ti_floor_start, ti_floor, TI_TYPE_SIMPLE, 1, 0, 1, {"real",0}, {"",0}, {"floor",0}},
     {"fosc", "Forecast Oscillator", ti_fosc_start, ti_fosc, TI_TYPE_INDICATOR, 1, 1, 1, {"real",0}, {"period",0}, {"fosc",0}},
     {"hma", "Hull Moving Average", ti_hma_start, ti_hma, TI_TYPE_OVERLAY, 1, 1, 1, {"real",0}, {"period",0}, {"hma",0}},
+    {"ikhts", "Ichimoku Tenkan-Sen", ti_ikhts_start, ti_ikhts, TI_TYPE_OVERLAY, 2, 1, 1, {"high","low",0}, {"period",0}, {"ikhts",0}},
     {"kama", "Kaufman Adaptive Moving Average", ti_kama_start, ti_kama, TI_TYPE_OVERLAY, 1, 1, 1, {"real",0}, {"period",0}, {"kama",0}},
     {"kvo", "Klinger Volume Oscillator", ti_kvo_start, ti_kvo, TI_TYPE_INDICATOR, 4, 2, 1, {"high","low","close","volume",0}, {"short period","long period",0}, {"kvo",0}},
     {"lag", "Lag", ti_lag_start, ti_lag, TI_TYPE_MATH, 1, 1, 1, {"real",0}, {"period",0}, {"lag",0}},
