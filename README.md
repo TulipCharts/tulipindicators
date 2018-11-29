@@ -9,12 +9,12 @@ Tulip Indicators is a library of technical analysis functions written in ANSI C.
 Lots of information is available on the website:
 [https://tulipindicators.org](https://tulipindicators.org)
 
-High quality bindings are available for [Node.js](https://github.com/TulipCharts/tulipnode)
-and [Python](https://github.com/cirla/tulipy).
+High quality bindings are available for [Node.js](https://github.com/TulipCharts/tulipnode),
+[Python](https://github.com/cirla/tulipy), and [.NET](https://github.com/TulipCharts/tinet).
 
 ## Features
 
- - **ANSI C with no dependecies**.
+ - **ANSI C with no dependencies**.
  - Uses fast algorithms.
  - Easy to use programming interface.
  - Release under LGPL license.
@@ -44,7 +44,7 @@ For usage information, please see:
 
 ## Indicator Listing
 ```
-103 total indicators
+104 total indicators
 
 Overlay
    avgprice            Average Price
@@ -108,6 +108,7 @@ Indicator
    rocr                Rate of Change Ratio
    rsi                 Relative Strength Index
    stoch               Stochastic Oscillator
+   stochrsi            Stochastic RSI
    tr                  True Range
    trix                Trix
    ultosc              Ultimate Oscillator
@@ -157,3 +158,8 @@ Simple
    torad               Vector Radian Conversion
    trunc               Vector Truncate
 ```
+
+
+## Special Thanks
+
+The stochrsi indicator was sponsored by: [Gunthy](https://gunthy.org).

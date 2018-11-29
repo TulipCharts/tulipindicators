@@ -1,7 +1,7 @@
 /*
  * Tulip Indicators
  * https://tulipindicators.org/
- * Copyright (c) 2010-2017 Tulip Charts LLC
+ * Copyright (c) 2010-2018 Tulip Charts LLC
  * Lewis Van Winkle (LV@tulipcharts.org)
  *
  * This file is part of Tulip Indicators.
@@ -24,8 +24,8 @@
 
 /*
  *
- * Version 0.8.1
- * Header Build 1482259567
+ * Version 0.8.4
+ * Header Build 1537377628
  *
  */
 
@@ -39,8 +39,9 @@
 #define __TI_INDICATORS_H__
 
 
-#define TI_VERSION "0.8.1"
-#define TI_BUILD 1482259567
+#define TI_VERSION "0.8.4"
+#define TI_BUILD 1537377628
+
 
 #ifndef TI_SKIP_SYSTEM_HEADERS
 #include <math.h>
@@ -53,6 +54,9 @@
 extern "C" {
 #endif
 
+
+const char* ti_version();
+long int ti_build();
 
 
 
@@ -1365,6 +1369,22 @@ int ti_stderr(int size,
 /* Outputs: stoch_k, stoch_d */
 int ti_stoch_start(TI_REAL const *options);
 int ti_stoch(int size,
+      TI_REAL const *const *inputs,
+      TI_REAL const *options,
+      TI_REAL *const *outputs);
+
+
+
+
+
+/* Stochastic RSI */
+/* Type: indicator */
+/* Input arrays: 1    Options: 1    Output arrays: 1 */
+/* Inputs: real */
+/* Options: period */
+/* Outputs: stochrsi */
+int ti_stochrsi_start(TI_REAL const *options);
+int ti_stochrsi(int size,
       TI_REAL const *const *inputs,
       TI_REAL const *options,
       TI_REAL *const *outputs);

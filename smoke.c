@@ -85,7 +85,7 @@ int get_array(FILE *fp, TI_REAL *s) {
         ++inp;
     } while ((num = strtok(0, ",}\r\n")));
 
-    return inp - s;
+    return (int)(inp - s);
 }
 
 /*Read in options, inputs, answers, and test.*/
@@ -101,7 +101,7 @@ void test_ind_name(FILE *fp, const char *name, int count) {
     }
 
 
-    const int ind_num = info - ti_indicators;
+    const int ind_num = (int)(info - ti_indicators);
     if (count)
         tested[ind_num] = 1;
 
@@ -114,7 +114,7 @@ void test_ind_name(FILE *fp, const char *name, int count) {
         ++o;
     }
 
-    lequal(o-options, info->options);
+    lequal((int)(o-options), info->options);
 
     int i;
 
@@ -135,7 +135,7 @@ void test_ind_name(FILE *fp, const char *name, int count) {
         answer_size = get_array(fp, answers[i]);
     }
 
-    const int ret = info->indicator(input_size, (TI_REAL const * const *)inputs, options, outputs);
+    const int ret = info->indicator(input_size, (TI_REAL const *const *)inputs, options, outputs);
     lok(ret == TI_OKAY);
 
     int output_size = input_size - info->start(options);
@@ -179,6 +179,12 @@ void test(const char *fname, int count) {
 }
 
 
+void test_version() {
+    lok(strcmp(TI_VERSION, ti_version()) == 0);
+    lok(TI_BUILD == ti_build());
+}
+
+
 void test_buffer() {
     ti_buffer *b = ti_buffer_new(3);
     ti_buffer_push(b, 5.0); lfequal(b->sum, 5.0);
@@ -204,6 +210,7 @@ int main() {
 
     printf("TI TEST SUITE\n");
     lrun("buffer", test_buffer());
+    lrun("version", test_version());
     test("tests/untest.txt", 0);
     test("tests/atoz.txt", 1);
     test("tests/extra.txt", 1);

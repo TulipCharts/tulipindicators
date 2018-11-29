@@ -31,7 +31,7 @@ int ti_tema_start(TI_REAL const *options) {
 }
 
 
-int ti_tema(int size, TI_REAL const * const *inputs, TI_REAL const *options, TI_REAL * const *outputs) {
+int ti_tema(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
     const TI_REAL *input = inputs[0];
     const int period = (int)options[0];
     TI_REAL *output = outputs[0];

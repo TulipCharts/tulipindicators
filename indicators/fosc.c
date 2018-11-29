@@ -28,7 +28,7 @@
 
 #define FINAL(forecast) do { \
         const TI_REAL a = (y - b * x) * p; \
-        if (i >= (period)) {*(output)++ = 100 * (input[i] - tsf) / input[i];} \
+        if (i >= (period)) {*output++ = 100 * (input[i] - tsf) / input[i];} \
         tsf = (a + b * (forecast)); \
 } while (0)
 
