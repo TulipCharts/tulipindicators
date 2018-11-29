@@ -195,7 +195,7 @@ lappend indicators [list simple "Vector Truncate" trunc 1 0 1 {real} {} {trunc}]
 
 # Ichimoku
 lappend indicators [list overlay "Ichimoku Tenkan-Sen" ikhts 2 1 1 {high low} {period} {ikhts}]
-
+lappend indicators [list overlay "Ichimoku Chikou Span" ikhcs 1 1 1 {high low} {period} {ikhcs}]
 
 proc ci {a b} {
     return [string compare [lindex $a 2] [lindex $b 2]]

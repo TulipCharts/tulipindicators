@@ -25,7 +25,7 @@
 /*
  *
  * Version 0.8.4
- * Header Build 1540671090
+ * Header Build 1543506150
  *
  */
 
@@ -40,7 +40,7 @@
 
 
 #define TI_VERSION "0.8.4"
-#define TI_BUILD 1540671090
+#define TI_BUILD 1543506150
 
 
 #ifndef TI_SKIP_SYSTEM_HEADERS
@@ -64,7 +64,7 @@ long int ti_build();
 
 #define TI_REAL double
 
-#define TI_INDICATOR_COUNT 105 /* Total number of indicators. */
+#define TI_INDICATOR_COUNT 106 /* Total number of indicators. */
 
 #define TI_OKAY                    0
 #define TI_INVALID_OPTION          1
@@ -761,6 +761,22 @@ int ti_fosc(int size,
 /* Outputs: hma */
 int ti_hma_start(TI_REAL const *options);
 int ti_hma(int size,
+      TI_REAL const *const *inputs,
+      TI_REAL const *options,
+      TI_REAL *const *outputs);
+
+
+
+
+
+/* Ichimoku Chikou Span */
+/* Type: overlay */
+/* Input arrays: 1    Options: 1    Output arrays: 1 */
+/* Inputs: high, low */
+/* Options: period */
+/* Outputs: ikhcs */
+int ti_ikhcs_start(TI_REAL const *options);
+int ti_ikhcs(int size,
       TI_REAL const *const *inputs,
       TI_REAL const *options,
       TI_REAL *const *outputs);
