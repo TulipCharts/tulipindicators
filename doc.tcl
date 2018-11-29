@@ -151,6 +151,8 @@ foreach i $indicators {
             "%k period" {lappend options 5}
             "%k slowing period" {lappend options 3}
             "%d period" {lappend options 3}
+            "sigma" {lappend options 6}
+            "offset" {lappend options .85}
             default {
                 puts "\n\nERROR: Unhandled option $opt"
                 exit

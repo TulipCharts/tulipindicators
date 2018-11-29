@@ -241,6 +241,22 @@ int ti_adxr(int size,
 
 
 
+/* Arnaud Legoux Moving Average */
+/* Type: indicator */
+/* Input arrays: 1    Options: 3    Output arrays: 1 */
+/* Inputs: real */
+/* Options: period, offset, sigma */
+/* Outputs: alma */
+int ti_alma_start(TI_REAL const *options);
+int ti_alma(int size,
+      TI_REAL const *const *inputs,
+      TI_REAL const *options,
+      TI_REAL *const *outputs);
+
+
+
+
+
 /* Awesome Oscillator */
 /* Type: indicator */
 /* Input arrays: 2    Options: 0    Output arrays: 1 */
