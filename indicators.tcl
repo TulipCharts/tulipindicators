@@ -125,8 +125,8 @@ lappend indicators [list indicator "Volume Oscillator" vosc 1 2 1 {volume} {{sho
 lappend indicators [list indicator "Directional Movement" dm 2 1 2 {high low} {period} {plus_dm minus_dm}]
 lappend indicators [list indicator "Directional Movement Index" dx 3 1 1 {high low close} {period} {dx}]
 lappend indicators [list indicator "Directional Indicator" di 3 1 2 {high low close} {period} {plus_di minus_di}]
-lappend indicators [list indicator "Average Directional Movement Index" adx 3 1 1 {high low close} {period} {dx}]
-lappend indicators [list indicator "Average Directional Movement Rating" adxr 3 1 1 {high low close} {period} {dx}]
+lappend indicators [list indicator "Average Directional Movement Index" adx 3 1 1 {high low close} {period} {adx}]
+lappend indicators [list indicator "Average Directional Movement Rating" adxr 3 1 1 {high low close} {period} {adxr}]
 
 #Waves
 lappend indicators [list indicator "Mesa Sine Wave" msw 1 1 2 {real} {period} {msw_sine msw_lead}]
