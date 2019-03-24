@@ -1,6 +1,6 @@
 # Tulip Indicators
 # https://tulipindicators.org/
-# Copyright (c) 2010-2018 Tulip Charts LLC
+# Copyright (c) 2010-2019 Tulip Charts LLC
 # Lewis Van Winkle (LV@tulipcharts.org)
 #
 # This file is part of Tulip Indicators.
@@ -22,7 +22,7 @@
 set license "/*
  * Tulip Indicators
  * https://tulipindicators.org/
- * Copyright (c) 2010-2018 Tulip Charts LLC
+ * Copyright (c) 2010-2019 Tulip Charts LLC
  * Lewis Van Winkle (LV@tulipcharts.org)
  *
  * This file is part of Tulip Indicators.
@@ -249,10 +249,7 @@ long int ti_build();
 "
 
       set fun_args_start {TI_REAL const *options}
-      set fun_args "int size,
-      TI_REAL const *const *inputs,
-      TI_REAL const *options,
-      TI_REAL *const *outputs"
+      set fun_args "int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs"
 
       puts $h "
 
@@ -343,14 +340,26 @@ foreach func $indicators {
         set o [open $imp w]
         puts $o $license
         puts $o {#include "../indicators.h"}
-        puts $o "\n\n"
+        puts $o "\n"
 
         puts $o "$start {"
         puts $o ""
         puts $o "}\n\n"
 
         puts $o "$fun {"
-        puts $o ""
+        set indent "    "
+        for {set i 0} {$i < $in} {incr i} {
+            puts $o "${indent}TI_REAL const *[lindex $in_names $i] = inputs\[$i\];"
+        }
+        for {set i 0} {$i < $opt} {incr i} {
+            puts $o "${indent}const TI_REAL [lindex $opt_names $i] = options\[$i\];"
+        }
+        for {set i 0} {$i < $out} {incr i} {
+            puts $o "${indent}TI_REAL *[lindex $out_names $i] = outputs\[$i\];"
+        }
+
+        puts $o "\n${indent}#error \"CODE GOES HERE\"\n"
+        puts $o "${indent}return TI_OKAY;"
         puts $o "}"
 
         close $o
