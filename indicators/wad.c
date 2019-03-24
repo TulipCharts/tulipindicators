@@ -54,7 +54,7 @@ int ti_wad(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_RE
         } else if (c < yc) {
             sum += c - MAX(yc, high[i]);
         } else {
-            //No change
+            /* No change */
         }
 
         *output++ = sum;

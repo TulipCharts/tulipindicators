@@ -63,7 +63,7 @@ int ti_msw(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_RE
         phase += pi/2.0;
         if (phase < 0.0) phase += tpi;
         if (phase > tpi) phase -= tpi;
-        //phase = 180 * phase / pi;
+        /* phase = 180 * phase / pi; */
 
         *sine++ = sin(phase);
         *lead++ = sin(phase + pi/4.0);
