@@ -71,7 +71,6 @@ int get_array(FILE *fp, TI_REAL *s) {
         return 0;
     }
 
-//#pragma warning(disable:4996) //MSVC
     char *num = strtok(line+1, ",}\r\n");
 
     if (!num) {
