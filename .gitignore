@@ -1,0 +1,12 @@
+*.o
+libindicators.a
+smoke
+smoke.exe
+fuzzer
+fuzzer.exe
+example1
+example1.exe
+example2
+example2.exe
+sample
+sample.exe
