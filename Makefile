@@ -15,12 +15,14 @@ AMAL=$(SRCS:%.c=%.ca)
 
 all: libindicators.a sample example1 example2 fuzzer smoke
 
-libindicators.a: indicators_index.o $(OBJS)
+libindicators.a: indicators_index.o $(OBJS) indicators.h
 	$(AR) rcu $@ $^
 	$(RANLIB) $@
 
+indicators.h indicators_index.c: indicators.tcl
+	tclsh indicators.tcl
 
-indicators_index.o: indicators.h
+indicators_index.o: indicators.h indicators_index.c
 
 
 smoke: smoke.o libindicators.a
@@ -59,6 +61,8 @@ clean:
 	rm -f *.a
 	rm -f *.exe
 	rm -f *.o
+	rm -f indicators.h
+	rm -f indicators_index.c
 	rm -f indicators/*.o
 	rm -f utils/*.o
 	rm -f *.ca

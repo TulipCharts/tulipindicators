@@ -1,6 +1,6 @@
 # Tulip Indicators
 # https://tulipindicators.org/
-# Copyright (c) 2010-2018 Tulip Charts LLC
+# Copyright (c) 2010-2019 Tulip Charts LLC
 # Lewis Van Winkle (LV@tulipcharts.org)
 #
 # This file is part of Tulip Indicators.
@@ -22,7 +22,7 @@
 set license "/*
  * Tulip Indicators
  * https://tulipindicators.org/
- * Copyright (c) 2010-2018 Tulip Charts LLC
+ * Copyright (c) 2010-2019 Tulip Charts LLC
  * Lewis Van Winkle (LV@tulipcharts.org)
  *
  * This file is part of Tulip Indicators.
@@ -43,7 +43,7 @@ set license "/*
  */
 "
 
-set version 0.8.4
+set version 0.8.5
 set build [clock seconds]
 
 
@@ -84,7 +84,7 @@ lappend indicators [list overlay "Time Series Forecast" tsf 1 1 1 {real} {period
 lappend indicators [list indicator "Forecast Oscillator" fosc 1 1 1 {real} {period} {fosc}]
 
 #Special moving averages and other overlays
-lappend indicators [list overlay "Bollinger Bands" bbands 1 2 3 {real} {period stddev} {bbands_lower bbands_middle bbands_upper} {input input input}]
+lappend indicators [list overlay "Bollinger Bands" bbands 1 2 3 {real} {period stddev} {bbands_lower bbands_middle bbands_upper}]
 lappend indicators [list overlay "Kaufman Adaptive Moving Average" kama 1 1 1 {real} {period} {kama}]
 lappend indicators [list overlay "Parabolic SAR" psar 2 2 1 {high low} {{acceleration factor step} {acceleration factor maximum}} {psar}]
 
