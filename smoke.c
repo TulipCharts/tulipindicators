@@ -266,8 +266,6 @@ void run_one(FILE *fp, const char* target_name, int is_regression_test) {
             any_failures_here = 1;
 
         } else {
-            int bar;
-
             const int ret = info->stream_run(stream, input_size, (const double * const*)inputs, outputs_stream_all);
 
             //TODO should we check ret? Is it possible for a stream indicator to fail?
