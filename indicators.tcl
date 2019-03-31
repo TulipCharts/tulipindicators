@@ -250,7 +250,7 @@ long int ti_build();
 
       set fun_args_start {TI_REAL const *options}
       set fun_args "int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs"
-      set fun_stream_new_args {TI_REAL const *options}
+      set fun_stream_new_args {TI_REAL const *options, ti_stream **stream}
       set fun_stream_run_args "ti_stream *stream, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs"
       set fun_stream_free_args "ti_stream *stream"
 
@@ -278,7 +278,7 @@ typedef int (*ti_indicator_function)($fun_args);
 
 
 struct ti_stream; typedef struct ti_stream ti_stream;
-typedef ti_stream *(*ti_indicator_stream_new)($fun_stream_new_args);
+typedef int (*ti_indicator_stream_new)($fun_stream_new_args);
 typedef int (*ti_indicator_stream_run)($fun_stream_run_args);
 typedef void (*ti_indicator_stream_free)($fun_stream_free_args);
 
@@ -420,7 +420,7 @@ foreach func $indicators {
             append prototype "int ti_[set n]_ref($fun_args);\n"
         }
         if {[lsearch $extra stream] != -1} {
-            append prototype "ti_stream *ti_[set n]_stream_new($fun_stream_new_args);\n"
+            append prototype "int ti_[set n]_stream_new($fun_stream_new_args);\n"
             append prototype "int ti_[set n]_stream_run($fun_stream_run_args);\n"
             append prototype "void ti_[set n]_stream_free($fun_stream_free_args);\n"
         }

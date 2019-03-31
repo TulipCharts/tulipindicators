@@ -115,22 +115,21 @@ struct ti_stream {
 };
 
 
-ti_stream *ti_atr_stream_new(TI_REAL const *options) {
+int ti_atr_stream_new(TI_REAL const *options, ti_stream **stream) {
     const int period = (int)options[0];
-    if (period < 1) return 0;
+    if (period < 1) return TI_INVALID_OPTION;
 
-    ti_stream *stream = malloc(sizeof(ti_stream));
-    if (stream) {
-
-        stream->index = TI_INDICATOR_ATR_INDEX;
-        stream->progress = -ti_atr_start(options);
-
-        stream->period = period;
-
-        stream->sum = 0.0;
-
+    *stream = malloc(sizeof(ti_stream));
+    if (!*stream) {
+        return TI_OUT_OF_MEMORY;
     }
-    return stream;
+
+    (*stream)->index = TI_INDICATOR_ATR_INDEX;
+    (*stream)->progress = -ti_atr_start(options);
+    (*stream)->period = period;
+    (*stream)->sum = 0.0;
+
+    return TI_OKAY;
 }
 
 

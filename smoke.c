@@ -214,8 +214,9 @@ void run_one(FILE *fp, const char* target_name, int is_regression_test) {
         printf("running \t%s%-*s... ", info->name, 16-strlen(info->name), "_stream");
         const clock_t ts_start = clock();
 
-        ti_stream *stream = info->stream_new(options);
-        if (!stream) {
+        ti_stream *stream = 0;
+        int new_ret = info->stream_new(options, &stream);
+        if (new_ret != TI_OKAY || !stream) {
             printf("stream_new failure.\n");
             failed_cnt += 1;
             any_failures_here = 1;
