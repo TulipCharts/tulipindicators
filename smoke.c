@@ -99,7 +99,7 @@ void print_array(const TI_REAL *a, int size) {
 
 /*********** PARSING, TESTING, REPORTING ************/
 
-int equal_answers(const ti_indicator_info *info, TI_REAL *answers[], TI_REAL *outputs[], int answer_size, int output_size) {
+int compare_answers(const ti_indicator_info *info, TI_REAL *answers[], TI_REAL *outputs[], int answer_size, int output_size) {
     int i;
     int fails = 0;
     for (i = 0; i < info->outputs; ++i) {
@@ -153,7 +153,8 @@ void run_one(FILE *fp, const char* target_name, int is_regression_test) {
     TI_REAL *answers[TI_MAXINDPARAMS] = {0};
     TI_REAL *outputs[TI_MAXINDPARAMS] = {0};
     TI_REAL *outputs_ref[TI_MAXINDPARAMS] = {0};
-    TI_REAL *outputs_stream[TI_MAXINDPARAMS] = {0};
+    TI_REAL *outputs_stream_1[TI_MAXINDPARAMS] = {0};
+    TI_REAL *outputs_stream_all[TI_MAXINDPARAMS] = {0};
 
     int input_size = 0;
     for (i = 0; i < info->inputs; ++i) {
@@ -167,7 +168,8 @@ void run_one(FILE *fp, const char* target_name, int is_regression_test) {
         answers[i] = malloc(sizeof(TI_REAL) * (size_t)output_size);
         outputs[i] = malloc(sizeof(TI_REAL) * (size_t)output_size);
         outputs_ref[i] = malloc(sizeof(TI_REAL) * (size_t)output_size);
-        outputs_stream[i] = malloc(sizeof(TI_REAL) * (size_t)output_size);
+        outputs_stream_1[i] = malloc(sizeof(TI_REAL) * (size_t)output_size);
+        outputs_stream_all[i] = malloc(sizeof(TI_REAL) * (size_t)output_size);
         answer_size = read_array(fp, answers[i]);
     }
 
@@ -185,7 +187,7 @@ void run_one(FILE *fp, const char* target_name, int is_regression_test) {
             failed_cnt += 1;
             any_failures_here = 1;
         } else {
-            any_failures_here += equal_answers(info, answers, outputs, answer_size, output_size);
+            any_failures_here += compare_answers(info, answers, outputs, answer_size, output_size);
         }
 
         printf("%4dμs\n", (int)((ts_end - ts_start) / (double)CLOCKS_PER_SEC * 1000000.0));
@@ -203,7 +205,7 @@ void run_one(FILE *fp, const char* target_name, int is_regression_test) {
             failed_cnt += 1;
             any_failures_here = 1;
         } else {
-            any_failures_here += equal_answers(info, answers, outputs_ref, answer_size, output_size);
+            any_failures_here += compare_answers(info, answers, outputs_ref, answer_size, output_size);
         }
 
         printf("%4dμs\n", (int)((ts_end - ts_start) / (double)CLOCKS_PER_SEC * 1000000.0));
@@ -211,7 +213,7 @@ void run_one(FILE *fp, const char* target_name, int is_regression_test) {
 
 
     if (info->stream_new) {
-        printf("running \t%s%-*s... ", info->name, 16-strlen(info->name), "_stream");
+        printf("running \t%s%-*s... ", info->name, 16-strlen(info->name), "_stream_1");
         const clock_t ts_start = clock();
 
         ti_stream *stream = 0;
@@ -234,7 +236,7 @@ void run_one(FILE *fp, const char* target_name, int is_regression_test) {
                 }
 
                 for (i = 0; i < info->outputs; ++i) {
-                    outs[i] = outputs_stream[i] + ti_stream_get_progress(stream);
+                    outs[i] = outputs_stream_1[i] + ti_stream_get_progress(stream);
                 }
 
                 const int ret = info->stream_run(stream, 1, (const double * const*)ins, outs);
@@ -247,7 +249,35 @@ void run_one(FILE *fp, const char* target_name, int is_regression_test) {
         }
         const clock_t ts_end = clock();
 
-        any_failures_here += equal_answers(info, answers, outputs_stream, answer_size, output_size);
+        any_failures_here += compare_answers(info, answers, outputs_stream_1, answer_size, output_size);
+        printf("%4dμs\n", (int)((ts_end - ts_start) / (double)CLOCKS_PER_SEC * 1000000.0));
+    }
+
+
+    if (info->stream_new) {
+        printf("running \t%s%-*s... ", info->name, 16-strlen(info->name), "_stream_all");
+        const clock_t ts_start = clock();
+
+        ti_stream *stream = 0;
+        int new_ret = info->stream_new(options, &stream);
+        if (new_ret != TI_OKAY || !stream) {
+            printf("stream_new failure.\n");
+            failed_cnt += 1;
+            any_failures_here = 1;
+
+        } else {
+            int bar;
+
+            const int ret = info->stream_run(stream, input_size, (const double * const*)inputs, outputs_stream_all);
+
+            //TODO should we check ret? Is it possible for a stream indicator to fail?
+            assert(ret == TI_OKAY);
+        }
+
+        info->stream_free(stream);
+        const clock_t ts_end = clock();
+
+        any_failures_here += compare_answers(info, answers, outputs_stream_all, answer_size, output_size);
         printf("%4dμs\n", (int)((ts_end - ts_start) / (double)CLOCKS_PER_SEC * 1000000.0));
     }
 
@@ -260,7 +290,8 @@ cleanup:
         free(answers[i]);
         free(outputs[i]);
         free(outputs_ref[i]);
-        free(outputs_stream[i]);
+        free(outputs_stream_1[i]);
+        free(outputs_stream_all[i]);
     }
 }
 
