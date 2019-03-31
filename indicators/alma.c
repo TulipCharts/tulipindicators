@@ -23,7 +23,7 @@
 
 #include "../indicators.h"
 
-/* 
+/*
  * Implementation of Arnaud Legoux Moving Average
  * Originally created by Arnaud Legoux, www.arnaudlegoux.com
  * C implementation for Tulip Indicators by Johan Henriksson, johan@stackpoint.se
@@ -52,11 +52,8 @@ int ti_alma(int size, TI_REAL const * const *inputs, TI_REAL const *options, TI_
 
     // precompute weights
     TI_REAL *weights = (TI_REAL*)malloc(sizeof(TI_REAL) * (size_t)window);
-    assert(weights != NULL); // break tests
-    if (weights == NULL) {
-        // todo: out of memory error code. 
-        // for now it'll be considered a too large window size
-        return TI_INVALID_OPTION;
+    if (!weights) {
+        return TI_OUT_OF_MEMORY;
     }
 
     const TI_REAL m = floor(offset * (window - 1));
@@ -78,7 +75,7 @@ int ti_alma(int size, TI_REAL const * const *inputs, TI_REAL const *options, TI_
         }
         *output++ = sum;
     }
-    
+
     // free computed weights
     free(weights);
 
