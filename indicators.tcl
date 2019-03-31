@@ -61,7 +61,7 @@ puts "Generate interface for indicator library."
 
 
 set indicators {}
-#type name func_name inputs options outputs
+#type name func_name inputs options outputs extra_features
 
 #Moving averages
 lappend indicators [list overlay "Double Exponential Moving Average" dema 1 1 1 {real} {period} {dema}]
@@ -153,7 +153,7 @@ lappend indicators [list overlay "Typical Price" typprice 3 0 1 {high low close}
 lappend indicators [list overlay "Weighted Close Price" wcprice 3 0 1 {high low close} {} {wcprice}]
 
 #Volatility
-lappend indicators [list indicator "Average True Range" atr 3 1 1 {high low close} {period} {atr}]
+lappend indicators [list indicator "Average True Range" atr 3 1 1 {high low close} {period} {atr} {stream ref}]
 lappend indicators [list indicator "Normalized Average True Range" natr 3 1 1 {high low close} {period} {natr}]
 lappend indicators [list indicator "True Range" tr 3 0 1 {high low close} {} {tr}]
 lappend indicators [list indicator "Annualized Historical Volatility" volatility 1 1 1 {real} {period} {volatility}]
@@ -250,6 +250,9 @@ long int ti_build();
 
       set fun_args_start {TI_REAL const *options}
       set fun_args "int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs"
+      set fun_stream_new_args {TI_REAL const *options}
+      set fun_stream_run_args "ti_stream *stream, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs"
+      set fun_stream_free_args "ti_stream *stream"
 
       puts $h "
 
@@ -259,6 +262,7 @@ long int ti_build();
 
 #define TI_OKAY                    0
 #define TI_INVALID_OPTION          1
+#define TI_OUT_OF_MEMORY           2
 
 #define TI_TYPE_OVERLAY            1 /* These have roughly the same range as the input data. */
 #define TI_TYPE_INDICATOR          2 /* Everything else (e.g. oscillators). */
@@ -272,15 +276,26 @@ long int ti_build();
 typedef int (*ti_indicator_start_function)($fun_args_start);
 typedef int (*ti_indicator_function)($fun_args);
 
+
+struct ti_stream; typedef struct ti_stream ti_stream;
+typedef ti_stream *(*ti_indicator_stream_new)($fun_stream_new_args);
+typedef int (*ti_indicator_stream_run)($fun_stream_run_args);
+typedef void (*ti_indicator_stream_free)($fun_stream_free_args);
+
+
 typedef struct ti_indicator_info {
     char *name;
     char *full_name;
     ti_indicator_start_function start;
     ti_indicator_function indicator;
+    ti_indicator_function indicator_ref;
     int type, inputs, options, outputs;
     char *input_names\[TI_MAXINDPARAMS\];
     char *option_names\[TI_MAXINDPARAMS\];
     char *output_names\[TI_MAXINDPARAMS\];
+    ti_indicator_stream_new stream_new;
+    ti_indicator_stream_run stream_run;
+    ti_indicator_stream_free stream_free;
 } ti_indicator_info;
 
 
@@ -290,6 +305,17 @@ extern ti_indicator_info ti_indicators\[\];
 
 /*Searches for an indicator by name. Returns 0 if not found.*/
 const ti_indicator_info *ti_find_indicator(const char *name);
+
+
+
+
+int ti_stream_run(ti_stream *stream, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs);
+
+ti_indicator_info *ti_stream_get_info(ti_stream *stream);
+
+int ti_stream_get_progress(ti_stream *stream);
+
+void ti_stream_free(ti_stream *stream);
 
 
 
@@ -319,8 +345,11 @@ const ti_indicator_info *ti_find_indicator(const char *name);
 file mkdir indicators
 file mkdir docs
 
+set index 0
+
 foreach func $indicators {
     lassign $func type fn n in opt out in_names opt_names out_names
+
 
     if {$in != [llength $in_names]} {
         puts "WARNING: Bad in names array: $n"
@@ -380,10 +409,27 @@ foreach func $indicators {
         append prototype "/* Options: none */\n"
     }
     append prototype "/* Outputs: [join $out_names {, }] */\n"
+    append prototype "#define TI_INDICATOR_[string toupper $n]_INDEX $index\n"
     append prototype "$start;\n"
-    append prototype "$fun;"
+    append prototype "$fun;\n"
 
-    puts $h "\n\n$prototype\n\n\n"
+
+    if {[llength $func] > 9} {
+        set extra [lindex $func 9]
+        if {[lsearch $extra ref] != -1} {
+            append prototype "int ti_[set n]_ref($fun_args);\n"
+        }
+        if {[lsearch $extra stream] != -1} {
+            append prototype "ti_stream *ti_[set n]_stream_new($fun_stream_new_args);\n"
+            append prototype "int ti_[set n]_stream_run($fun_stream_run_args);\n"
+            append prototype "void ti_[set n]_stream_free($fun_stream_free_args);\n"
+        }
+    }
+
+
+    puts $h "\n$prototype\n\n\n"
+
+    incr index
 }
 
 
@@ -430,20 +476,67 @@ foreach func $indicators {
     lassign $func type n fn in opt out in_names opt_names out_names
     lappend func_names $n
 
+    set ref 0
+    set stream_new 0
+    set stream_run 0
+    set stream_free 0
+
+    if {[llength $func] > 9} {
+        set extra [lindex $func 9]
+        foreach option $extra {
+            switch $option {
+                ref {set ref ti_[set fn]_ref}
+                stream {
+                    set stream_new ti_[set fn]_stream_new
+                    set stream_run ti_[set fn]_stream_run
+                    set stream_free ti_[set fn]_stream_free
+                }
+            }
+
+        }
+    }
+
     set type "TI_TYPE_[string toupper $type]"
 
     set in_names "{\"[join $in_names {","}]\",0}"
     set opt_names "{\"[join $opt_names {","}]\",0}"
     set out_names "{\"[join $out_names {","}]\",0}"
 
-    puts $idx "    {\"$fn\", \"$n\", ti_[set fn]_start, ti_[set fn], $type, $in, $opt, $out, $in_names, $opt_names, $out_names},"
+    puts $idx "    {\"$fn\", \"$n\", ti_[set fn]_start, ti_[set fn], $ref, $type, $in, $opt, $out, $in_names, $opt_names, $out_names, $stream_new, $stream_run, $stream_free},"
 }
 
-puts $idx "    {0,0,0,0,0,0,0,0,{0,0},{0,0},{0,0}}"
+puts $idx "    {0,0,0,0,0,0,0,0,0,{0,0},{0,0},{0,0},0,0,0}"
 
 puts $idx "};"
 
 puts $idx {
+
+
+
+struct ti_stream {
+    int index;
+    int progress;
+};
+
+
+
+int ti_stream_run(ti_stream *stream, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
+    return ti_indicators[stream->index].stream_run(stream, size, inputs, outputs);
+}
+
+ti_indicator_info *ti_stream_get_info(ti_stream *stream) {
+    return ti_indicators + stream->index;
+}
+
+int ti_stream_get_progress(ti_stream *stream) {
+    return stream->progress;
+}
+
+void ti_stream_free(ti_stream *stream) {
+    ti_indicators[stream->index].stream_free(stream);
+}
+
+
 
 const ti_indicator_info *ti_find_indicator(const char *name) {
     int imin = 0;

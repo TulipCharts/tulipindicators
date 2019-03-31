@@ -23,6 +23,7 @@
 
 #include "indicators.h"
 #include "utils/buffer.h"
+#include "utils/minmax.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -98,6 +99,22 @@ void print_array(const TI_REAL *a, int size) {
 
 /*********** PARSING, TESTING, REPORTING ************/
 
+int equal_answers(const ti_indicator_info *info, TI_REAL *answers[], TI_REAL *outputs[], int answer_size, int output_size) {
+    int i;
+    int fails = 0;
+    for (i = 0; i < info->outputs; ++i) {
+        if (!equal_arrays(answers[i], outputs[i], answer_size, output_size)) {
+            ++failed_cnt;
+            ++fails;
+            printf("output '%s' mismatch\n", info->output_names[i]);
+            printf("> expected: "); print_array(answers[i], answer_size); printf("\n");
+            printf("> got:      "); print_array(outputs[i], output_size); printf("\n");
+        }
+    }
+    return fails;
+}
+
+
 void run_one(FILE *fp, const char* target_name, int is_regression_test) {
     char *line = read_line(fp);
     if (!line) { return; }
@@ -107,7 +124,6 @@ void run_one(FILE *fp, const char* target_name, int is_regression_test) {
     }
     char *name = strtok(line, " \n\r");
     int skip_this = target_name && strcmp(name, target_name) != 0;
-    if (!skip_this) { printf("running \t%-16s... ", name); }
 
     int any_failures_here = 0;
 
@@ -136,6 +152,8 @@ void run_one(FILE *fp, const char* target_name, int is_regression_test) {
     TI_REAL *inputs[TI_MAXINDPARAMS] = {0};
     TI_REAL *answers[TI_MAXINDPARAMS] = {0};
     TI_REAL *outputs[TI_MAXINDPARAMS] = {0};
+    TI_REAL *outputs_ref[TI_MAXINDPARAMS] = {0};
+    TI_REAL *outputs_stream[TI_MAXINDPARAMS] = {0};
 
     int input_size = 0;
     for (i = 0; i < info->inputs; ++i) {
@@ -143,44 +161,105 @@ void run_one(FILE *fp, const char* target_name, int is_regression_test) {
         input_size = read_array(fp, inputs[i]);
     }
 
+    const int output_size = MAX(0, input_size - info->start(options));
     int answer_size = 0;
     for (i = 0; i < info->outputs; ++i) {
-        answers[i] = malloc(sizeof(TI_REAL) * 4096);
-        outputs[i] = malloc(sizeof(TI_REAL) * 4096);
+        answers[i] = malloc(sizeof(TI_REAL) * (size_t)output_size);
+        outputs[i] = malloc(sizeof(TI_REAL) * (size_t)output_size);
+        outputs_ref[i] = malloc(sizeof(TI_REAL) * (size_t)output_size);
+        outputs_stream[i] = malloc(sizeof(TI_REAL) * (size_t)output_size);
         answer_size = read_array(fp, answers[i]);
     }
 
     if (skip_this) { goto cleanup; }
 
-    const clock_t ts_start = clock();
-    const int ret = info->indicator(input_size, (const double * const*)inputs, options, outputs);
-    const clock_t ts_end = clock();
 
-    if (ret != TI_OKAY) {
-        printf("return code %i\n", ret);
-        failed_cnt += 1;
-        any_failures_here = 1;
-        goto cleanup;
-    }
+    {
+        printf("running \t%-16s... ", info->name);
+        const clock_t ts_start = clock();
+        const int ret = info->indicator(input_size, (const double * const*)inputs, options, outputs);
+        const clock_t ts_end = clock();
 
-    int output_size = input_size - info->start(options);
-    if (output_size < 0) output_size = 0;
-    for (i = 0; i < info->outputs; ++i) {
-        if (!equal_arrays(answers[i], outputs[i], answer_size, output_size)) {
+        if (ret != TI_OKAY) {
+            printf("return code %i\n", ret);
             failed_cnt += 1;
             any_failures_here = 1;
-            printf("output '%s' mismatch\n", info->output_names[i]);
-            printf("> expected: "); print_array(answers[i], answer_size); printf("\n");
-            printf("> got:      "); print_array(outputs[i], output_size); printf("\n");
+        } else {
+            any_failures_here += equal_answers(info, answers, outputs, answer_size, output_size);
         }
+
+        printf("%4dμs\n", (int)((ts_end - ts_start) / (double)CLOCKS_PER_SEC * 1000000.0));
     }
 
-cleanup:
-    for (i = 0; i < info->inputs; ++i) { if (inputs[i]) { free(inputs[i]); } };
-    for (i = 0; i < info->outputs; ++i) { if (answers[i]) { free(answers[i]); } };
-    for (i = 0; i < info->outputs; ++i) { if (outputs[i]) { free(outputs[i]); } };
-    if (!any_failures_here && !skip_this) {
+
+    if (info->indicator_ref) {
+        printf("running \t%s%-*s... ", info->name, 16-strlen(info->name), "_ref");
+        const clock_t ts_start = clock();
+        const int ret = info->indicator_ref(input_size, (const double * const*)inputs, options, outputs_ref);
+        const clock_t ts_end = clock();
+
+        if (ret != TI_OKAY) {
+            printf("return code %i\n", ret);
+            failed_cnt += 1;
+            any_failures_here = 1;
+        } else {
+            any_failures_here += equal_answers(info, answers, outputs_ref, answer_size, output_size);
+        }
+
         printf("%4dμs\n", (int)((ts_end - ts_start) / (double)CLOCKS_PER_SEC * 1000000.0));
+    }
+
+
+    if (info->stream_new) {
+        printf("running \t%s%-*s... ", info->name, 16-strlen(info->name), "_stream");
+        const clock_t ts_start = clock();
+
+        ti_stream *stream = info->stream_new(options);
+        if (!stream) {
+            printf("stream_new failure.\n");
+            failed_cnt += 1;
+            any_failures_here = 1;
+
+        } else {
+            int bar;
+
+            TI_REAL *ins[TI_MAXINDPARAMS] = {0};
+            TI_REAL *outs[TI_MAXINDPARAMS] = {0};
+
+            for (bar = 0; bar < input_size; ++bar) {
+
+                for (i = 0; i < info->inputs; ++i) {
+                    ins[i] = inputs[i] + bar;
+                }
+
+                for (i = 0; i < info->outputs; ++i) {
+                    outs[i] = outputs_stream[i] + ti_stream_get_progress(stream);
+                }
+
+                const int ret = info->stream_run(stream, 1, (const double * const*)ins, outs);
+
+                //TODO should we check ret? Is it possible for a stream indicator to fail?
+                assert(ret == TI_OKAY);
+            }
+
+            info->stream_free(stream);
+        }
+        const clock_t ts_end = clock();
+
+        any_failures_here += equal_answers(info, answers, outputs_stream, answer_size, output_size);
+        printf("%4dμs\n", (int)((ts_end - ts_start) / (double)CLOCKS_PER_SEC * 1000000.0));
+    }
+
+
+cleanup:
+    for (i = 0; i < info->inputs; ++i) {
+        free(inputs[i]);
+    }
+    for (i = 0; i < info->outputs; ++i) {
+        free(answers[i]);
+        free(outputs[i]);
+        free(outputs_ref[i]);
+        free(outputs_stream[i]);
     }
 }
 
@@ -257,19 +336,24 @@ int main(int argc, const char** argv) {
         exit(VERSION_MISMATCH);
     }
 
-    printf("# utils:\n");
-    test_buffer();
-    printf("\n");
-
     const char* target_name = argc > 1 ? argv[1] : 0;
+
+    if (!target_name) {
+        printf("# utils:\n");
+        test_buffer();
+        printf("\n");
+    }
+
 
     run_tests("tests/untest.txt", target_name, 1);
     run_tests("tests/atoz.txt", target_name, 0);
     run_tests("tests/extra.txt", target_name, 0);
 
-    int i;
-    for (i = 0; i < TI_INDICATOR_COUNT; ++i) {
-        if (!tested[i]) { printf("WARNING: no test for %s\n", ti_indicators[i].name); }
+    if (!target_name) {
+        int i;
+        for (i = 0; i < TI_INDICATOR_COUNT; ++i) {
+            if (!tested[i]) { printf("WARNING: no test for %s\n", ti_indicators[i].name); }
+        }
     }
 
     if (failed_cnt == 0) {
