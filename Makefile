@@ -17,10 +17,8 @@ libindicators.a: indicators_index.o $(OBJS) indicators.h
 	$(AR) rcu $@ $^
 	$(RANLIB) $@
 
-indicators.h indicators_index.c: indicators.tcl
+indicators.h: indicators.tcl
 	tclsh indicators.tcl
-
-indicators_index.o: indicators.h indicators_index.c
 
 
 smoke: smoke.o libindicators.a
@@ -47,6 +45,11 @@ benchmark: benchmark.o libindicators.a
 tiamalgamation.c: $(AMAL) indicators_index.ca indicators.h
 	echo -e "/*\n * TULIP INDICATORS AMALGAMATION\n * This is all of Tulip Indicators in one file.\n * To get the original sources, go to https://tulipindicators.org\n */\n\n" \
 	    | cat - indicators.h utils/buffer.h utils/minmax.h $(AMAL) indicators_index.ca > $@
+
+
+$(OBJS) indicators_index.o: indicators.h
+
+$(AMAL): indicators.h
 
 .c.o:
 	$(CC) -c $(CCFLAGS) $< -o $@
