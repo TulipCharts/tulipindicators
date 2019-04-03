@@ -16,8 +16,9 @@ all: libindicators.a sample example1 example2 fuzzer smoke
 indicators.h: indicators.tcl
 	tclsh indicators.tcl
 
-libindicators.a: indicators.h indicators_index.o $(OBJS)
-	$(AR) rcu $@ $^
+libindicators.a: indicators.h $(OBJS)
+	$(CC) -c $(CCFLAGS) indicators_index.c -o indicators_index.o
+	$(AR) rcu $@ $^ indicators_index.o
 	$(RANLIB) $@
 
 smoke: smoke.o libindicators.a
@@ -46,7 +47,19 @@ tiamalgamation.c: $(AMAL) indicators_index.ca indicators.h
 	    | cat - indicators.h utils/buffer.h utils/minmax.h $(AMAL) indicators_index.ca > $@
 
 
-$(OBJS) indicators_index.o: indicators.h
+$(OBJS): indicators.h
+
+smoke.o: indicators.h
+
+example1.o: indicators.h
+
+example2.o: indicators.h
+
+fuzzer.o: indicators.h
+
+sample.o: indicators.h
+
+benchmark.o: indicators.h
 
 $(AMAL): indicators.h
 
