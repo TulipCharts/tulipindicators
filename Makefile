@@ -13,13 +13,12 @@ AMAL=$(SRCS:%.c=%.ca)
 
 all: libindicators.a sample example1 example2 fuzzer smoke
 
-libindicators.a: indicators_index.o $(OBJS) indicators.h
-	$(AR) rcu $@ $^
-	$(RANLIB) $@
-
 indicators.h: indicators.tcl
 	tclsh indicators.tcl
 
+libindicators.a: indicators.h indicators_index.o $(OBJS)
+	$(AR) rcu $@ $^
+	$(RANLIB) $@
 
 smoke: smoke.o libindicators.a
 	$(CC) $(CCFLAGS) -o $@ $^ -lm
