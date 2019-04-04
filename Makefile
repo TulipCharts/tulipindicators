@@ -41,6 +41,10 @@ sample: sample.o libindicators.a
 benchmark: benchmark.o libindicators.a
 	$(CC) $(CCFLAGS) -o $@ $^ -lta_lib -lm
 
+#Optional benchmark program, new edition.
+benchmark2: benchmark2.o libindicators.a
+	$(CC) $(CCFLAGS) -o $@ $^ -lm
+
 #This will build all of Tulip Indicators into one .c file.
 tiamalgamation.c: $(AMAL) indicators_index.ca indicators.h
 	echo -e "/*\n * TULIP INDICATORS AMALGAMATION\n * This is all of Tulip Indicators in one file.\n * To get the original sources, go to https://tulipindicators.org\n */\n\n" \
