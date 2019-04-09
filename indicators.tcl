@@ -109,6 +109,7 @@ lappend indicators [list indicator "Moving Average Convergence/Divergence" macd 
 lappend indicators [list indicator "Negative Volume Index" nvi 2 0 1 {close volume} {} {nvi}]
 lappend indicators [list indicator "On Balance Volume" obv 2 0 1 {close volume} {} {obv}]
 lappend indicators [list indicator "Percentage Price Oscillator" ppo 1 2 1 {real} {{short period} {long period}} {ppo}]
+lappend indicators [list indicator "Polarized Fractal Efficiency" pfe 1 2 1 {real} {period ema_period} {pfe} {ref stream}]
 lappend indicators [list indicator "Positive Volume Index" pvi 2 0 1 {close volume} {} {pvi}]
 lappend indicators [list indicator "Qstick" qstick 2 1 1 {open close} {period} {qstick}]
 lappend indicators [list indicator "Relative Strength Index" rsi 1 1 1 {real} {period} {rsi}]
