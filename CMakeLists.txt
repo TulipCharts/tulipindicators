@@ -1,10 +1,11 @@
-cmake_minimum_required(VERSION 3.14.1)
+cmake_minimum_required(VERSION 3.13.4)
 project(tulipindicators VERSION 0.9 LANGUAGES C)
 
 ## Library
 file(GLOB src utils/*.c indicators/*.c)
-add_library(indicators ${src} indicators_index.c)
-target_link_libraries(indicators m)
+add_library(indicators SHARED ${src} indicators.h indicators_index.c)
+target_link_libraries(indicators $<$<OR:$<C_COMPILER_ID:Clang>,$<C_COMPILER_ID:AppleClang>,$<C_COMPILER_ID:GNU>>:m>)
+target_link_options(indicators PRIVATE $<$<C_COMPILER_ID:MSVC>:/PROFILE:linker /STACK:10000000>)
 
 set_target_properties(indicators PROPERTIES PUBLIC_HEADER "indicators.h")
 install(TARGETS indicators
@@ -13,9 +14,9 @@ install(TARGETS indicators
 
 target_compile_options(indicators PUBLIC
    $<$<OR:$<C_COMPILER_ID:Clang>,$<C_COMPILER_ID:AppleClang>,$<C_COMPILER_ID:GNU>>:
-        -Wall -Wextra -Wshadow -Wconversion -std=c99 -pedantic -Wno-declaration-after-statement -O2 -g>
+        -Wall -Wextra -Wshadow -Wconversion -std=c99 -pedantic -O2 -g>
    $<$<C_COMPILER_ID:MSVC>:
-        /W4>
+        /W4 /O2>
 )
 
 # file(COPY indicators.tcl DESTINATION ${CMAKE_SOURCE_DIR})
@@ -25,9 +26,10 @@ execute_process(
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 )
 
- # Samples
-add_executable(example1 example1.c)
-target_link_libraries(example1 indicators)
+# Samples
+# failed to build on MSVC:
+# add_executable(example1 example1.c)
+# target_link_libraries(example1 indicators)
 
 add_executable(example2 example2.c)
 target_link_libraries(example2 indicators)
@@ -35,6 +37,7 @@ target_link_libraries(example2 indicators)
 add_executable(sample sample.c)
 target_link_libraries(sample indicators)
 
+# not ready yet:
 # file(GLOB src-h utils/*.h indicators/*.h)
 # add_custom_command(
 #     OUTPUT tiamalgamation.c
@@ -47,18 +50,16 @@ target_link_libraries(sample indicators)
 ## Tests
 enable_testing()
 
-# Copy tests files
-file(CREATE_LINK ${CMAKE_SOURCE_DIR}/tests ${CMAKE_BINARY_DIR}/tests SYMBOLIC)
-
 add_executable(smoke smoke.c)
 target_link_libraries(smoke indicators)
-add_test(NAME smoke COMMAND smoke)
+add_test(NAME smoke COMMAND smoke WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 
 add_executable(fuzzer fuzzer.c)
 target_link_libraries(fuzzer indicators)
 add_test(NAME fuzzer COMMAND fuzzer)
 
 add_executable(benchmark benchmark.c)
+set_target_properties(benchmark PROPERTIES EXCLUDE_FROM_ALL 1)
 target_link_libraries(benchmark indicators ta_lib)
 add_test(NAME benchmark COMMAND benchmark)
 
