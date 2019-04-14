@@ -4,7 +4,8 @@ project(tulipindicators VERSION 0.9 LANGUAGES C)
 ## Library
 file(GLOB src utils/*.c indicators/*.c)
 add_library(indicators SHARED ${src} indicators.h indicators_index.c)
-target_link_libraries(indicators $<$<OR:$<C_COMPILER_ID:Clang>,$<C_COMPILER_ID:AppleClang>,$<C_COMPILER_ID:GNU>>:m>)
+target_link_libraries(indicators PUBLIC
+	"$<$<OR:$<C_COMPILER_ID:Clang>,$<C_COMPILER_ID:AppleClang>,$<C_COMPILER_ID:GNU>>:$<$<CONFIG:DEBUG>:asan;ubsan>;m>")
 target_link_options(indicators PRIVATE $<$<C_COMPILER_ID:MSVC>:/PROFILE:linker /STACK:10000000>)
 
 set_target_properties(indicators PROPERTIES PUBLIC_HEADER "indicators.h")
@@ -14,7 +15,11 @@ install(TARGETS indicators
 
 target_compile_options(indicators PUBLIC
    $<$<OR:$<C_COMPILER_ID:Clang>,$<C_COMPILER_ID:AppleClang>,$<C_COMPILER_ID:GNU>>:
-        -Wall -Wextra -Wshadow -Wconversion -std=c99 -pedantic -O2 -g>
+        -Wall -Wextra -Wshadow -Wconversion -std=c99 -pedantic -g3 -ggdb -O2
+        	$<$<CONFIG:DEBUG>:
+        		-fsanitize=undefined -fsanitize=address -fsanitize=leak>
+        	$<$<CONFIG:RELEASE>:
+        		-ffast-math -march=native>>
    $<$<C_COMPILER_ID:MSVC>:
         /W4 /O2>
 )
@@ -67,4 +72,4 @@ add_executable(benchmark2 benchmark2.c)
 target_link_libraries(benchmark2 indicators)
 add_test(NAME benchmark2 COMMAND benchmark2)
 
-add_custom_target(check COMMAND CTEST_OUTPUT_ON_FAILURE=1 ${CMAKE_CTEST_COMMAND})
+add_custom_target(check COMMAND CTEST_OUTPUT_ON_FAILURE=1 LD_PRELOAD=libasan.so ${CMAKE_CTEST_COMMAND})
