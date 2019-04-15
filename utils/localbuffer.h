@@ -4,6 +4,7 @@
  *  1. BUFFERS must go in the very end of the struct
  *  2. BUFFER_INIT must go in the order of declaration
  *  3. the zero[3] array must be initialized to zero, e.g. with help of calloc
+ *  4. it is ASSUMED that sizeof(double) = 2*sizeof(int)
  */
 
 /* This set of macros implements ring buffer functionality.
@@ -38,14 +39,14 @@
  * > }
  */
 
-#define BUFFERS(buffers) struct { int zero[3]; buffers } buf_info;
-#define BUFFER(name) int offset_##name; int size_##name; int index_##name;
+#define BUFFERS(buffers) struct { double padding; int zero[4]; buffers } buf_info;
+#define BUFFER(name) int offset_##name; int size_##name; int index_##name; int padding_##name;
 #define BUFFER_INIT(ptr, name, size) do { \
-    ((ptr)->buf_info).offset_##name = *(&((ptr)->buf_info).offset_##name-2) + *(&((ptr)->buf_info).offset_##name-3); \
+    ((ptr)->buf_info).offset_##name = *(&((ptr)->buf_info).offset_##name-3) + *(&((ptr)->buf_info).offset_##name-4); \
     ((ptr)->buf_info).size_##name = size; \
     ((ptr)->buf_info).index_##name = -1; \
 } while (0);
-#define BUFFERS_SIZE(ptr) *((int*)(&((ptr)->buf_info)+1)-2) + *((int*)(&((ptr)->buf_info)+1)-3)
+#define BUFFERS_SIZE(ptr) *((int*)(&((ptr)->buf_info)+1)-3) + *((int*)(&((ptr)->buf_info)+1)-4)
 #define BUFFER_AT(result, ptr, name, delta) { \
     int idx = ((ptr)->buf_info).index_##name + delta; \
     while (idx >= ((ptr)->buf_info).size_##name) { idx -= ((ptr)->buf_info).size_##name; } \
