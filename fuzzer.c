@@ -62,6 +62,7 @@ do { \
  \
 } while (0)
 
+int errors_cnt = 0;
 
 void check_output(const ti_indicator_info *info, int size, TI_REAL const *const *inputs, TI_REAL const * options, TI_REAL *const *outputs) {
 
@@ -91,6 +92,7 @@ void check_output(const ti_indicator_info *info, int size, TI_REAL const *const 
                     if (op > max * 1.5 + 2 || op < min * 0.5 - 2) {
                         DUMP_STATE();
                         printf("\nERROR Output is out of range for input: input: %f output: %f\n", in, op);
+                        errors_cnt += 1;
                         assert(0);
                     }
                     break;
@@ -205,5 +207,5 @@ int main(int argc, char *argv[])
 
     printf("\r                                                  \rDone\n");
 
-    return 0;
+    return errors_cnt ? 1 : 0;
 }
