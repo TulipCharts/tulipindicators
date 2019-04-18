@@ -28,7 +28,7 @@
 #include <assert.h>
 
 
-double optionsd[] = {-20,-1,0,.1,.5,.7,1,2,2.5,3,4,5,6,7,8,9,10,11,17,18,19,20,21,22,23,24,25,26,100};
+double optionsd[] = {-20,-1,0,.7,100}; // 5 options are the maximum computable amount given TI_MAXINDPARAMS = 10
 double dummy_in[] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20};
 double dummy_in0[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 double dummy_ot[] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20};
