@@ -136,6 +136,11 @@ void ce_option_setter(double period, double *options) {
     options[1] = 3;
 }
 
+void kc_option_setter(double period, double *options) {
+    options[0] = period;
+    options[1] = 0.77;
+}
+
 void bench(const ti_indicator_info *info) {
     void (*options_setter)(double period, double *options) = simple_option_setter;
     if (strcmp(info->name, "apo") == 0) { options_setter = ppo_option_setter; }
