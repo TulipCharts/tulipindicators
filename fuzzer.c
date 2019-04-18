@@ -142,6 +142,40 @@ void stress(const ti_indicator_info *info) {
         printf(" %d", size); r = info->indicator(size, inputs, options, outputs); if (r == TI_OKAY) check_output(info, size, inputs, options, outputs);
         printf(" 0s"); r = info->indicator(size, inputs0, options, outputs); if (r == TI_OKAY) check_output(info, size, inputs0, options, outputs);
 
+        if (info->stream_new) {
+            ti_stream *stream; printf(" stream");
+            r = info->stream_new(options, &stream);
+            if (r == TI_OKAY) {
+                printf(" 0"); r = info->stream_run(stream, 0, inputs, outputs); if (r == TI_OKAY) check_output(info, 0, inputs, options, outputs);
+                info->stream_free(stream);
+            }
+            r = info->stream_new(options, &stream);
+            if (r == TI_OKAY) {
+                printf(" 1"); r = info->stream_run(stream, 1, inputs, outputs); if (r == TI_OKAY) check_output(info, 1, inputs, options, outputs);
+                info->stream_free(stream);
+            }
+            r = info->stream_new(options, &stream);
+            if (r == TI_OKAY) {
+                printf(" 2"); r = info->stream_run(stream, 2, inputs, outputs); if (r == TI_OKAY) check_output(info, 2, inputs, options, outputs);
+                info->stream_free(stream);
+            }
+            r = info->stream_new(options, &stream);
+            if (r == TI_OKAY) {
+                printf(" 3"); r = info->stream_run(stream, 3, inputs, outputs); if (r == TI_OKAY) check_output(info, 3, inputs, options, outputs);
+                info->stream_free(stream);
+            }
+            r = info->stream_new(options, &stream);
+            if (r == TI_OKAY) {
+                printf(" %d", size); r = info->stream_run(stream, size, inputs, outputs); if (r == TI_OKAY) check_output(info, size, inputs, options, outputs);
+                info->stream_free(stream);
+            }
+            r = info->stream_new(options, &stream);
+            if (r == TI_OKAY) {
+                printf(" 0s"); r = info->stream_run(stream, size, inputs0, outputs); if (r == TI_OKAY) check_output(info, size, inputs0, options, outputs);
+                info->stream_free(stream);
+            }
+        }
+
         printf("\r                                                  \r");
 
         j = 0;
