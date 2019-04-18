@@ -251,6 +251,10 @@ struct ti_stream {
 int ti_ce_stream_new(TI_REAL const *options, ti_stream **stream) {
     const int period = options[0];
     const TI_REAL coef = options[1];
+
+    if (period < 1) {
+        return TI_INVALID_OPTION;
+    }
     *stream = malloc(sizeof(ti_stream) + sizeof(TI_REAL[period][2]));
     if (!*stream) {
         return TI_OUT_OF_MEMORY;
