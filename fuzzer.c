@@ -178,7 +178,7 @@ void stress(const ti_indicator_info *info) {
             }
         }
 
-        printf("\r                                                  \r");
+        printf("\r                                                                                                       \r");
 
         j = 0;
         do {
