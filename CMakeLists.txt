@@ -66,7 +66,7 @@ add_test(NAME fuzzer COMMAND fuzzer)
 add_executable(benchmark benchmark.c)
 set_target_properties(benchmark PROPERTIES EXCLUDE_FROM_ALL 1)
 target_link_libraries(benchmark indicators ta_lib)
-add_test(NAME benchmark COMMAND benchmark)
+#add_test(NAME benchmark COMMAND benchmark)
 
 add_executable(benchmark2 benchmark2.c)
 target_link_libraries(benchmark2 indicators)
