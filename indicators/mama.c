@@ -34,6 +34,13 @@ int ti_mama(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_R
     TI_REAL const *real = inputs[0];
     const TI_REAL fastlimit = options[0];
     const TI_REAL slowlimit = options[1];
+
+    for (int i = 0; i < 2; ++i) {
+        if (options[i] < 0. || options[i] > 1.) {
+            return TI_INVALID_OPTION;
+        }
+    }
+
     TI_REAL *mama = outputs[0];
     TI_REAL *fama = outputs[1];
 
@@ -226,6 +233,12 @@ int ti_mama_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options, 
     TI_REAL *mama = outputs[0];
     TI_REAL *fama = outputs[1];
 
+    for (int i = 0; i < 2; ++i) {
+        if (options[i] < 0. || options[i] > 1.) {
+            return TI_INVALID_OPTION;
+        }
+    }
+
     // Straightforward translation of the original definition in EasyLanguage
     TI_REAL const *price = real;
 
@@ -344,15 +357,15 @@ struct ti_stream {
 };
 
 int ti_mama_stream_new(TI_REAL const *options, ti_stream **stream) {
-    *stream = calloc(1, sizeof(ti_stream));
-    if (!*stream) {
-        return TI_OUT_OF_MEMORY;
-    }
-
     for (int i = 0; i < 2; ++i) {
         if (options[i] < 0. || options[i] > 1.) {
             return TI_INVALID_OPTION;
         }
+    }
+
+    *stream = calloc(1, sizeof(ti_stream));
+    if (!*stream) {
+        return TI_OUT_OF_MEMORY;
     }
 
     (*stream)->index = TI_INDICATOR_MAMA_INDEX;
