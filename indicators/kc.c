@@ -48,7 +48,7 @@ int ti_kc(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REA
     // moving average - multiple * atr
     // where atr is ema of trueranges
 
-    if (period < 0) {
+    if (period < 1) {
         return TI_INVALID_OPTION;
     }
     if (multiple < 0 || multiple > 1) {
@@ -69,7 +69,7 @@ int ti_kc(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REA
         price_ema = (close[i] - price_ema) * per + price_ema;
 
         CALC_TRUERANGE();
-        tr_ema = (truerange - tr_ema) * per + truerange;
+        tr_ema = (truerange - tr_ema) * per + tr_ema;
 
         *kc_lower++ = price_ema - multiple * tr_ema;
         *kc_middle++ = price_ema;
