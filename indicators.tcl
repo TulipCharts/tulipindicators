@@ -101,6 +101,7 @@ lappend indicators [list indicator "Commodity Channel Index" cci 3 1 1 {high low
 lappend indicators [list indicator "Detrended Price Oscillator" dpo 1 1 1 {real} {period} {dpo}]
 lappend indicators [list indicator "Ease of Movement" emv 3 0 1 {high low volume} {} {emv}]
 lappend indicators [list indicator "Fisher Transform" fisher 2 1 2 {high low} {period} {fisher fisher_signal}]
+lappend indicators [list indicator "Force Index" fi 2 1 1 {close volume} {period} {fi} {ref stream}]
 lappend indicators [list indicator "Klinger Volume Oscillator" kvo 4 2 1 {high low close volume} {{short period} {long period}} {kvo}]
 lappend indicators [list indicator "Market Facilitation Index" marketfi 3 0 1 {high low volume} {} {marketfi}]
 lappend indicators [list indicator "Mass Index" mass 2 1 1 {high low} {period} {mass}]
