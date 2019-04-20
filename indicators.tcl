@@ -87,6 +87,7 @@ lappend indicators [list indicator "Forecast Oscillator" fosc 1 1 1 {real} {peri
 lappend indicators [list overlay "Bollinger Bands" bbands 1 2 3 {real} {period stddev} {bbands_lower bbands_middle bbands_upper}]
 lappend indicators [list overlay "Kaufman Adaptive Moving Average" kama 1 1 1 {real} {period} {kama}]
 lappend indicators [list overlay "Parabolic SAR" psar 2 2 1 {high low} {{acceleration factor step} {acceleration factor maximum}} {psar}]
+lappend indicators [list overlay "Projection Bands" pbands 3 1 2 {high low close} {period} {pbands_lower pbands_upper} {ref stream}]
 
 #Momentum
 lappend indicators [list indicator "Accumulation/Distribution Line" ad 4 0 1 {high low close volume} {} {ad}]
