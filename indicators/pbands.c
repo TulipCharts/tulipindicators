@@ -50,75 +50,53 @@ int ti_pbands(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI
 
     int i = 0;
 
-    TI_REAL max = high[i];
-    int max_idx = i;
-    TI_REAL min = low[i];
-    int min_idx = i;
-
     for (; i < period; ++i) {
-        if (max <= high[i]) {
-            max = high[i];
-            max_idx = i;
-        }
-        if (min >= low[i]) {
-            min = low[i];
-            min_idx = i;
-        }
-
         xy_sum += close[i] * (i + 1);
         y_sum += close[i];
-
     }
     {
         --i;
         // y = a + bx
         TI_REAL b = (xy_sum / period - x_sum / period * y_sum / period) / (xsq_sum / period - (x_sum / period)*(x_sum / period));
-        TI_REAL a = y_sum / period - b * x_sum / period;
 
-        *pbands_upper++ = (a + b*period) + (max - (a + b*(period - (i - max_idx))));
-        *pbands_lower++ = (a + b*period) - (a + b*(period - (i - min_idx)) - min);
+        TI_REAL the_max = high[i];
+        for (int j = 1; j < period; ++j) {
+            if (the_max < high[i-j] + j * b) {
+                the_max = high[i-j] + j * b;
+            }
+        }
+        TI_REAL the_min = low[i];
+        for (int j = 1; j < period; ++j) {
+            if (the_min > low[i-j] + j * b) {
+                the_min = low[i-j] + j * b;
+            }
+        }
+        *pbands_upper++ = the_max;
+        *pbands_lower++ = the_min;
 
-        // *pbands_upper++ = a + b*period + (max - (a + b*(period-(i-max_idx))));
-        // *pbands_lower++ = a + b*period - ((a + b*(period-(i-min_idx))) - min);
         ++i;
     }
     for (; i < size; ++i) {
-        if (max_idx == i - period) {
-            max_idx = i - period+1;
-            max = high[i-(int)period+1];
-            for (int j = i-period+2; j <= i; ++j) {
-                if (high[j] >= max) {
-                    max = high[j];
-                    max_idx = j;
-                }
-            }
-        } else if (high[i] >= max) {
-            max = high[i];
-            max_idx = i;
-        }
-        if (min_idx == i - period) {
-            min_idx = i - period+1;
-            min = low[i-(int)period+1];
-            for (int j = i-period+2; j <= i; ++j) {
-                if (low[j] <= min) {
-                    min = low[j];
-                    min_idx = j;
-                }
-            }
-        } else if (low[i] <= min) {
-            min = low[i];
-            min_idx = i;
-        }
-
         xy_sum += -y_sum + close[i]*period;
         y_sum += -close[i-(int)period] + close[i];
 
         // y = a + bx
         TI_REAL b = (xy_sum / period - x_sum / period * y_sum / period) / (xsq_sum / period - (x_sum / period)*(x_sum / period));
-        TI_REAL a = y_sum / period - b * x_sum / period;
 
-        *pbands_upper++ = (a + b*period) + (max - (a + b*(period - (i - max_idx))));
-        *pbands_lower++ = (a + b*period) - (a + b*(period - (i - min_idx)) - min);
+        TI_REAL the_max = high[i];
+        for (int j = 1; j < period; ++j) {
+            if (the_max < high[i-j] + j * b) {
+                the_max = high[i-j] + j * b;
+            }
+        }
+        TI_REAL the_min = low[i];
+        for (int j = 1; j < period; ++j) {
+            if (the_min > low[i-j] + j * b) {
+                the_min = low[i-j] + j * b;
+            }
+        }
+        *pbands_upper++ = the_max;
+        *pbands_lower++ = the_min;
     }
 
     return TI_OKAY;
@@ -134,39 +112,27 @@ int ti_pbands_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options
 
     int start = ti_linregslope_start(options);
     TI_REAL *b = malloc(sizeof(TI_REAL[size - start]));
-    TI_REAL *a = malloc(sizeof(TI_REAL[size - start]));
 
     ti_linregslope(size, &close, &period, &b);
-    ti_linregintercept(size, &close, &period, &a);
 
     for (int i = start; i < size; ++i) {
-        TI_REAL max;
-        TI_REAL min;
-        int max_idx;
-        int min_idx;
-
-        max = high[i-(int)period+1];
-        max_idx = i-(int)period+1;
-        for (int j = i-(int)period+2; j <= i; ++j) {
-            if (max <= high[j]) {
-                max = high[j];
-                max_idx = j;
+        TI_REAL the_max = high[i];
+        for (int j = 1; j < period; ++j) {
+            if (the_max < high[i-j] + j * b[i-start]) {
+                the_max = high[i-j] + j * b[i-start];
             }
         }
-        min = low[i-(int)period+1];
-        min_idx = i-(int)period+1;
-        for (int j = i-period+2; j <= i; ++j) {
-            if (min >= low[j]) {
-                min = low[j];
-                min_idx = j;
+        TI_REAL the_min = low[i];
+        for (int j = 1; j < period; ++j) {
+            if (the_min > low[i-j] + j * b[i-start]) {
+                the_min = low[i-j] + j * b[i-start];
             }
         }
 
-        *pbands_upper++ = a[i-start] + b[i-start]*period + (max - (a[i-start] + b[i-start]*(period-(i-max_idx))));
-        *pbands_lower++ = a[i-start] + b[i-start]*period - ((a[i-start] + b[i-start]*(period-(i-min_idx))) - min);
+        *pbands_upper++ = the_max;
+        *pbands_lower++ = the_min;
     }
 
-    free(a);
     free(b);
 
     return TI_OKAY;
@@ -182,13 +148,6 @@ struct ti_stream {
     } options;
 
     struct {
-        TI_REAL max;
-        int max_idx;
-        TI_REAL min;
-        int min_idx;
-
-        TI_REAL xsq_sum;
-        TI_REAL x_sum;
         TI_REAL y_sum;
         TI_REAL xy_sum;
     } state;
@@ -248,11 +207,6 @@ int ti_pbands_stream_run(ti_stream *stream, int size, TI_REAL const *const *inpu
 
     const TI_REAL period = stream->options.period;
 
-    TI_REAL max = stream->state.max;
-    int max_idx = stream->state.max_idx;
-    TI_REAL min = stream->state.min;
-    int min_idx = stream->state.min_idx;
-
     TI_REAL y_sum = stream->state.y_sum;
     TI_REAL xy_sum = stream->state.xy_sum;
 
@@ -261,76 +215,47 @@ int ti_pbands_stream_run(ti_stream *stream, int size, TI_REAL const *const *inpu
 
     int i = 0;
     TI_REAL var1;
-    if (i < size && progress == -period+1) {
-        BUFFER_PUSH(stream, high, high[0]);
-        BUFFER_PUSH(stream, low, low[0]);
-        BUFFER_PUSH(stream, close, close[0]);
-
-        max = high[0];
-        max_idx = progress;
-        min = low[0];
-        min_idx = progress;
-    }
     for (; i < size && progress <= 0; ++i, ++progress) {
         BUFFER_PUSH(stream, high, high[i]);
         BUFFER_PUSH(stream, low, low[i]);
         BUFFER_PUSH(stream, close, close[i]);
-        if (max <= high[i]) {
-            max = high[i];
-            max_idx = progress;
-        }
-        if (min >= low[i]) {
-            min = low[i];
-            min_idx = progress;
-        }
 
         xy_sum += close[i] * (progress - (-period+1) + 1);
         y_sum += close[i];
     }
+
     if (i > 0 && progress == 1) {
         --progress;
+        --i;
 
         // y = a + bx
         TI_REAL b = (xy_sum / period - x_sum / period * y_sum / period) / (xsq_sum / period - (x_sum / period)*(x_sum / period));
-        TI_REAL a = y_sum / period - b * x_sum / period;
 
-        *pbands_upper++ = (a + b*period) + (max - (a + b*(period - (progress - max_idx))));
-        *pbands_lower++ = (a + b*period) - (a + b*(period - (progress - min_idx)) - min);
+        TI_REAL the_max = high[i];
+        for (int j = 1; j < period; ++j) {
+            BUFFER_AT(var1, stream, high, -j);
+            if (the_max < var1 + j * b) {
+                the_max = var1 + j * b;
+            }
+        }
+        TI_REAL the_min = low[i];
+        for (int j = 1; j < period; ++j) {
+            BUFFER_AT(var1, stream, low, -j);
+            if (the_min > var1 + j * b) {
+                the_min = var1 + j * b;
+            }
+        }
+        *pbands_upper++ = the_max;
+        *pbands_lower++ = the_min;
 
         ++progress;
+        ++i;
     }
+
     for (; i < size; ++i, ++progress) {
         BUFFER_PUSH(stream, high, high[i]);
         BUFFER_PUSH(stream, low, low[i]);
         BUFFER_PUSH(stream, close, close[i]);
-        if (max_idx == progress - period) {
-            max_idx = progress - period+1;
-            BUFFER_AT(max, stream, high, -period+1);
-            for (int j = -period+2; j <= 0; ++j) {
-                BUFFER_AT(var1, stream, high, j);
-                if (var1 >= max) {
-                    max = var1;
-                    max_idx = progress+j;
-                }
-            }
-        } else if (high[i] >= max) {
-            max = high[i];
-            max_idx = progress;
-        }
-        if (min_idx == progress - period) {
-            min_idx = progress - period+1;
-            BUFFER_AT(min, stream, low, -period+1);
-            for (int j = -period+2; j <= 0; ++j) {
-                BUFFER_AT(var1, stream, low, j);
-                if (var1 <= min) {
-                    min = var1;
-                    min_idx = progress+j;
-                }
-            }
-        } else if (low[i] <= min) {
-            min = low[i];
-            min_idx = progress;
-        }
 
         xy_sum += -y_sum + close[i]*period;
         BUFFER_AT(var1, stream, close, -period);
@@ -338,20 +263,26 @@ int ti_pbands_stream_run(ti_stream *stream, int size, TI_REAL const *const *inpu
 
         // y = a + bx
         TI_REAL b = (xy_sum / period - x_sum / period * y_sum / period) / (xsq_sum / period - (x_sum / period)*(x_sum / period));
-        TI_REAL a = y_sum / period - b * x_sum / period;
 
-        *pbands_upper++ = (a + b*period) + (max - (a + b*(period - (progress - max_idx))));
-        *pbands_lower++ = (a + b*period) - (a + b*(period - (progress - min_idx)) - min);
+        TI_REAL the_max = high[i];
+        for (int j = 1; j < period; ++j) {
+            BUFFER_AT(var1, stream, high, -j);
+            if (the_max < var1 + j * b) {
+                the_max = var1 + j * b;
+            }
+        }
+        TI_REAL the_min = low[i];
+        for (int j = 1; j < period; ++j) {
+            BUFFER_AT(var1, stream, low, -j);
+            if (the_min > var1 + j * b) {
+                the_min = var1 + j * b;
+            }
+        }
+        *pbands_upper++ = the_max;
+        *pbands_lower++ = the_min;
     }
 
     stream->progress = progress;
-
-    stream->options.period = period;
-
-    stream->state.max = max;
-    stream->state.max_idx = max_idx;
-    stream->state.min = min;
-    stream->state.min_idx = min_idx;
 
     stream->state.y_sum = y_sum;
     stream->state.xy_sum = xy_sum;
