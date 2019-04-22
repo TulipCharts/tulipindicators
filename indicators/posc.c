@@ -41,6 +41,7 @@ int ti_posc(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_R
     TI_REAL *posc = outputs[0];
 
     if (period < 1) { return TI_INVALID_OPTION; }
+    if (ema_period < 1) { return TI_INVALID_OPTION; }
     if (size <= ti_posc_start(options)) { return TI_OKAY; }
 
     TI_REAL y_sum = 0.;
@@ -175,6 +176,7 @@ int ti_posc_stream_new(TI_REAL const *options, ti_stream **stream) {
     const TI_REAL period = options[0];
     const TI_REAL ema_period = options[1];
     if (period < 1) { return TI_INVALID_OPTION; }
+    if (ema_period < 1) { return TI_INVALID_OPTION; }
 
     *stream = calloc(1, sizeof(**stream));
     if (!*stream) { return TI_OUT_OF_MEMORY; }
