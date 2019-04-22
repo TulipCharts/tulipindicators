@@ -136,12 +136,18 @@ void ce_option_setter(double period, double *options) {
     options[1] = 3;
 }
 
+void rmi_option_setter(double period, double *options) {
+    options[0] = period;
+    options[1] = 3;
+}
+
 void bench(const ti_indicator_info *info) {
     void (*options_setter)(double period, double *options) = simple_option_setter;
     if (strcmp(info->name, "apo") == 0) { options_setter = ppo_option_setter; }
     if (strcmp(info->name, "macd") == 0) { options_setter = macd_option_setter; }
     if (strcmp(info->name, "ppo") == 0) { options_setter = ppo_option_setter; }
     if (strcmp(info->name, "psar") == 0) { options_setter = psar_option_setter; }
+    if (strcmp(info->name, "rmi") == 0) { options_setter = rmi_option_setter; }
     if (strcmp(info->name, "adosc") == 0) { options_setter = fast_slow_option_setter; }
     if (strcmp(info->name, "kvo") == 0) { options_setter = fast_slow_option_setter; }
     if (strcmp(info->name, "stoch") == 0) { options_setter = stoch_option_setter; }
