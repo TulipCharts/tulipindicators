@@ -34,6 +34,8 @@ int ti_tsi(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_RE
     const TI_REAL z_period = options[1];
     TI_REAL *tsi = outputs[0];
 
+    for (int i = 0; i < 2; ++i) { if (options[i] < 1) { return TI_INVALID_OPTION; } }
+
     int progress = -1;
 
     TI_REAL price;
