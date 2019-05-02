@@ -246,9 +246,9 @@ extern \"C\" {
 #endif
 
 
-const char* ti_version();
-long int ti_build();
-int ti_indicator_count();
+const char* ti_version(void);
+long int ti_build(void);
+int ti_indicator_count(void);
 
 
 "
@@ -470,9 +470,9 @@ puts $idx "$license
 
 puts $idx "#include \"indicators.h\"\n\n"
 puts $idx "
-const char* ti_version() {return TI_VERSION;}
-long int ti_build() {return TI_BUILD;}
-int ti_indicator_count() {return TI_INDICATOR_COUNT;}
+const char* ti_version(void) {return TI_VERSION;}
+long int ti_build(void) {return TI_BUILD;}
+int ti_indicator_count(void) {return TI_INDICATOR_COUNT;}
 "
 
 puts $idx "\n\n\nstruct ti_indicator_info ti_indicators\[\] = {"
