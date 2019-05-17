@@ -305,8 +305,10 @@ int ti_mama_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options, 
         }
         alpha[i] = fastlimit / deltaphase[i];
         if (alpha[i] < slowlimit) { alpha[i] = slowlimit; }
-        *mama++ = alpha[i] * price[i] + (1. - alpha[i]) * (i > 6 ? mama[-1] : 0);
-        *fama++ = .5 * alpha[i] * mama[-1] + (1. - .5 * alpha[i]) * (i > 6 ? fama[-1] : 0);
+        *mama = alpha[i] * price[i] + (1. - alpha[i]) * (i > 6 ? mama[-1] : 0);
+        ++mama;
+        *fama = .5 * alpha[i] * mama[-1] + (1. - .5 * alpha[i]) * (i > 6 ? fama[-1] : 0);
+        ++fama;
     }
 
     free(smooth);
