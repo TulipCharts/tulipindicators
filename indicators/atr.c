@@ -112,6 +112,7 @@ struct ti_stream {
     int period;
     TI_REAL sum;
     TI_REAL last;
+    TI_REAL last_close;
 };
 
 
@@ -132,8 +133,18 @@ int ti_atr_stream_new(TI_REAL const *options, ti_stream **stream) {
     return TI_OKAY;
 }
 
-
 int ti_atr_stream_run(ti_stream *stream, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
+
+    #undef CALC_TRUERANGE
+    #define CALC_TRUERANGE(var, h, l, c) do { \
+        const TI_REAL ych = fabs((h) - (c)); \
+        const TI_REAL ycl = fabs((l) - (c)); \
+        TI_REAL v = (h) - (l); \
+        if (ych > v) v = ych; \
+        if (ycl > v) v = ycl; \
+        var = v; \
+    } while (0)
+
     const TI_REAL *high = inputs[0];
     const TI_REAL *low = inputs[1];
     const TI_REAL *close = inputs[2];
@@ -150,13 +161,15 @@ int ti_atr_stream_run(ti_stream *stream, int size, TI_REAL const *const *inputs,
         if (stream->progress == start) {
             /* first bar of input */
             stream->sum = high[0] - low[0];
+            stream->last_close = close[0];
             ++stream->progress; ++i;
         }
 
         /* still calculating first output */
         while (stream->progress <= 0 && i < size) {
-            TI_REAL truerange; CALC_TRUERANGE();
+            TI_REAL truerange; CALC_TRUERANGE(truerange, high[i], low[i], stream->last_close);
             stream->sum += truerange;
+            stream->last_close = close[i];
             ++stream->progress; ++i;
         }
 
@@ -171,9 +184,10 @@ int ti_atr_stream_run(ti_stream *stream, int size, TI_REAL const *const *inputs,
         /* steady state */
         TI_REAL val = stream->last;
         while (i < size) {
-            TI_REAL truerange; CALC_TRUERANGE();
+            TI_REAL truerange; CALC_TRUERANGE(truerange, high[i], low[i], stream->last_close);
             val = (truerange-val) * per + val;
             *output++ = val;
+            stream->last_close = close[i];
             ++stream->progress; ++i;
         }
 

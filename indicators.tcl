@@ -68,7 +68,7 @@ lappend indicators [list overlay "Double Exponential Moving Average" dema 1 1 1 
 lappend indicators [list overlay "Exponential Moving Average" ema 1 1 1 {real} {period} {ema}]
 lappend indicators [list overlay "Hull Moving Average" hma 1 1 1 {real} {period} {hma}]
 lappend indicators [list overlay "MESA Adaptive Moving Average" mama 1 2 2 {real} {fastlimit slowlimit} {mama fama} {ref stream}]
-lappend indicators [list overlay "Simple Moving Average" sma 1 1 1 {real} {period} {sma}]
+lappend indicators [list overlay "Simple Moving Average" sma 1 1 1 {real} {period} {sma} {stream}]
 lappend indicators [list overlay "Triple Exponential Moving Average" tema 1 1 1 {real} {period} {tema}]
 lappend indicators [list overlay "Triangular Moving Average" trima 1 1 1 {real} {period} {trima}]
 lappend indicators [list overlay "Variable Index Dynamic Average" vidya 1 3 1 {real} {{short period} {long period} alpha} {vidya}]
@@ -76,6 +76,7 @@ lappend indicators [list overlay "Volume Weighted Moving Average" vwma 2 1 1 {cl
 lappend indicators [list overlay "Wilders Smoothing" wilders 1 1 1 {real} {period} {wilders}]
 lappend indicators [list overlay "Weighted Moving Average" wma 1 1 1 {real} {period} {wma}]
 lappend indicators [list overlay "Zero-Lag Exponential Moving Average" zlema 1 1 1 {real} {period} {zlema}]
+lappend indicators [list overlay "Recursive Moving Trend Average" rmta 1 2 1 {real} {period beta} {rmta}]
 
 #Line fitting
 lappend indicators [list overlay "Linear Regression" linreg 1 1 1 {real} {period} {linreg}]
@@ -85,6 +86,7 @@ lappend indicators [list overlay "Time Series Forecast" tsf 1 1 1 {real} {period
 lappend indicators [list indicator "Forecast Oscillator" fosc 1 1 1 {real} {period} {fosc}]
 
 #Special moving averages and other overlays
+lappend indicators [list overlay "Acceleration Bands" abands 3 1 3 {high low close} {period} {abands_lower abands_upper abands_middle} {ref}]
 lappend indicators [list overlay "Bollinger Bands" bbands 1 2 3 {real} {period stddev} {bbands_lower bbands_middle bbands_upper}]
 lappend indicators [list overlay "Kaufman Adaptive Moving Average" kama 1 1 1 {real} {period} {kama}]
 lappend indicators [list overlay "Parabolic SAR" psar 2 2 1 {high low} {{acceleration factor step} {acceleration factor maximum}} {psar}]
@@ -97,6 +99,7 @@ lappend indicators [list indicator "Aroon" aroon 2 1 2 {high low} {period} {aroo
 lappend indicators [list indicator "Aroon Oscillator" aroonosc 2 1 1 {high low} {period} {aroonosc}]
 lappend indicators [list indicator "Awesome Oscillator" ao 2 0 1 {high low} {} {ao}]
 lappend indicators [list indicator "Balance of Power" bop 4 0 1 {open high low close} {} {bop}]
+lappend indicators [list indicator "Chaikin Money Flow" cmf 4 1 1 {high low close volume} {period} {cmf}]
 lappend indicators [list indicator "Chande Momentum Oscillator" cmo 1 1 1 {real} {period} {cmo}]
 lappend indicators [list indicator "Commodity Channel Index" cci 3 1 1 {high low close} {period} {cci}]
 lappend indicators [list indicator "Detrended Price Oscillator" dpo 1 1 1 {real} {period} {dpo}]
@@ -139,8 +142,8 @@ lappend indicators [list indicator "Rate of Change Ratio" rocr 1 1 1 {real} {per
 
 #Math functions
 lappend indicators [list math "Lag" lag 1 1 1 {real} {period} {lag}]
-lappend indicators [list math "Maximum In Period" max 1 1 1 {real} {period} {max}]
-lappend indicators [list math "Minimum In Period" min 1 1 1 {real} {period} {min}]
+lappend indicators [list math "Maximum In Period" max 1 1 1 {real} {period} {max} {ref}]
+lappend indicators [list math "Minimum In Period" min 1 1 1 {real} {period} {min} {ref}]
 lappend indicators [list math "Sum Over Period" sum 1 1 1 {real} {period} {sum}]
 lappend indicators [list math "Standard Deviation Over Period" stddev 1 1 1 {real} {period} {stddev}]
 lappend indicators [list math "Standard Error Over Period" stderr 1 1 1 {real} {period} {stderr}]
@@ -155,6 +158,7 @@ lappend indicators [list overlay "Weighted Close Price" wcprice 3 0 1 {high low 
 
 #Volatility
 lappend indicators [list indicator "Average True Range" atr 3 1 1 {high low close} {period} {atr} {stream ref}]
+lappend indicators [list indicator "Chandelier Exit" ce 3 2 2 {high low close} {period coef} {ce_high ce_low} {stream ref}]
 lappend indicators [list indicator "Normalized Average True Range" natr 3 1 1 {high low close} {period} {natr}]
 lappend indicators [list indicator "True Range" tr 3 0 1 {high low close} {} {tr}]
 lappend indicators [list indicator "Annualized Historical Volatility" volatility 1 1 1 {real} {period} {volatility}]
@@ -245,6 +249,7 @@ extern \"C\" {
 
 const char* ti_version();
 long int ti_build();
+int ti_indicator_count();
 
 
 "
@@ -468,6 +473,7 @@ puts $idx "#include \"indicators.h\"\n\n"
 puts $idx "
 const char* ti_version() {return TI_VERSION;}
 long int ti_build() {return TI_BUILD;}
+int ti_indicator_count() {return TI_INDICATOR_COUNT;}
 "
 
 puts $idx "\n\n\nstruct ti_indicator_info ti_indicators\[\] = {"
