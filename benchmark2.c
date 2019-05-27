@@ -67,6 +67,9 @@ void generate_inputs() {
         high[i] = open[i] > close[i] ? open[i] + diff3 : close[i] + diff3;
         low[i] = open[i] < close[i] ? open[i] - diff4 : close[i] - diff4;
         volume[i] = vol;
+        if (rand() % 100 == 0) {
+            close[i] = low[i] = high[i] = open[i];
+        }
 
         assert(open[i] <= high[i]);
         assert(close[i] <= high[i]);
