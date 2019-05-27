@@ -98,6 +98,7 @@ lappend indicators [list indicator "Aroon" aroon 2 1 2 {high low} {period} {aroo
 lappend indicators [list indicator "Aroon Oscillator" aroonosc 2 1 1 {high low} {period} {aroonosc}]
 lappend indicators [list indicator "Awesome Oscillator" ao 2 0 1 {high low} {} {ao}]
 lappend indicators [list indicator "Balance of Power" bop 4 0 1 {open high low close} {} {bop}]
+lappend indicators [list indicator "Chaikin Money Flow" cmf 4 1 1 {high low close volume} {period} {cmf}]
 lappend indicators [list indicator "Chande Momentum Oscillator" cmo 1 1 1 {real} {period} {cmo}]
 lappend indicators [list indicator "Commodity Channel Index" cci 3 1 1 {high low close} {period} {cci}]
 lappend indicators [list indicator "Detrended Price Oscillator" dpo 1 1 1 {real} {period} {dpo}]
