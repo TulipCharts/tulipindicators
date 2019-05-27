@@ -28,7 +28,7 @@
 #include <assert.h>
 
 
-double optionsd[] = {-20,-1,0,.1,.5,.7,1,2,2.5,3,4,5,6,7,8,9,10,11,17,18,19,20,21,22,23,24,25,26,100};
+double optionsd[] = {-20,-1,0,.7,100}; // 5 options are the maximum computable amount given TI_MAXINDPARAMS = 10
 double dummy_in[] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20};
 double dummy_in0[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 double dummy_ot[] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20};
@@ -62,6 +62,7 @@ do { \
  \
 } while (0)
 
+int errors_cnt = 0;
 
 void check_output(const ti_indicator_info *info, int size, TI_REAL const *const *inputs, TI_REAL const * options, TI_REAL *const *outputs) {
 
@@ -91,6 +92,7 @@ void check_output(const ti_indicator_info *info, int size, TI_REAL const *const 
                     if (op > max * 1.5 + 2 || op < min * 0.5 - 2) {
                         DUMP_STATE();
                         printf("\nERROR Output is out of range for input: input: %f output: %f\n", in, op);
+                        errors_cnt += 1;
                         assert(0);
                     }
                     break;
@@ -142,7 +144,41 @@ void stress(const ti_indicator_info *info) {
         printf(" %d", size); r = info->indicator(size, inputs, options, outputs); if (r == TI_OKAY) check_output(info, size, inputs, options, outputs);
         printf(" 0s"); r = info->indicator(size, inputs0, options, outputs); if (r == TI_OKAY) check_output(info, size, inputs0, options, outputs);
 
-        printf("\r                                                  \r");
+        if (info->stream_new) {
+            ti_stream *stream; printf(" stream");
+            r = info->stream_new(options, &stream);
+            if (r == TI_OKAY) {
+                printf(" 0"); r = info->stream_run(stream, 0, inputs, outputs); if (r == TI_OKAY) check_output(info, 0, inputs, options, outputs);
+                info->stream_free(stream);
+            }
+            r = info->stream_new(options, &stream);
+            if (r == TI_OKAY) {
+                printf(" 1"); r = info->stream_run(stream, 1, inputs, outputs); if (r == TI_OKAY) check_output(info, 1, inputs, options, outputs);
+                info->stream_free(stream);
+            }
+            r = info->stream_new(options, &stream);
+            if (r == TI_OKAY) {
+                printf(" 2"); r = info->stream_run(stream, 2, inputs, outputs); if (r == TI_OKAY) check_output(info, 2, inputs, options, outputs);
+                info->stream_free(stream);
+            }
+            r = info->stream_new(options, &stream);
+            if (r == TI_OKAY) {
+                printf(" 3"); r = info->stream_run(stream, 3, inputs, outputs); if (r == TI_OKAY) check_output(info, 3, inputs, options, outputs);
+                info->stream_free(stream);
+            }
+            r = info->stream_new(options, &stream);
+            if (r == TI_OKAY) {
+                printf(" %d", size); r = info->stream_run(stream, size, inputs, outputs); if (r == TI_OKAY) check_output(info, size, inputs, options, outputs);
+                info->stream_free(stream);
+            }
+            r = info->stream_new(options, &stream);
+            if (r == TI_OKAY) {
+                printf(" 0s"); r = info->stream_run(stream, size, inputs0, outputs); if (r == TI_OKAY) check_output(info, size, inputs0, options, outputs);
+                info->stream_free(stream);
+            }
+        }
+
+        printf("\r                                                                                                       \r");
 
         j = 0;
         do {
@@ -171,5 +207,5 @@ int main(int argc, char *argv[])
 
     printf("\r                                                  \rDone\n");
 
-    return 0;
+    return errors_cnt ? 1 : 0;
 }
