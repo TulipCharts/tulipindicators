@@ -67,6 +67,9 @@ void generate_inputs() {
         high[i] = open[i] > close[i] ? open[i] + diff3 : close[i] + diff3;
         low[i] = open[i] < close[i] ? open[i] - diff4 : close[i] - diff4;
         volume[i] = vol;
+        if (rand() % 100 == 0) {
+            close[i] = low[i] = high[i] = open[i];
+        }
 
         assert(open[i] <= high[i]);
         assert(close[i] <= high[i]);
@@ -136,9 +139,16 @@ void ce_option_setter(double period, double *options) {
     options[1] = 3;
 }
 
+
 void kc_option_setter(double period, double *options) {
     options[0] = period;
     options[1] = 0.77;
+}
+
+void rmta_option_setter(double period,  double *options) {
+    options[0] = period;
+    options[1] = 1 - (2. / (period + 1));
+
 }
 
 void bench(const ti_indicator_info *info) {
@@ -149,6 +159,7 @@ void bench(const ti_indicator_info *info) {
     if (strcmp(info->name, "psar") == 0) { options_setter = psar_option_setter; }
     if (strcmp(info->name, "adosc") == 0) { options_setter = fast_slow_option_setter; }
     if (strcmp(info->name, "kvo") == 0) { options_setter = fast_slow_option_setter; }
+    if (strcmp(info->name, "rmta") == 0) { options_setter = rmta_option_setter; }
     if (strcmp(info->name, "stoch") == 0) { options_setter = stoch_option_setter; }
     if (strcmp(info->name, "stochrsi") == 0) { options_setter = stochrsi_option_setter; }
     if (strcmp(info->name, "ultosc") == 0) { options_setter = ultosc_option_setter; }
@@ -243,6 +254,8 @@ void bench(const ti_indicator_info *info) {
                 for (int bar = 0; bar < INSIZE; ++bar) {
                     for (int j = 0; j < info->inputs; ++j) {
                         inputs_[j] = inputs[j] + bar;
+                    }
+                    for (int j = 0; j < info->outputs; ++j) {
                         outputs_[j] = outputs_stream_1[j] + ti_stream_get_progress(stream);
                     }
                     const int ret = info->stream_run(stream, 1, inputs_, outputs_);
