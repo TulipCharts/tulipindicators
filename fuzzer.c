@@ -144,6 +144,7 @@ void stress(const ti_indicator_info *info) {
         printf(" %d", size); r = info->indicator(size, inputs, options, outputs); if (r == TI_OKAY) check_output(info, size, inputs, options, outputs);
         printf(" 0s"); r = info->indicator(size, inputs0, options, outputs); if (r == TI_OKAY) check_output(info, size, inputs0, options, outputs);
 
+        //TODO these tests need to continue on, not just test from the beginning and then abort
         if (info->stream_new) {
             ti_stream *stream; printf(" stream");
             r = info->stream_new(options, &stream);
