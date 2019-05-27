@@ -141,8 +141,8 @@ lappend indicators [list indicator "Rate of Change Ratio" rocr 1 1 1 {real} {per
 
 #Math functions
 lappend indicators [list math "Lag" lag 1 1 1 {real} {period} {lag}]
-lappend indicators [list math "Maximum In Period" max 1 1 1 {real} {period} {max}]
-lappend indicators [list math "Minimum In Period" min 1 1 1 {real} {period} {min}]
+lappend indicators [list math "Maximum In Period" max 1 1 1 {real} {period} {max} {ref}]
+lappend indicators [list math "Minimum In Period" min 1 1 1 {real} {period} {min} {ref}]
 lappend indicators [list math "Sum Over Period" sum 1 1 1 {real} {period} {sum}]
 lappend indicators [list math "Standard Deviation Over Period" stddev 1 1 1 {real} {period} {stddev}]
 lappend indicators [list math "Standard Error Over Period" stderr 1 1 1 {real} {period} {stderr}]
@@ -157,6 +157,7 @@ lappend indicators [list overlay "Weighted Close Price" wcprice 3 0 1 {high low 
 
 #Volatility
 lappend indicators [list indicator "Average True Range" atr 3 1 1 {high low close} {period} {atr} {stream ref}]
+lappend indicators [list indicator "Chandelier Exit" ce 3 2 2 {high low close} {period coef} {ce_high ce_low} {stream ref}]
 lappend indicators [list indicator "Normalized Average True Range" natr 3 1 1 {high low close} {period} {natr}]
 lappend indicators [list indicator "True Range" tr 3 0 1 {high low close} {} {tr}]
 lappend indicators [list indicator "Annualized Historical Volatility" volatility 1 1 1 {real} {period} {volatility}]
