@@ -85,6 +85,7 @@ lappend indicators [list overlay "Time Series Forecast" tsf 1 1 1 {real} {period
 lappend indicators [list indicator "Forecast Oscillator" fosc 1 1 1 {real} {period} {fosc}]
 
 #Special moving averages and other overlays
+lappend indicators [list overlay "Acceleration Bands" abands 3 1 3 {high low close} {period} {abands_lower abands_upper abands_middle} {ref}]
 lappend indicators [list overlay "Bollinger Bands" bbands 1 2 3 {real} {period stddev} {bbands_lower bbands_middle bbands_upper}]
 lappend indicators [list overlay "Kaufman Adaptive Moving Average" kama 1 1 1 {real} {period} {kama}]
 lappend indicators [list overlay "Parabolic SAR" psar 2 2 1 {high low} {{acceleration factor step} {acceleration factor maximum}} {psar}]
@@ -92,7 +93,6 @@ lappend indicators [list overlay "Parabolic SAR" psar 2 2 1 {high low} {{acceler
 #Momentum
 lappend indicators [list indicator "Accumulation/Distribution Line" ad 4 0 1 {high low close volume} {} {ad}]
 lappend indicators [list indicator "Accumulation/Distribution Oscillator" adosc 4 2 1 {high low close volume} {{short period} {long period}} {adosc}]
-lappend indicators [list indicator "Acceleration Bands" abands 3 1 3 {high low close} {period} {abands_lower abands_upper abands_middle} {ref}]
 lappend indicators [list indicator "Absolute Price Oscillator" apo 1 2 1 {real} {{short period} {long period}} {apo}]
 lappend indicators [list indicator "Aroon" aroon 2 1 2 {high low} {period} {aroon_down aroon_up}]
 lappend indicators [list indicator "Aroon Oscillator" aroonosc 2 1 1 {high low} {period} {aroonosc}]
