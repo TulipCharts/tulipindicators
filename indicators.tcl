@@ -67,7 +67,7 @@ set indicators {}
 lappend indicators [list overlay "Double Exponential Moving Average" dema 1 1 1 {real} {period} {dema}]
 lappend indicators [list overlay "Exponential Moving Average" ema 1 1 1 {real} {period} {ema}]
 lappend indicators [list overlay "Hull Moving Average" hma 1 1 1 {real} {period} {hma}]
-lappend indicators [list overlay "Simple Moving Average" sma 1 1 1 {real} {period} {sma}]
+lappend indicators [list overlay "Simple Moving Average" sma 1 1 1 {real} {period} {sma} {stream}]
 lappend indicators [list overlay "Triple Exponential Moving Average" tema 1 1 1 {real} {period} {tema}]
 lappend indicators [list overlay "Triangular Moving Average" trima 1 1 1 {real} {period} {trima}]
 lappend indicators [list overlay "Variable Index Dynamic Average" vidya 1 3 1 {real} {{short period} {long period} alpha} {vidya}]
@@ -245,6 +245,7 @@ extern \"C\" {
 
 const char* ti_version();
 long int ti_build();
+int ti_indicator_count();
 
 
 "
@@ -468,6 +469,7 @@ puts $idx "#include \"indicators.h\"\n\n"
 puts $idx "
 const char* ti_version() {return TI_VERSION;}
 long int ti_build() {return TI_BUILD;}
+int ti_indicator_count() {return TI_INDICATOR_COUNT;}
 "
 
 puts $idx "\n\n\nstruct ti_indicator_info ti_indicators\[\] = {"
