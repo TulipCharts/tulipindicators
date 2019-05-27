@@ -75,6 +75,7 @@ lappend indicators [list overlay "Volume Weighted Moving Average" vwma 2 1 1 {cl
 lappend indicators [list overlay "Wilders Smoothing" wilders 1 1 1 {real} {period} {wilders}]
 lappend indicators [list overlay "Weighted Moving Average" wma 1 1 1 {real} {period} {wma}]
 lappend indicators [list overlay "Zero-Lag Exponential Moving Average" zlema 1 1 1 {real} {period} {zlema}]
+lappend indicators [list overlay "Recursive Moving Trend Average" rmta 1 2 1 {real} {period beta} {rmta}]
 
 #Line fitting
 lappend indicators [list overlay "Linear Regression" linreg 1 1 1 {real} {period} {linreg}]
