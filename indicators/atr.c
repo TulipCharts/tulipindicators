@@ -103,7 +103,7 @@ int ti_atr_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options, T
 }
 
 
-struct ti_stream {
+typedef struct ti_stream_atr {
     /* required */
     int index;
     int progress;
@@ -113,14 +113,16 @@ struct ti_stream {
     TI_REAL sum;
     TI_REAL last;
     TI_REAL last_close;
-};
+} ti_stream_atr;
 
 
-int ti_atr_stream_new(TI_REAL const *options, ti_stream **stream) {
+int ti_atr_stream_new(TI_REAL const *options, ti_stream **stream_in) {
+    ti_stream_atr **stream = (ti_stream_atr**) stream_in;
+
     const int period = (int)options[0];
     if (period < 1) return TI_INVALID_OPTION;
 
-    *stream = malloc(sizeof(ti_stream));
+    *stream = malloc(sizeof(ti_stream_atr));
     if (!*stream) {
         return TI_OUT_OF_MEMORY;
     }
@@ -133,7 +135,8 @@ int ti_atr_stream_new(TI_REAL const *options, ti_stream **stream) {
     return TI_OKAY;
 }
 
-int ti_atr_stream_run(ti_stream *stream, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
+int ti_atr_stream_run(ti_stream *stream_in, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
+    ti_stream_atr *stream = (ti_stream_atr*)stream_in;
 
     #undef CALC_TRUERANGE
     #define CALC_TRUERANGE(var, h, l, c) do { \

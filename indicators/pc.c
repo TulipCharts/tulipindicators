@@ -26,7 +26,7 @@
 
 
 int ti_pc_start(TI_REAL const *options) {
-    const TI_REAL period = options[0];
+    const int period = (int)options[0];
     return period-1;
 }
 
@@ -47,7 +47,7 @@ int ti_pc(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REA
     return TI_OKAY;
 }
 
-struct ti_stream {
+typedef struct ti_stream_pc {
     int index;
     int progress;
 
@@ -66,10 +66,12 @@ struct ti_stream {
         BUFFER(high)
         BUFFER(low)
     )
-};
+} ti_stream_pc;
 
-int ti_pc_stream_new(TI_REAL const *options, ti_stream **stream) {
-    const TI_REAL period = options[0];
+int ti_pc_stream_new(TI_REAL const *options, ti_stream **stream_in) {
+    ti_stream_pc **stream = (ti_stream_pc**)stream_in;
+
+    const int period = (int)options[0];
 
     if (period < 1) { return TI_INVALID_OPTION; }
 
@@ -91,7 +93,9 @@ void ti_pc_stream_free(ti_stream *stream) {
     free(stream);
 }
 
-int ti_pc_stream_run(ti_stream *stream, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
+int ti_pc_stream_run(ti_stream *stream_in, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
+    ti_stream_pc *stream = (ti_stream_pc*)stream_in;
+
     int progress = stream->progress;
 
     TI_REAL const *high = inputs[0];

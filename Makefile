@@ -1,4 +1,4 @@
-CC ?= gcc
+CC = gcc
 AR ?= ar
 RANLIB ?= ranlib
 
@@ -41,7 +41,7 @@ sample: sample.o libindicators.a
 benchmark: benchmark.o libindicators.a
 	$(CC) $(CCFLAGS) -o $@ $^ -lta_lib -lm
 
-#Optional benchmark program, new edition.
+#Optional benchmark program. No TA-Lib.
 benchmark2: benchmark2.o libindicators.a
 	$(CC) $(CCFLAGS) -o $@ $^ -lm
 

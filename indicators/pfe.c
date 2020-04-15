@@ -25,9 +25,7 @@
 #include "../utils/buffer.h"
 
 int ti_pfe_start(TI_REAL const *options) {
-    const TI_REAL period = options[0];
-    const TI_REAL ema_period = options[1];
-
+    const int period = (int)options[0];
     return period;
 }
 
@@ -37,8 +35,8 @@ int ti_pfe_start(TI_REAL const *options) {
 
 int ti_pfe(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
     TI_REAL const *real = inputs[0];
-    const TI_REAL period = options[0];
-    const TI_REAL ema_period = options[1];
+    const int period = (int)options[0];
+    const int ema_period = (int)options[1];
     TI_REAL *pfe = outputs[0];
 
     if (period < 1) { return TI_INVALID_OPTION; }
@@ -61,9 +59,9 @@ int ti_pfe(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_RE
 
     for (i = period+1; i < size; ++i) {
         ti_buffer_push(denom, sqrt(pow(real[i] - real[i-1], 2) + 1.));
-        TI_REAL numer = SIGN(real[i] - real[i-(int)period]) * 100. * sqrt(pow(real[i] - real[i-(int)period], 2) + 100.);
+        TI_REAL numer2 = SIGN(real[i] - real[i-(int)period]) * 100. * sqrt(pow(real[i] - real[i-(int)period], 2) + 100.);
 
-        ema = EMA_NEXT(numer / denom->sum);
+        ema = EMA_NEXT(numer2 / denom->sum);
         *pfe++ = ema;
     }
 
@@ -80,8 +78,8 @@ int ti_pfe(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_RE
 
 int ti_pfe_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
     TI_REAL const *real = inputs[0];
-    const TI_REAL period = options[0];
-    const TI_REAL ema_period = options[1];
+    const int period = (int)options[0];
+    const int ema_period = (int)options[1];
     TI_REAL *pfe = outputs[0];
 
     if (period < 1) { return TI_INVALID_OPTION; }
@@ -92,10 +90,12 @@ int ti_pfe_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options, T
         for (int j = i - period + 1; j <= i; ++j) {
             div += sqrt(pow(real[j] - real[j-1], 2) + 1);
         }
-        TI_REAL numer = SIGN(real[i] - real[i-(int)period]) * 100. * sqrt(pow(real[i] - real[i-(int)period], 2) + 100.);
         *pfe++ = SIGN(real[i] - real[i-(int)period]) * 100. * sqrt(pow(real[i] - real[i-(int)period], 2) + 100.) / div;
     }
-    ti_ema(size - period, outputs, &ema_period, outputs);
+
+    const TI_REAL *ti_ema_inputs[] = {outputs[0]};
+    const TI_REAL ti_ema_options[] = {ema_period};
+    ti_ema(size - period, ti_ema_inputs, ti_ema_options, outputs);
 
     assert(pfe - outputs[0] == size - ti_pfe_start(options));
     return TI_OKAY;
@@ -103,14 +103,14 @@ int ti_pfe_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options, T
 
 /* Streaming */
 
-struct ti_stream {
+typedef struct ti_stream_pfe {
     /* required */
     int index;
     int progress;
 
     /* indicator specific */
-    TI_REAL period;
-    TI_REAL ema_period;
+    int period;
+    int ema_period;
 
     TI_REAL ema;
     TI_REAL numer;
@@ -119,22 +119,24 @@ struct ti_stream {
     int buffers_idx;
     TI_REAL buffer2_sum;
     TI_REAL buffer[][2];
-};
+} ti_stream_pfe;
 
-int ti_pfe_stream_new(TI_REAL const *options, ti_stream **stream) {
-    const TI_REAL period = options[0];
-    const TI_REAL ema_period = options[1];
+int ti_pfe_stream_new(TI_REAL const *options, ti_stream **stream_in) {
+    ti_stream_pfe **stream = (ti_stream_pfe**)stream_in;
+
+    const int period = (int)options[0];
+    const int ema_period = (int)options[1];
 
     if (period < 1) { return TI_INVALID_OPTION; }
 
-    *stream = malloc(sizeof(ti_stream) + sizeof(TI_REAL[(int)period][2]));
+    *stream = malloc(sizeof(ti_stream_pfe) + sizeof(TI_REAL[(int)period][2]));
 
     if (!stream) { return TI_OUT_OF_MEMORY; }
 
     (*stream)->index = TI_INDICATOR_PFE_INDEX;
     (*stream)->progress = -ti_pfe_start(options);
-    (*stream)->period = options[0];
-    (*stream)->ema_period = options[1];
+    (*stream)->period = period;
+    (*stream)->ema_period = ema_period;
     (*stream)->buffers_idx = -1;
     (*stream)->buffer2_sum = 0.;
 
@@ -167,9 +169,11 @@ void ti_pfe_stream_free(ti_stream *stream) {
     free(stream);
 }
 
-int ti_pfe_stream_run(ti_stream *stream, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
+int ti_pfe_stream_run(ti_stream *stream_in, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
+    ti_stream_pfe *stream = (ti_stream_pfe*)stream_in;
+
     TI_REAL const *real = inputs[0];
-    const TI_REAL period = stream->period;
+    const int period = stream->period;
     const TI_REAL ema_period = stream->ema_period;
     TI_REAL *pfe = outputs[0];
 
@@ -192,7 +196,7 @@ int ti_pfe_stream_run(ti_stream *stream, int size, TI_REAL const *const *inputs,
         PUSH_NONFULL(buffer, real[i], 0);
         ++i, ++progress;
     } else {}
-    for (i; progress < 0 && i < size; ++i, ++progress) { // warm up
+    for (; progress < 0 && i < size; ++i, ++progress) { // warm up
         TI_REAL prev; LOOKBACK(prev, buffer, 0, 0);
         PUSH_NONFULL(buffer, real[i], sqrt(pow(real[i] - prev, 2) + 1.));
     }
@@ -205,7 +209,7 @@ int ti_pfe_stream_run(ti_stream *stream, int size, TI_REAL const *const *inputs,
 
         ++i, ++progress;
     }
-    for (i; i < size; ++i, ++progress) { // continue in normal mode
+    for (; i < size; ++i, ++progress) { // continue in normal mode
         TI_REAL prev; LOOKBACK(prev, buffer, 0, 0);
         PUSH_FULL(buffer, real[i], sqrt(pow(real[i] - prev, 2) + 1.));
         numer = SIGN(real[i] - last_removed) * 100. * sqrt(pow(real[i] - last_removed, 2) + 100.);

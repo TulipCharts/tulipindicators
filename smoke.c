@@ -24,21 +24,20 @@
 #include "indicators.h"
 #include "utils/buffer.h"
 #include "utils/minmax.h"
+#include "utils/testing.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
 
-/*********** TYPEDEFS ************/
 
 enum {OK, FAILURES_OCCURED, PARSING_ERROR, VERSION_MISMATCH};
 
-/*********** GLOBALS ************/
 
 int tested[TI_INDICATOR_COUNT] = {0};
 int failed_cnt = 0;
 
-/************ PARSING PRIMITIVES *************/
+
 
 char *read_line(FILE *fp) {
     static char buf[65536];
@@ -71,7 +70,7 @@ int read_array(FILE *fp, TI_REAL *s) {
     return (int)(inp - s);
 }
 
-/*********** PARSING, TESTING, REPORTING ************/
+
 
 void run_one(FILE *fp, const char* target_name, int is_regression_test) {
     char *line = read_line(fp);
@@ -101,7 +100,7 @@ void run_one(FILE *fp, const char* target_name, int is_regression_test) {
     if (o-options != info->options) {
         printf("options number mismatch: expected %i, got %i\n", (int)(o-options), info->options);
         failed_cnt += 1;
-        any_failures_here = 1;
+        any_failures_here += 1;
         goto cleanup;
     }
 
@@ -143,7 +142,7 @@ void run_one(FILE *fp, const char* target_name, int is_regression_test) {
         if (ret != TI_OKAY) {
             printf("return code %i\n", ret);
             failed_cnt += 1;
-            any_failures_here = 1;
+            any_failures_here += 1;
         } else {
             int mismatches = compare_answers(info, answers, outputs, answer_size, output_size);
             if (mismatches) {
@@ -152,7 +151,7 @@ void run_one(FILE *fp, const char* target_name, int is_regression_test) {
             }
         }
 
-        printf("%4dμs\n", (int)((ts_end - ts_start) / (double)CLOCKS_PER_SEC * 1000000.0));
+        printf("%4dms\n", (int)((ts_end - ts_start) / (double)CLOCKS_PER_SEC * 1000.0));
     }
 
 
@@ -165,7 +164,7 @@ void run_one(FILE *fp, const char* target_name, int is_regression_test) {
         if (ret != TI_OKAY) {
             printf("return code %i\n", ret);
             failed_cnt += 1;
-            any_failures_here = 1;
+            any_failures_here += 1;
         } else {
             int mismatches = compare_answers(info, answers, outputs, answer_size, output_size);
             if (mismatches) {
@@ -174,7 +173,7 @@ void run_one(FILE *fp, const char* target_name, int is_regression_test) {
             }
         }
 
-        printf("%4dμs\n", (int)((ts_end - ts_start) / (double)CLOCKS_PER_SEC * 1000000.0));
+        printf("%4dms\n", (int)((ts_end - ts_start) / (double)CLOCKS_PER_SEC * 1000.0));
     }
 
 
@@ -187,7 +186,7 @@ void run_one(FILE *fp, const char* target_name, int is_regression_test) {
         if (new_ret != TI_OKAY || !stream) {
             printf("stream_new failure.\n");
             failed_cnt += 1;
-            any_failures_here = 1;
+            any_failures_here += 1;
 
         } else {
             int bar;
@@ -220,7 +219,7 @@ void run_one(FILE *fp, const char* target_name, int is_regression_test) {
             failed_cnt += 1;
             any_failures_here += 1;
         }
-        printf("%4dμs\n", (int)((ts_end - ts_start) / (double)CLOCKS_PER_SEC * 1000000.0));
+        printf("%4dms\n", (int)((ts_end - ts_start) / (double)CLOCKS_PER_SEC * 1000.0));
     }
 
 
@@ -233,7 +232,7 @@ void run_one(FILE *fp, const char* target_name, int is_regression_test) {
         if (new_ret != TI_OKAY || !stream) {
             printf("stream_new failure.\n");
             failed_cnt += 1;
-            any_failures_here = 1;
+            any_failures_here += 1;
 
         } else {
             const int ret = info->stream_run(stream, input_size, (const double * const*)inputs, outputs_stream_all);
@@ -245,8 +244,12 @@ void run_one(FILE *fp, const char* target_name, int is_regression_test) {
         info->stream_free(stream);
         const clock_t ts_end = clock();
 
-        any_failures_here += compare_answers(info, answers, outputs_stream_all, answer_size, output_size);
-        printf("%4dμs\n", (int)((ts_end - ts_start) / (double)CLOCKS_PER_SEC * 1000000.0));
+        int mismatches = compare_answers(info, answers, outputs_stream_all, answer_size, output_size);
+        if (mismatches) {
+            failed_cnt += 1;
+            any_failures_here += 1;
+        }
+        printf("%4dms\n", (int)((ts_end - ts_start) / (double)CLOCKS_PER_SEC * 1000.0));
     }
 
 
@@ -321,10 +324,12 @@ void test_buffer() {
 
     ti_buffer_free(b);
     if (any_failures_here) { exit(FAILURES_OCCURED); }
-    printf("%4dμs\n", (int)((ts_end - ts_start) / (double)CLOCKS_PER_SEC * 1000000.0));
+    printf("%4dms\n", (int)((ts_end - ts_start) / (double)CLOCKS_PER_SEC * 1000.0));
 }
 
-/************** ENTRY POINT ***************/
+
+
+
 
 int main(int argc, const char** argv) {
     if (strcmp(TI_VERSION, ti_version()) != 0) {

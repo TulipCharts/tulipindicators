@@ -27,17 +27,15 @@
 
 
 int ti_rmi_start(TI_REAL const *options) {
-    const TI_REAL period = options[0];
-    const TI_REAL lookback_period = options[1];
-
+    const int lookback_period = (int)options[1];
     return lookback_period;
 }
 
 
 int ti_rmi(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
     TI_REAL const *real = inputs[0];
-    const TI_REAL period = options[0];
-    const TI_REAL lookback_period = options[1];
+    const int period = (int)options[0];
+    const int lookback_period = (int)options[1];
     TI_REAL *rmi = outputs[0];
 
     if (period < 1) { return TI_INVALID_OPTION; }
@@ -66,8 +64,8 @@ int ti_rmi(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_RE
 
 int ti_rmi_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
     TI_REAL const *real = inputs[0];
-    const TI_REAL period = options[0];
-    const TI_REAL lookback_period = options[1];
+    const int period = (int)options[0];
+    const int lookback_period = (int)options[1];
     TI_REAL *rmi = outputs[0];
 
     if (period < 1) { return TI_INVALID_OPTION; }
@@ -81,11 +79,14 @@ int ti_rmi_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options, T
         gains[i-start] = MAX(0, real[i] - real[i-(int)lookback_period]);
         losses[i-start] = MAX(0, real[i-(int)lookback_period] - real[i]);
     }
-    ti_ema(size-start, &gains, &period, &gains);
-    ti_ema(size-start, &losses, &period, &losses);
 
-    TI_REAL *inputs_[] = {gains, losses};
-    ti_add(size-start, inputs_, 0, &losses);
+    const TI_REAL *ti_ema_gains[] = {gains};
+    const TI_REAL *ti_ema_losses[] = {losses};
+
+    ti_ema(size-start, ti_ema_gains, options, &gains);
+    ti_ema(size-start, ti_ema_losses, options, &losses);
+    const TI_REAL *ti_add_inputs[] = {gains, losses};
+    ti_add(size-start, ti_add_inputs, 0, &losses);
     for (int i = 0; i < size-start; ++i) {
         *rmi++ = gains[i] / losses[i] * 100.;
     }
@@ -96,13 +97,13 @@ int ti_rmi_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options, T
     return TI_OKAY;
 }
 
-struct ti_stream {
+typedef struct ti_stream_rmi {
     int index;
     int progress;
 
     struct {
-        TI_REAL period;
-        TI_REAL lookback_period;
+        int period;
+        int lookback_period;
     } options;
 
     struct {
@@ -113,11 +114,13 @@ struct ti_stream {
     BUFFERS(
         BUFFER(price)
     )
-};
+} ti_stream_rmi;
 
-int ti_rmi_stream_new(TI_REAL const *options, ti_stream **stream) {
-    const TI_REAL period = options[0];
-    const TI_REAL lookback_period = options[1];
+int ti_rmi_stream_new(TI_REAL const *options, ti_stream **stream_in) {
+    ti_stream_rmi **stream = (ti_stream_rmi**)stream_in;
+
+    const int period = (int)options[0];
+    const int lookback_period = (int)options[1];
 
     if (period < 1) { return TI_INVALID_OPTION; }
     if (lookback_period < 1) { return TI_INVALID_OPTION; }
@@ -143,14 +146,16 @@ void ti_rmi_stream_free(ti_stream *stream) {
     free(stream);
 }
 
-int ti_rmi_stream_run(ti_stream *stream, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
+int ti_rmi_stream_run(ti_stream *stream_in, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
+    ti_stream_rmi *stream = (ti_stream_rmi*)stream_in;
+
     TI_REAL const *real = inputs[0];
     TI_REAL *rmi = outputs[0];
 
     int progress = stream->progress;
 
-    TI_REAL period = stream->options.period;
-    TI_REAL lookback_period = stream->options.lookback_period;
+    const int period = stream->options.period;
+    const int lookback_period = stream->options.lookback_period;
 
     TI_REAL gains_ema = stream->state.gains_ema;
     TI_REAL losses_ema = stream->state.losses_ema;

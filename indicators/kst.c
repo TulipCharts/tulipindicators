@@ -36,28 +36,20 @@
  */
 
 int ti_kst_start(TI_REAL const *options) {
-    const TI_REAL roc1 = options[0];
-    const TI_REAL roc2 = options[1];
-    const TI_REAL roc3 = options[2];
-    const TI_REAL roc4 = options[3];
-    const TI_REAL ma1 = options[4];
-    const TI_REAL ma2 = options[5];
-    const TI_REAL ma3 = options[6];
-    const TI_REAL ma4 = options[7];
-
+    const int roc4 = (int)options[3];
     return roc4;
 }
 
 int ti_kst(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
     TI_REAL const *real = inputs[0];
-    const int roc1 = options[0];
-    const int roc2 = options[1];
-    const int roc3 = options[2];
-    const int roc4 = options[3];
-    const int ma1 = options[4];
-    const int ma2 = options[5];
-    const int ma3 = options[6];
-    const int ma4 = options[7];
+    const int roc1 = (int)options[0];
+    const int roc2 = (int)options[1];
+    const int roc3 = (int)options[2];
+    const int roc4 = (int)options[3];
+    const int ma1 = (int)options[4];
+    const int ma2 = (int)options[5];
+    const int ma3 = (int)options[6];
+    const int ma4 = (int)options[7];
     TI_REAL *kst = outputs[0];
     TI_REAL *kst_signal = outputs[1];
 
@@ -150,7 +142,9 @@ int ti_kst_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options, T
         ti_roc(size, &real, roc + i, roc_mem + i);
 
         ema_mem[i] = malloc(sizeof(TI_REAL[size_ema[i]]));
-        ti_ema(size_roc[i], roc_mem + i, ma + i, ema_mem + i);
+
+        const TI_REAL *ti_ema_inputs[] = {roc_mem[i]};
+        ti_ema(size_roc[i], ti_ema_inputs, ma + i, ema_mem + i);
     }
 
     int min_len = size_ema[0];
@@ -166,7 +160,8 @@ int ti_kst_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options, T
     }
 
     TI_REAL signal_period = 9.;
-    ti_ema(min_len, outputs, &signal_period, &kst_signal);
+    const TI_REAL *ti_ema_inputs[] = {outputs[0]};
+    ti_ema(min_len, ti_ema_inputs, &signal_period, &kst_signal);
 
     for (int i = 0; i < 4; ++i) {
         free(roc_mem[i]);

@@ -26,6 +26,7 @@
 #include "../utils/minmax.h"
 
 int ti_mama_start(TI_REAL const *options) {
+    (void)options;
     return 6;
 }
 
@@ -107,7 +108,7 @@ int ti_mama(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_R
         BUFFER_PUSH(data, fama, 0);
     }
 
-    TI_REAL var1, var2, var3, var4, var5, var6;
+    TI_REAL var1, var2, var3, var4, var5;
     for (int i = 6; i < size; ++i) {
         BUFFER_PUSH(data, smooth, (4 * price[i] + 3 * price[i-1] + 2 * price[i-2] + price[i-3]) / 10.);
 
@@ -242,21 +243,22 @@ int ti_mama_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options, 
     // Straightforward translation of the original definition in EasyLanguage
     TI_REAL const *price = real;
 
-    TI_REAL *smooth = calloc(size, sizeof(TI_REAL));
-    TI_REAL *detrender = calloc(size, sizeof(TI_REAL));
-    TI_REAL *I1 = calloc(size, sizeof(TI_REAL));
-    TI_REAL *Q1 = calloc(size, sizeof(TI_REAL));
-    TI_REAL *jI = calloc(size, sizeof(TI_REAL));
-    TI_REAL *jQ = calloc(size, sizeof(TI_REAL));
-    TI_REAL *I2 = calloc(size, sizeof(TI_REAL));
-    TI_REAL *Q2 = calloc(size, sizeof(TI_REAL));
-    TI_REAL *Re = calloc(size, sizeof(TI_REAL));
-    TI_REAL *Im = calloc(size, sizeof(TI_REAL));
-    TI_REAL *period = calloc(size, sizeof(TI_REAL));
-    TI_REAL *smoothperiod = calloc(size, sizeof(TI_REAL));
-    TI_REAL *phase = calloc(size, sizeof(TI_REAL));
-    TI_REAL *deltaphase = calloc(size, sizeof(TI_REAL));
-    TI_REAL *alpha = calloc(size, sizeof(TI_REAL));
+    const unsigned int usize = (unsigned int)size;
+    TI_REAL *smooth = calloc(usize, sizeof(TI_REAL));
+    TI_REAL *detrender = calloc(usize, sizeof(TI_REAL));
+    TI_REAL *I1 = calloc(usize, sizeof(TI_REAL));
+    TI_REAL *Q1 = calloc(usize, sizeof(TI_REAL));
+    TI_REAL *jI = calloc(usize, sizeof(TI_REAL));
+    TI_REAL *jQ = calloc(usize, sizeof(TI_REAL));
+    TI_REAL *I2 = calloc(usize, sizeof(TI_REAL));
+    TI_REAL *Q2 = calloc(usize, sizeof(TI_REAL));
+    TI_REAL *Re = calloc(usize, sizeof(TI_REAL));
+    TI_REAL *Im = calloc(usize, sizeof(TI_REAL));
+    TI_REAL *period = calloc(usize, sizeof(TI_REAL));
+    TI_REAL *smoothperiod = calloc(usize, sizeof(TI_REAL));
+    TI_REAL *phase = calloc(usize, sizeof(TI_REAL));
+    TI_REAL *deltaphase = calloc(usize, sizeof(TI_REAL));
+    TI_REAL *alpha = calloc(usize, sizeof(TI_REAL));
 
     for (int i = 6; i < size; ++i) {
         smooth[i] = (4 * price[i] + 3 * price[i-1] + 2 * price[i-2] + price[i-3]) / 10.;
@@ -330,7 +332,7 @@ int ti_mama_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options, 
     return TI_OKAY;
 }
 
-struct ti_stream {
+typedef struct ti_stream_mama {
     int index;
     int progress;
 
@@ -355,17 +357,19 @@ struct ti_stream {
         BUFFER(alpha)
         BUFFER(mama)
         BUFFER(fama)
-    );
-};
+    )
+} ti_stream_mama;
 
-int ti_mama_stream_new(TI_REAL const *options, ti_stream **stream) {
+int ti_mama_stream_new(TI_REAL const *options, ti_stream **stream_in) {
+    ti_stream_mama **stream = (ti_stream_mama**)stream_in;
+
     for (int i = 0; i < 2; ++i) {
         if (options[i] < 0. || options[i] > 1.) {
             return TI_INVALID_OPTION;
         }
     }
 
-    *stream = calloc(1, sizeof(ti_stream));
+    *stream = calloc(1, sizeof(ti_stream_mama));
     if (!*stream) {
         return TI_OUT_OF_MEMORY;
     }
@@ -395,7 +399,7 @@ int ti_mama_stream_new(TI_REAL const *options, ti_stream **stream) {
     BUFFER_INIT(*stream, mama, 1)
     BUFFER_INIT(*stream, fama, 1)
 
-    *stream = realloc(*stream, sizeof(struct ti_stream) + sizeof(TI_REAL[BUFFERS_SIZE(*stream)]));
+    *stream = realloc(*stream, sizeof(ti_stream_mama) + sizeof(TI_REAL[BUFFERS_SIZE(*stream)]));
     if (!*stream) {
         return TI_OUT_OF_MEMORY;
     }
@@ -404,7 +408,9 @@ int ti_mama_stream_new(TI_REAL const *options, ti_stream **stream) {
 }
 
 
-int ti_mama_stream_run(ti_stream *stream, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
+int ti_mama_stream_run(ti_stream *stream_in, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
+    ti_stream_mama* stream = (ti_stream_mama*)stream_in;
+
     int progress = stream->progress;
 
     TI_REAL const *real = inputs[0];
@@ -415,9 +421,9 @@ int ti_mama_stream_run(ti_stream *stream, int size, TI_REAL const *const *inputs
 
     TI_REAL const *price = real;
 
-    int i = 0;
     if (progress == -6) {}
-    for (i; i < size && progress < 0; ++i, ++progress) {
+    int i;
+    for (i = 0; i < size && progress < 0; ++i, ++progress) {
         BUFFER_PUSH(stream, price, price[i]);
         BUFFER_PUSH(stream, smooth, 0);
         BUFFER_PUSH(stream, detrender, 0);
@@ -437,8 +443,8 @@ int ti_mama_stream_run(ti_stream *stream, int size, TI_REAL const *const *inputs
         BUFFER_PUSH(stream, mama, 0);
         BUFFER_PUSH(stream, fama, 0);
     }
-    for (i; i < size; ++i, ++progress) {
-        TI_REAL var1, var2, var3, var4, var5, var6;
+    for (; i < size; ++i, ++progress) {
+        TI_REAL var1, var2, var3, var4, var5;
 
         BUFFER_PUSH(stream, price, price[i]);
 

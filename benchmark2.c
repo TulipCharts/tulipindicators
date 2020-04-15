@@ -2,7 +2,6 @@
  * Tulip Indicators
  * https://tulipindicators.org/
  * Copyright (c) 2018 Tulip Charts LLC
- * Ilya Pikulin (ilya.pikulin@gmail.com)
  *
  * This file is part of Tulip Indicators.
  *
@@ -36,7 +35,7 @@
 #define INSIZE 4000
 #define MIN_PERIOD 4
 #define MAX_PERIOD 150
-#define LOOPS 10
+#define LOOPS 1
 
 TI_REAL g_inputs[TI_MAXINDPARAMS][INSIZE];
 
@@ -87,11 +86,62 @@ void simple_option_setter(double period, double *options) {
     options[0] = period;
 }
 
+void fast_slow_option_setter(double period, double *options) {
+    options[0] = period;
+    options[1] = period + 10;
+}
+
+
+void alma_option_setter(double period, double *options) {
+    options[0] = period;
+    options[1] = 0.5;
+    options[2] = 1;
+}
+
+void ce_option_setter(double period, double *options) {
+    options[0] = period;
+    options[1] = 3;
+}
+
+void copp_option_setter(double period, double *options) {
+    options[0] = 11;
+    options[1] = 14;
+    options[2] = period;
+}
+
+void kc_option_setter(double period, double *options) {
+    options[0] = period;
+    options[1] = 0.77;
+}
+
+void kst_option_setter(double period, double *options) {
+    for (int i = 0; i < 4; ++i) {
+        options[i+4] = options[i] = period + period / 4. * i;
+    }
+}
+
 void macd_option_setter(double period, double *options) {
     options[0] = period;
     options[1] = period + 10;
 
     options[2] = period + 1;
+}
+
+void mama_option_setter(double period, double *options) {
+    //TODO base something on period
+    (void)period;
+    options[0] = 0.5;
+    options[1] = 0.05;
+}
+
+void pfe_option_setter(double period, double *options) {
+    options[0] = period;
+    options[1] = 5;
+}
+
+void posc_option_setter(double period, double *options) {
+    options[0] = period;
+    options[1] = 3;
 }
 
 void ppo_option_setter(double period, double *options) {
@@ -104,9 +154,25 @@ void psar_option_setter(double period, double *options) {
     options[1] = options[0] * 10;
 }
 
-void fast_slow_option_setter(double period, double *options) {
+void rmi_option_setter(double period, double *options) {
     options[0] = period;
-    options[1] = period + 10;
+    options[1] = 3;
+}
+
+void rmta_option_setter(double period,  double *options) {
+    options[0] = period;
+    options[1] = 1 - (2. / (period + 1));
+}
+
+void rvi_option_setter(double period, double *options) {
+    options[0] = period;
+    options[1] = 10;
+}
+
+void smi_option_setter(double period, double* options) {
+    options[0] = period;
+    options[1] = 25;
+    options[2] = 3;
 }
 
 void stoch_option_setter(double period, double *options) {
@@ -122,6 +188,11 @@ void stochrsi_option_setter(double period, double *options) {
     options[3] = 1;
 }
 
+void tsi_option_setter(double period, double* options) {
+    options[0] = period;
+    options[1] = 3;
+}
+
 void ultosc_option_setter(double period, double *options) {
     options[0] = period;
     options[1] = period * 2;
@@ -134,141 +205,34 @@ void vidya_option_setter(double period, double *options) {
     options[2] = .2;
 }
 
-void ce_option_setter(double period, double *options) {
-    options[0] = period;
-    options[1] = 3;
-}
 
-void rmta_option_setter(double period,  double *options) {
-    options[0] = period;
-    options[1] = 1 - (2. / (period + 1));
-}
-
-void kst_option_setter(double period, double *options) {
-    for (int i = 0; i < 4; ++i) {
-        options[i+4] = options[i] = period + period / 4. * i;
-    }
-}
-
-void pfe_option_setter(double period, double *options) {
-    options[0] = period;
-    options[1] = 5;
-}
-
-void mama_option_setter(double period, double *options) {
-    options[0] = 0.5;
-    options[1] = 0.05;
-}
-
-void kc_option_setter(double period, double *options) {
-    options[0] = period;
-    options[1] = 0.77;
-}
-
-void rvi_option_setter(double period, double *options) {
-    options[0] = period;
-    options[1] = 10;
-
-void rmi_option_setter(double period, double *options) {
-    options[0] = period;
-    options[1] = 3;
-}
-
-void posc_option_setter(double period, double *options) {
-    options[0] = period;
-    options[1] = 3;
-}
-
-void copp_option_setter(double period, double *options) {
-    options[0] = 11;
-    options[1] = 14;
-    options[2] = period;
-}
-
-void posc_option_setter(double period, double *options) {
-    options[0] = period;
-    options[1] = 3;
-}
-
-void rmi_option_setter(double period, double *options) {
-    options[0] = period;
-    options[1] = 3;
-}
-
-void rvi_option_setter(double period, double *options) {
-    options[0] = period;
-    options[1] = 10;
-}
-
-void frama_option_setter(double period, double* options) {
-	options[0] = (int)period / 2 * 2.;
-	options[1] = 198;
-}
-
-void smi_option_setter(double period, double* options) {
-    options[0] = period;
-    options[1] = 25;
-    options[2] = 3;
-}
-
-void tsi_option_setter(double period, double* options) {
-    options[0] = period;
-    options[1] = 3;
-}
-  
-void kc_option_setter(double period, double *options) {
-    options[0] = period;
-    options[1] = 0.77;
-}
-
-void mama_option_setter(double period, double *options) {
-    options[0] = 0.5;
-    options[1] = 0.05;
-}
-
-void pfe_option_setter(double period, double *options) {
-    options[0] = period;
-    options[1] = 5;
-}
-
-void kst_option_setter(double period, double *options) {
-    for (int i = 0; i < 4; ++i) {
-        options[i+4] = options[i] = period + period / 4. * i;
-    }
-}
-
-void rmta_option_setter(double period,  double *options) {
-    options[0] = period;
-    options[1] = 1 - (2. / (period + 1));
-}
 
 void bench(const ti_indicator_info *info) {
     void (*options_setter)(double period, double *options) = simple_option_setter;
+    if (strcmp(info->name, "alma") == 0) { options_setter = alma_option_setter; }
+    if (strcmp(info->name, "adosc") == 0) { options_setter = fast_slow_option_setter; }
     if (strcmp(info->name, "apo") == 0) { options_setter = ppo_option_setter; }
+    if (strcmp(info->name, "copp") == 0) { options_setter = copp_option_setter; }
+    if (strcmp(info->name, "kc") == 0) { options_setter = kc_option_setter; }
+    if (strcmp(info->name, "kst") == 0) { options_setter = kst_option_setter; }
+    if (strcmp(info->name, "kvo") == 0) { options_setter = fast_slow_option_setter; }
     if (strcmp(info->name, "macd") == 0) { options_setter = macd_option_setter; }
+    if (strcmp(info->name, "mama") == 0) { options_setter = mama_option_setter; }
+    if (strcmp(info->name, "pfe") == 0) { options_setter = pfe_option_setter; }
+    if (strcmp(info->name, "posc") == 0) { options_setter = posc_option_setter; }
     if (strcmp(info->name, "ppo") == 0) { options_setter = ppo_option_setter; }
     if (strcmp(info->name, "psar") == 0) { options_setter = psar_option_setter; }
-    if (strcmp(info->name, "adosc") == 0) { options_setter = fast_slow_option_setter; }
-    if (strcmp(info->name, "kvo") == 0) { options_setter = fast_slow_option_setter; }
-    if (strcmp(info->name, "smi") == 0) { options_setter = smi_option_setter; }
     if (strcmp(info->name, "rvi") == 0) { options_setter = rvi_option_setter; }
     if (strcmp(info->name, "rmi") == 0) { options_setter = rmi_option_setter; }
-    if (strcmp(info->name, "adosc") == 0) { options_setter = fast_slow_option_setter; }
-    if (strcmp(info->name, "kvo") == 0) { options_setter = fast_slow_option_setter; }
-    if (strcmp(info->name, "kst") == 0) { options_setter = kst_option_setter; }
     if (strcmp(info->name, "rmta") == 0) { options_setter = rmta_option_setter; }
+    if (strcmp(info->name, "smi") == 0) { options_setter = smi_option_setter; }
     if (strcmp(info->name, "stoch") == 0) { options_setter = stoch_option_setter; }
     if (strcmp(info->name, "stochrsi") == 0) { options_setter = stochrsi_option_setter; }
     if (strcmp(info->name, "ultosc") == 0) { options_setter = ultosc_option_setter; }
-    if (strcmp(info->name, "vosc") == 0) { options_setter = fast_slow_option_setter; }
     if (strcmp(info->name, "vidya") == 0) { options_setter = vidya_option_setter; }
-    if (strcmp(info->name, "posc") == 0) { options_setter = posc_option_setter; }
-    if (strcmp(info->name, "copp") == 0) { options_setter = copp_option_setter; }
-    if (strcmp(info->name, "kc") == 0) { options_setter = kc_option_setter; }
-    if (strcmp(info->name, "mama") == 0) { options_setter = mama_option_setter; }
-    if (strcmp(info->name, "pfe") == 0) { options_setter = pfe_option_setter; }
+    if (strcmp(info->name, "vosc") == 0) { options_setter = fast_slow_option_setter; }
 
-    TI_REAL *inputs[TI_MAXINDPARAMS];
+    const TI_REAL *inputs[TI_MAXINDPARAMS];
     for (int i = 0; i < info->inputs; ++i) {
         if (strcmp(info->input_names[i], "open") == 0) { inputs[i] = open; }
         else if (strcmp(info->input_names[i], "high") == 0) { inputs[i] = high; }
@@ -285,7 +249,8 @@ void bench(const ti_indicator_info *info) {
     int elapsed_stream_all = 0;
 
 
-    for (int i = 0; i < LOOPS; ++i) {
+    int i, j;
+    for (i = 0; i < LOOPS; ++i) {
         for (int period = MIN_PERIOD; period <= MAX_PERIOD; ++period) {
             TI_REAL outputs_mem[4][TI_MAXINDPARAMS][INSIZE];
             TI_REAL options[TI_MAXINDPARAMS];
@@ -294,11 +259,11 @@ void bench(const ti_indicator_info *info) {
             TI_REAL *outputs_ref[TI_MAXINDPARAMS];
             TI_REAL *outputs_stream_all[TI_MAXINDPARAMS];
             TI_REAL *outputs_stream_1[TI_MAXINDPARAMS];
-            for (int i = 0; i < info->outputs; ++i) {
-                outputs[i] = outputs_mem[0][i];
-                outputs_ref[i] = outputs_mem[1][i];
-                outputs_stream_all[i] = outputs_mem[2][i];
-                outputs_stream_1[i] = outputs_mem[3][i];
+            for (j = 0; j < info->outputs; ++j) {
+                outputs[j] = outputs_mem[0][j];
+                outputs_ref[j] = outputs_mem[1][j];
+                outputs_stream_all[j] = outputs_mem[2][j];
+                outputs_stream_1[j] = outputs_mem[3][j];
             }
             options_setter(period, options);
 
@@ -313,6 +278,11 @@ void bench(const ti_indicator_info *info) {
                 elapsed_plain += end_ts - start_ts;
                 if (ret != TI_OKAY) {
                     printf("%s returned %i, exiting\n", info->name, ret);
+
+                    printf("Passed options were:\n");
+                    for (j = 0; j < info->options; ++j) {
+                        printf("\t%s -> %f\n", info->option_names[j], options[j]);
+                    }
                     exit(2);
                 }
             }
@@ -348,20 +318,24 @@ void bench(const ti_indicator_info *info) {
 
             if (info->stream_new) {
                 ti_stream *stream;
-                const int ret = info->stream_new(options, &stream);
-                TI_REAL *inputs_[TI_MAXINDPARAMS] = {0};
+                int ret = info->stream_new(options, &stream);
+                if (ret != TI_OKAY) {
+                    printf("%s_stream_new returned %i, exiting %i.\n", ret, TI_OKAY);
+                    exit(2);
+                }
+                const TI_REAL *inputs_[TI_MAXINDPARAMS] = {0};
                 TI_REAL *outputs_[TI_MAXINDPARAMS] = {0};
                 start_ts = clock();
                 for (int bar = 0; bar < INSIZE; ++bar) {
-                    for (int j = 0; j < info->inputs; ++j) {
+                    for (j = 0; j < info->inputs; ++j) {
                         inputs_[j] = inputs[j] + bar;
                     }
-                    for (int j = 0; j < info->outputs; ++j) {
+                    for (j = 0; j < info->outputs; ++j) {
                         outputs_[j] = outputs_stream_1[j] + ti_stream_get_progress(stream);
                     }
-                    const int ret = info->stream_run(stream, 1, inputs_, outputs_);
+                    ret = info->stream_run(stream, 1, inputs_, outputs_);
                     if (ret != TI_OKAY) {
-                        printf("%s_stream_new returned %i, exiting\n", info->name);
+                        printf("%s_stream_run returned %i, exiting %i\n", ret, TI_OKAY);
                         exit(2);
                     }
                 }
@@ -376,7 +350,7 @@ void bench(const ti_indicator_info *info) {
 
     #define MS(elapsed) (int)(elapsed * 1000. / CLOCKS_PER_SEC)
     const int iterations = LOOPS * (MAX_PERIOD - MIN_PERIOD + 1);
-    #define PERFORMANCE(elapsed) (int)(0 ? 0 : (iterations * INSIZE) / MS(elapsed) / 1000.)
+    #define PERFORMANCE(elapsed) (int)(elapsed == 0 ? 0 : (iterations * INSIZE) / MS(elapsed) / 1000.)
 
     // mfps = million floats per second
     printf("Benchmark %15s%s\t%5dms\t%5dmfps\n", info->name, "           ", MS(elapsed_plain), PERFORMANCE(elapsed_plain));
@@ -390,7 +364,7 @@ int main(int argc, char** argv) {
 
     if (argc > 1) {
         for (int i = 1; i < argc; ++i) {
-            ti_indicator_info *info = ti_find_indicator(argv[i]);
+            const ti_indicator_info *info = ti_find_indicator(argv[i]);
             if (!info) {
                 printf("indicator %s not found\n", argv[i]);
                 exit(3);

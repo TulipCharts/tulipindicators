@@ -25,6 +25,7 @@
 
 
 int ti_fi_start(TI_REAL const *options) {
+    (void)options;
     return 1;
 }
 
@@ -62,21 +63,24 @@ int ti_fi_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI
         fi[i-1] = volume[i] * (close[i] - close[i-1]);
     }
 
-    ti_ema(size-1, &fi, &period, &fi);
+    const TI_REAL *ti_ema_inputs[] = {fi};
+    ti_ema(size-1, ti_ema_inputs, &period, &fi);
 
     return TI_OKAY;
 }
 
-struct ti_stream {
+typedef struct ti_stream_fi {
     int index;
     int progress;
 
     TI_REAL per;
     TI_REAL ema;
     TI_REAL previous_close;
-};
+} ti_stream_fi;
 
-int ti_fi_stream_new(TI_REAL const *options, ti_stream **stream) {
+int ti_fi_stream_new(TI_REAL const *options, ti_stream **stream_in) {
+    ti_stream_fi **stream = (ti_stream_fi**)stream_in;
+
     TI_REAL const period = options[0];
     if (period < 1) { return TI_INVALID_OPTION; }
     *stream = malloc(sizeof(**stream));
@@ -93,7 +97,9 @@ void ti_fi_stream_free(ti_stream *stream) {
     free(stream);
 }
 
-int ti_fi_stream_run(ti_stream *stream, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
+int ti_fi_stream_run(ti_stream *stream_in, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
+    ti_stream_fi *stream = (ti_stream_fi*)stream_in;
+
     int progress = stream->progress;
 
     TI_REAL const *close = inputs[0];

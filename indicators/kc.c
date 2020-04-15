@@ -27,9 +27,7 @@
 
 
 int ti_kc_start(TI_REAL const *options) {
-    const TI_REAL period = options[0];
-    const TI_REAL multiple = options[1];
-
+    (void)options;
     return 0;
 }
 
@@ -82,7 +80,7 @@ int ti_kc(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REA
 /// 1. close used instead of a generic input
 /// 2. no ref since atr's ema and plain ema do not agree in the start amount, the plain ema way is chosen
 
-struct ti_stream {
+typedef struct ti_stream_kc {
     int index;
     int progress;
 
@@ -99,9 +97,11 @@ struct ti_stream {
     BUFFERS(
         BUFFER(close)
     )
-};
+} ti_stream_kc;
 
-int ti_kc_stream_new(TI_REAL const *options, ti_stream **stream) {
+int ti_kc_stream_new(TI_REAL const *options, ti_stream **stream_in) {
+    ti_stream_kc **stream = (ti_stream_kc**)stream_in;
+
     const TI_REAL period = options[0];
     const TI_REAL multiple = options[1];
 
@@ -112,7 +112,7 @@ int ti_kc_stream_new(TI_REAL const *options, ti_stream **stream) {
         return TI_INVALID_OPTION;
     }
 
-    *stream = calloc(1, sizeof(ti_stream));
+    *stream = calloc(1, sizeof(ti_stream_kc));
     if (!*stream) {
         return TI_OUT_OF_MEMORY;
     }
@@ -124,7 +124,7 @@ int ti_kc_stream_new(TI_REAL const *options, ti_stream **stream) {
 
     BUFFER_INIT(*stream, close, 2);
 
-    *stream = realloc(*stream, sizeof(struct ti_stream) + sizeof(TI_REAL[BUFFERS_SIZE(*stream)]));
+    *stream = realloc(*stream, sizeof(ti_stream_kc) + sizeof(TI_REAL[BUFFERS_SIZE(*stream)]));
     if (!*stream) {
         return TI_OUT_OF_MEMORY;
     }
@@ -136,7 +136,9 @@ void ti_kc_stream_free(ti_stream *stream) {
     free(stream);
 }
 
-int ti_kc_stream_run(ti_stream *stream, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
+int ti_kc_stream_run(ti_stream *stream_in, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
+    ti_stream_kc *stream = (ti_stream_kc*)stream_in;
+
     int progress = stream->progress;
     const TI_REAL period = stream->options.period;
     const TI_REAL multiple = stream->options.multiple;
@@ -151,12 +153,12 @@ int ti_kc_stream_run(ti_stream *stream, int size, TI_REAL const *const *inputs, 
     TI_REAL price_ema = stream->state.price_ema;
     TI_REAL tr_ema = stream->state.tr_ema;
 
-    int i = 0;
-    TI_REAL var1, var2;
+    TI_REAL var1;
 
     const TI_REAL per = 2 / ((TI_REAL)period + 1);
 
-    for (i; i < size && progress == 0; ++i, ++progress) {
+    int i;
+    for (i = 0; i < size && progress == 0; ++i, ++progress) {
         BUFFER_PUSH(stream, close, close[i]);
 
         price_ema = close[i];
@@ -166,8 +168,7 @@ int ti_kc_stream_run(ti_stream *stream, int size, TI_REAL const *const *inputs, 
         *kc_middle++ = price_ema;
         *kc_upper++ = price_ema + multiple * tr_ema;
     }
-    #undef CALC_TRUERANGE
-    #define CALC_TRUERANGE(var, h, l, c) do { \
+    #define KC_CALC_TRUERANGE(var, h, l, c) do { \
         const TI_REAL ych = fabs((h) - (c)); \
         const TI_REAL ycl = fabs((l) - (c)); \
         TI_REAL v = (h) - (l); \
@@ -175,13 +176,13 @@ int ti_kc_stream_run(ti_stream *stream, int size, TI_REAL const *const *inputs, 
         if (ycl > v) v = ycl; \
         var = v; \
     } while (0)
-    for (i; i < size; ++i, ++progress) {
+    for (; i < size; ++i, ++progress) {
         BUFFER_PUSH(stream, close, close[i]);
 
         price_ema = (close[i] - price_ema) * per + price_ema;
 
         BUFFER_AT(var1, stream, close, -1);
-        TI_REAL truerange; CALC_TRUERANGE(truerange, high[i], low[i], var1);
+        TI_REAL truerange; KC_CALC_TRUERANGE(truerange, high[i], low[i], var1);
         tr_ema = (truerange - tr_ema) * per + tr_ema;
 
         *kc_lower++ = price_ema - multiple * tr_ema;

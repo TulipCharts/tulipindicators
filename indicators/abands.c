@@ -95,11 +95,13 @@ int ti_abands(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI
     return TI_OKAY;
 }
 
+
 int ti_abands_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
     const TI_REAL *high = inputs[0];
     const TI_REAL *low = inputs[1];
     const TI_REAL *close = inputs[2];
-    const TI_REAL period = (int)options[0];
+    const int period = (int)options[0];
+    const TI_REAL inv_period = 1.0 / period;
     TI_REAL *lower_band = outputs[0];
     TI_REAL *upper_band = outputs[1];
     TI_REAL *middle_point = outputs[2];
@@ -111,9 +113,9 @@ int ti_abands_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options
         TI_REAL mid = 0;
         TI_REAL lower = 0;
         for (int j = i-period+1; j <= i; ++j) {
-            upper += (high[j] * (1. + 2. * ((((high[j] - low[j]) / ((high[j] + low[j]) / 2.)) * 1000.) * .001))) / period;
-            mid += close[j] / period;
-            lower += (low[j] * (1. - 2. * ((((high[j] - low[j]) / ((high[j] + low[j]) / 2.)) * 1000.) * .001))) / period;
+            upper += (high[j] * (1. + 2. * ((((high[j] - low[j]) / ((high[j] + low[j]) / 2.)) * 1000.) * .001))) * inv_period;
+            mid += close[j] * inv_period;
+            lower += (low[j] * (1. - 2. * ((((high[j] - low[j]) / ((high[j] + low[j]) / 2.)) * 1000.) * .001))) * inv_period;
         }
         *upper_band++ = upper;
         *middle_point++ = mid;

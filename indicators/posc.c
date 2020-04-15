@@ -26,8 +26,7 @@
 
 
 int ti_posc_start(TI_REAL const *options) {
-    const TI_REAL period = options[0];
-    const TI_REAL ema_period = options[1];
+    const int period = (int)options[0];
     return period-1;
 }
 
@@ -36,8 +35,8 @@ int ti_posc(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_R
     TI_REAL const *high = inputs[0];
     TI_REAL const *low = inputs[1];
     TI_REAL const *close = inputs[2];
-    const TI_REAL period = options[0];
-    const TI_REAL ema_period = options[1];
+    const int period = (int)options[0];
+    const int ema_period = (int)options[1];
     TI_REAL *posc = outputs[0];
 
     if (period < 1) { return TI_INVALID_OPTION; }
@@ -51,9 +50,8 @@ int ti_posc(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_R
     const TI_REAL x_sum = period * (period + 1) / 2.;
     const TI_REAL xsq_sum = period * (period + 1) * (2*period + 1) / 6.;
 
-    int i = 0;
-
-    for (; i < period; ++i) {
+    int i;
+    for (i = 0; i < period; ++i) {
         xy_sum += close[i] * (i + 1);
         y_sum += close[i];
     }
@@ -137,7 +135,9 @@ int ti_posc_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options, 
 
         posc[i-start] = (close[i] - the_min) / (the_max - the_min) * 100.;
     }
-    ti_ema(size-start, &posc, &ema_period, &posc);
+
+    const TI_REAL *ti_ema_inputs[] = {posc};
+    ti_ema(size-start, ti_ema_inputs, &ema_period, &posc);
 
     free(b);
 
@@ -145,13 +145,13 @@ int ti_posc_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options, 
 }
 
 
-struct ti_stream {
+typedef struct ti_stream_posc {
     int index;
     int progress;
 
     struct {
-        TI_REAL period;
-        TI_REAL ema_period;
+        int period;
+        int ema_period;
     } options;
 
     struct {
@@ -170,11 +170,13 @@ struct ti_stream {
         BUFFER(low)
         BUFFER(close)
     )
-};
+} ti_stream_posc;
 
-int ti_posc_stream_new(TI_REAL const *options, ti_stream **stream) {
-    const TI_REAL period = options[0];
-    const TI_REAL ema_period = options[1];
+int ti_posc_stream_new(TI_REAL const *options, ti_stream **stream_in) {
+    ti_stream_posc **stream = (ti_stream_posc**)stream_in;
+
+    const int period = (int)options[0];
+    const int ema_period = (int)options[1];
     if (period < 1) { return TI_INVALID_OPTION; }
     if (ema_period < 1) { return TI_INVALID_OPTION; }
 
@@ -207,7 +209,9 @@ void ti_posc_stream_free(ti_stream *stream) {
     free(stream);
 }
 
-int ti_posc_stream_run(ti_stream *stream, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
+int ti_posc_stream_run(ti_stream *stream_in, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
+    ti_stream_posc *stream = (ti_stream_posc*)stream_in;
+
     TI_REAL const *high = inputs[0];
     TI_REAL const *low = inputs[1];
     TI_REAL const *close = inputs[2];
@@ -215,8 +219,8 @@ int ti_posc_stream_run(ti_stream *stream, int size, TI_REAL const *const *inputs
 
     int progress = stream->progress;
 
-    const TI_REAL period = stream->options.period;
-    const TI_REAL ema_period = stream->options.ema_period;
+    const int period = stream->options.period;
+    const int ema_period = stream->options.ema_period;
 
     TI_REAL y_sum = stream->state.y_sum;
     TI_REAL xy_sum = stream->state.xy_sum;

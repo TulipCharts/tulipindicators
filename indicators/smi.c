@@ -25,9 +25,7 @@
 #include "../utils/localbuffer.h"
 
 int ti_smi_start(TI_REAL const *options) {
-    const TI_REAL q_period = options[0];
-    const TI_REAL r_period = options[1];
-    const TI_REAL s_period = options[2];
+    const int q_period = (int)options[0];
     return q_period-1;
 }
 
@@ -35,19 +33,19 @@ int ti_smi(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_RE
     TI_REAL const *high = inputs[0];
     TI_REAL const *low = inputs[1];
     TI_REAL const *close = inputs[2];
-    const TI_REAL q_period = options[0];
-    const TI_REAL r_period = options[1];
-    const TI_REAL s_period = options[2];
+    const int q_period = (int)options[0];
+    const int r_period = (int)options[1];
+    const int s_period = (int)options[2];
     TI_REAL *smi = outputs[0];
 
     for (int i = 0; i < 3; ++i) { if (options[i] < 1) { return TI_INVALID_OPTION; } }
 
     int progress = -q_period + 1;
 
-    TI_REAL ema_r_num;
-    TI_REAL ema_s_num;
-    TI_REAL ema_r_den;
-    TI_REAL ema_s_den;
+    TI_REAL ema_r_num = NAN;
+    TI_REAL ema_s_num = NAN;
+    TI_REAL ema_r_den = NAN;
+    TI_REAL ema_s_den = NAN;
     TI_REAL ll;
     TI_REAL hh;
     int hh_idx;
@@ -134,36 +132,42 @@ int ti_smi_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options, T
     TI_REAL const *high = inputs[0];
     TI_REAL const *low = inputs[1];
     TI_REAL const *close = inputs[2];
-    const TI_REAL q_period = options[0];
-    const TI_REAL r_period = options[1];
-    const TI_REAL s_period = options[2];
+    TI_REAL q_period = options[0];
+    TI_REAL r_period = options[1];
+    TI_REAL s_period = options[2];
     TI_REAL *smi = outputs[0];
 
     for (int i = 0; i < 3; ++i) { if (options[i] < 1) { return TI_INVALID_OPTION; } }
 
-    int outsize = size - ti_max_start(&q_period);
+    const int outsize = size - ti_max_start(options);
 
-    TI_REAL *max = malloc(sizeof(TI_REAL) * outsize);
-    TI_REAL *min = malloc(sizeof(TI_REAL) * outsize);
+    TI_REAL *max = malloc(sizeof(TI_REAL) * (unsigned int)outsize);
+    TI_REAL *min = malloc(sizeof(TI_REAL) * (unsigned int)outsize);
 
-    ti_max(size, &high, &q_period, &max);
-    ti_min(size, &low, &q_period, &min);
+    const TI_REAL *ti_max_inputs[] = {high};
+    ti_max(size, ti_max_inputs, &q_period, &max);
 
-    TI_REAL *num = malloc(sizeof(TI_REAL) * outsize);
-    TI_REAL *den = malloc(sizeof(TI_REAL) * outsize);
+    const TI_REAL *ti_min_inputs[] = {low};
+    ti_min(size, ti_min_inputs, &q_period, &min);
 
-    for (int i = 0; i < outsize; ++i) {
+    TI_REAL *num = malloc(sizeof(TI_REAL) * (unsigned int)outsize);
+    TI_REAL *den = malloc(sizeof(TI_REAL) * (unsigned int)outsize);
+
+    int i;
+    for (i = 0; i < outsize; ++i) {
         num[i] = close[size-outsize + i] - 0.5 * (max[i] + min[i]);
         den[i] = max[i] - min[i];
     }
 
-    ti_ema(outsize, &num, &r_period, &num);
-    ti_ema(outsize, &num, &s_period, &num);
+    const TI_REAL *num_input[] = {num};
+    ti_ema(outsize, num_input, &r_period, &num);
+    ti_ema(outsize, num_input, &s_period, &num);
 
-    ti_ema(outsize, &den, &r_period, &den);
-    ti_ema(outsize, &den, &s_period, &den);
+    const TI_REAL *den_input[] = {den};
+    ti_ema(outsize, den_input, &r_period, &den);
+    ti_ema(outsize, den_input, &s_period, &den);
 
-    for (int i = 0; i < outsize; ++i) {
+    for (i = 0; i < outsize; ++i) {
         smi[i] = 100. * num[i] / (0.5 * den[i]);
     }
 
@@ -175,7 +179,7 @@ int ti_smi_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options, T
     return TI_OKAY;
 }
 
-struct ti_stream {
+typedef struct ti_stream_smi {
     int index;
     int progress;
 
@@ -200,12 +204,14 @@ struct ti_stream {
         BUFFER(low)
         BUFFER(high)
     )
-};
+} ti_stream_smi;
 
-int ti_smi_stream_new(TI_REAL const *options, ti_stream **stream) {
-    const TI_REAL q_period = options[0];
-    const TI_REAL r_period = options[1];
-    const TI_REAL s_period = options[2];
+int ti_smi_stream_new(TI_REAL const *options, ti_stream **stream_in) {
+    ti_stream_smi **stream = (ti_stream_smi**)stream_in;
+
+    const int q_period = (int)options[0];
+    const int r_period = (int)options[1];
+    const int s_period = (int)options[2];
 
     for (int i = 0; i < 3; ++i) { if (options[i] < 1) { return TI_INVALID_OPTION; } }
 
@@ -222,7 +228,7 @@ int ti_smi_stream_new(TI_REAL const *options, ti_stream **stream) {
     BUFFER_INIT(*stream, low, q_period);
     BUFFER_INIT(*stream, high, q_period);
 
-    *stream = realloc(*stream, sizeof(**stream) + sizeof(TI_REAL) * BUFFERS_SIZE(*stream));
+    *stream = realloc(*stream, sizeof(**stream) + sizeof(TI_REAL) * (unsigned int)BUFFERS_SIZE(*stream));
     if (!*stream) { return TI_OUT_OF_MEMORY; }
 
     return TI_OKAY;
@@ -233,7 +239,9 @@ void ti_smi_stream_free(ti_stream *stream) {
     free(stream);
 }
 
-int ti_smi_stream_run(ti_stream *stream, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
+int ti_smi_stream_run(ti_stream *stream_in, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
+    ti_stream_smi *stream = (ti_stream_smi*)stream_in;
+
     TI_REAL const *high = inputs[0];
     TI_REAL const *low = inputs[1];
     TI_REAL const *close = inputs[2];

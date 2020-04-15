@@ -26,7 +26,7 @@
 
 
 int ti_dc_start(TI_REAL const *options) {
-    const TI_REAL period = options[0];
+    const int period = (int)options[0];
     return period-1;
 }
 
@@ -34,25 +34,26 @@ int ti_dc_start(TI_REAL const *options) {
 /* at first, I implemented this by hand, but it turned out to be no better */
 int ti_dc(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
     TI_REAL const *real = inputs[0];
-    const TI_REAL period = options[0];
+    const int period = (int)options[0];
     TI_REAL *dc_lower = outputs[0];
     TI_REAL *dc_upper = outputs[1];
 
     if (period < 1) { return TI_INVALID_OPTION; }
     if (size <= ti_dc_start(options)) { return TI_OKAY; }
 
-    ti_min(size, &real, &period, &dc_lower);
-    ti_max(size, &real, &period, &dc_upper);
+    ti_min(size, &real, options, &dc_lower);
+    ti_max(size, &real, options, &dc_upper);
 
     return TI_OKAY;
 }
 
-struct ti_stream {
+
+typedef struct ti_stream_de {
     int index;
     int progress;
 
     struct {
-        TI_REAL period;
+        int period;
     } options;
 
     struct {
@@ -65,10 +66,12 @@ struct ti_stream {
     BUFFERS(
         BUFFER(price)
     )
-};
+} ti_stream_de;
 
-int ti_dc_stream_new(TI_REAL const *options, ti_stream **stream) {
-    const TI_REAL period = options[0];
+int ti_dc_stream_new(TI_REAL const *options, ti_stream **stream_in) {
+    ti_stream_de **stream = (ti_stream_de**)stream_in;
+
+    const int period = (int)options[0];
 
     if (period < 1) { return TI_INVALID_OPTION; }
 
@@ -89,14 +92,16 @@ void ti_dc_stream_free(ti_stream *stream) {
     free(stream);
 }
 
-int ti_dc_stream_run(ti_stream *stream, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
+int ti_dc_stream_run(ti_stream *stream_in, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
+    ti_stream_de *stream = (ti_stream_de*)stream_in;
+
     int progress = stream->progress;
 
     TI_REAL const *real = inputs[0];
     TI_REAL *dc_lower = outputs[0];
     TI_REAL *dc_upper = outputs[1];
 
-    TI_REAL period = stream->options.period;
+    const int period = stream->options.period;
 
     TI_REAL max = stream->state.max;
     int max_idx = stream->state.max_idx;

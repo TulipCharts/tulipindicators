@@ -2,7 +2,6 @@
  * Tulip Indicators
  * https://tulipindicators.org/
  * Copyright (c) 2018 Tulip Charts LLC
- * Ilya Pikulin (ilya.pikulin@gmail.com)
  *
  * This file is part of Tulip Indicators.
  *

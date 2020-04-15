@@ -23,19 +23,17 @@
 
 #include "../indicators.h"
 #include "../utils/localbuffer.h"
-#include <stdio.h>
 
 int ti_rvi_start(TI_REAL const *options) {
-    const TI_REAL sma_period = options[0];
-    const TI_REAL stddev_period = options[1];
+    const int stddev_period = (int)options[1];
     return stddev_period-1;
 }
 
 
 int ti_rvi(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
     TI_REAL const *real = inputs[0];
-    const TI_REAL sma_period = options[0];
-    const TI_REAL stddev_period = options[1];
+    const int sma_period = (int)options[0];
+    const int stddev_period = (int)options[1];
     TI_REAL *rvi = outputs[0];
 
     if (sma_period < 1) { return TI_INVALID_OPTION; }
@@ -103,13 +101,13 @@ int ti_rvi(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_RE
     return TI_OKAY;
 }
 
-struct ti_stream {
+typedef struct ti_stream_rvi {
     int index;
     int progress;
 
     struct {
-        TI_REAL sma_period;
-        TI_REAL stddev_period;
+        int sma_period;
+        int stddev_period;
     } options;
 
     struct {
@@ -127,11 +125,13 @@ struct ti_stream {
     BUFFERS(
         BUFFER(price)
     )
-};
+} ti_stream_rvi;
 
-int ti_rvi_stream_new(TI_REAL const *options, ti_stream **stream) {
-    const TI_REAL sma_period = options[0];
-    const TI_REAL stddev_period = options[1];
+int ti_rvi_stream_new(TI_REAL const *options, ti_stream **stream_in) {
+    ti_stream_rvi **stream = (ti_stream_rvi**)stream_in;
+
+    const int sma_period = (int)options[0];
+    const int stddev_period = (int)options[1];
     if (sma_period < 1) { return TI_INVALID_OPTION; }
     if (stddev_period < 1) { return TI_INVALID_OPTION; }
 
@@ -164,14 +164,16 @@ void ti_rvi_stream_free(ti_stream *stream) {
     free(stream);
 }
 
-int ti_rvi_stream_run(ti_stream *stream, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
+int ti_rvi_stream_run(ti_stream *stream_in, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
+    ti_stream_rvi *stream = (ti_stream_rvi*)stream_in;
+
     TI_REAL const *real = inputs[0];
     TI_REAL *rvi = outputs[0];
 
     int progress = stream->progress;
 
-    TI_REAL sma_period = stream->options.sma_period;
-    TI_REAL stddev_period = stream->options.stddev_period;
+    const int sma_period = stream->options.sma_period;
+    const int stddev_period = stream->options.stddev_period;
 
     TI_REAL y_sum = stream->state.y_sum;
     TI_REAL xy_sum = stream->state.xy_sum;

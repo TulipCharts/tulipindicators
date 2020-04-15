@@ -34,7 +34,7 @@ int ti_vwap(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_R
     TI_REAL const *low = inputs[1];
     TI_REAL const *close = inputs[2];
     TI_REAL const *volume = inputs[3];
-    const TI_REAL period = options[0];
+    const int period = (int)options[0];
     TI_REAL *vwap = outputs[0];
 
     if (period < 1) { return TI_INVALID_OPTION; }
@@ -64,9 +64,6 @@ int ti_vwap(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_R
 }
 
 int ti_vwap_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
-    TI_REAL const *high = inputs[0];
-    TI_REAL const *low = inputs[1];
-    TI_REAL const *close = inputs[2];
     TI_REAL const *volume = inputs[3];
     const TI_REAL period = options[0];
     TI_REAL *vwap = outputs[0];
@@ -74,9 +71,9 @@ int ti_vwap_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options, 
     if (period < 1) { return TI_INVALID_OPTION; }
 
     int outsize = size - ti_typprice_start(&period);
-    TI_REAL *typprice = malloc(sizeof(TI_REAL) * outsize);
+    TI_REAL *typprice = malloc(sizeof(TI_REAL) * (unsigned int)outsize);
     ti_typprice(size, inputs, 0, &typprice);
-    
+
     TI_REAL sum = 0;
     TI_REAL vsum = 0;
 
@@ -88,7 +85,7 @@ int ti_vwap_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options, 
 
     *vwap++ = sum / vsum;
 
-    for (i = period; i < size; ++i) {
+    for (i = (int)period; i < size; ++i) {
         sum += typprice[i] * volume[i];
         sum -= typprice[i-(int)period] * volume[i-(int)period];
         vsum += volume[i];
@@ -102,12 +99,12 @@ int ti_vwap_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options, 
     return TI_OKAY;
 }
 
-struct ti_stream {
+typedef struct ti_stream_vwap {
     int index;
     int progress;
 
     struct {
-        TI_REAL period;
+        int period;
     } options;
 
     struct {
@@ -121,10 +118,12 @@ struct ti_stream {
         BUFFER(close)
         BUFFER(volume)
     )
-};
+} ti_stream_vwap;
 
-int ti_vwap_stream_new(TI_REAL const *options, ti_stream **stream) {
-    const TI_REAL period = options[0];
+int ti_vwap_stream_new(TI_REAL const *options, ti_stream **stream_in) {
+    ti_stream_vwap **stream = (ti_stream_vwap**)stream_in;
+
+    const int period = (int)options[0];
     if (period < 1) { return TI_INVALID_OPTION; }
 
     *stream = calloc(1, sizeof(**stream));
@@ -143,7 +142,7 @@ int ti_vwap_stream_new(TI_REAL const *options, ti_stream **stream) {
     BUFFER_INIT(*stream, close, period + 1);
     BUFFER_INIT(*stream, volume, period + 1);
 
-    *stream = realloc(*stream, sizeof(**stream) + sizeof(TI_REAL) * BUFFERS_SIZE(*stream));
+    *stream = realloc(*stream, sizeof(**stream) + sizeof(TI_REAL) * (unsigned int)BUFFERS_SIZE(*stream));
     if (!*stream) { return TI_OUT_OF_MEMORY; }
 
     return TI_OKAY;
@@ -153,7 +152,9 @@ void ti_vwap_stream_free(ti_stream *stream) {
     free(stream);
 }
 
-int ti_vwap_stream_run(ti_stream *stream, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
+int ti_vwap_stream_run(ti_stream *stream_in, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
+    ti_stream_vwap *stream = (ti_stream_vwap*)stream_in;
+
     TI_REAL const *high = inputs[0];
     TI_REAL const *low = inputs[1];
     TI_REAL const *close = inputs[2];
@@ -162,7 +163,7 @@ int ti_vwap_stream_run(ti_stream *stream, int size, TI_REAL const *const *inputs
 
     int progress = stream->progress;
 
-    TI_REAL period = stream->options.period;
+    const int period = stream->options.period;
 
     TI_REAL num = stream->state.num;
     TI_REAL den = stream->state.den;

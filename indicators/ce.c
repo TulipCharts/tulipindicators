@@ -24,7 +24,6 @@
 #include "../indicators.h"
 #include "truerange.h"
 
-#include <stdio.h>
 
 int ti_ce_start(TI_REAL const *options) {
     return (int)options[0]-1;
@@ -44,7 +43,7 @@ int ti_ce(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REA
     TI_REAL const *high = inputs[0];
     TI_REAL const *low = inputs[1];
     TI_REAL const *close = inputs[2];
-    const int period = options[0];
+    const int period = (int)options[0];
     const TI_REAL coef = options[1];
     TI_REAL *ce_high = outputs[0];
     TI_REAL *ce_low = outputs[1];
@@ -131,8 +130,7 @@ int ti_ce(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REA
 int ti_ce_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
     TI_REAL const *high = inputs[0];
     TI_REAL const *low = inputs[1];
-    TI_REAL const *close = inputs[2];
-    const int period = options[0];
+    const int period = (int)options[0];
     const TI_REAL coef = options[1];
     TI_REAL *ce_high = outputs[0];
     TI_REAL *ce_low = outputs[1];
@@ -143,11 +141,13 @@ int ti_ce_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI
     #define MAX(a, b) (a > b ? a : b)
     #define MAX3(a, b, c) (a > b && a > c ? a : b > a && b > c ? b : c)
 
-    TI_REAL *atr = malloc((size - ti_atr_start(options)) * sizeof(TI_REAL));
+    TI_REAL *atr = malloc((unsigned int)(size - ti_atr_start(options)) * sizeof(TI_REAL));
     ti_atr(size, inputs, options, &atr);
-    TI_REAL *max = malloc((size - ti_max_start(options)) * sizeof(TI_REAL));
+
+    TI_REAL *max = malloc((unsigned int)(size - ti_max_start(options)) * sizeof(TI_REAL));
     ti_max(size, &high, options, &max);
-    TI_REAL *min = malloc((size - ti_min_start(options)) * sizeof(TI_REAL));
+
+    TI_REAL *min = malloc((unsigned int)(size - ti_min_start(options)) * sizeof(TI_REAL));
     ti_min(size, &low, options, &min);
 
 
@@ -176,12 +176,12 @@ struct ti_ringbuffer_minmax {
     int max_idx;
     TI_REAL min;
     TI_REAL max;
-    TI_REAL buffer[][2]; // [i] = min, max
+    TI_REAL buffer[1][1]; // [i] = min, max
 };
 
 typedef struct ti_ringbuffer_minmax ti_ringbuffer_minmax;
 
-struct ti_stream {
+typedef struct ti_stream_ce {
     int index;
     int progress;
 
@@ -193,7 +193,7 @@ struct ti_stream {
     TI_REAL prev_close;
 
     ti_ringbuffer_minmax LP_HP;
-};
+} ti_stream_ce;
 
 #define PUSH(RINGBUFFER, MIN, MAX) do { \
     int end_idx = ((RINGBUFFER).end_idx + 1) % (RINGBUFFER).size; \
@@ -248,14 +248,16 @@ struct ti_stream {
     } \
 } while (0) \
 
-int ti_ce_stream_new(TI_REAL const *options, ti_stream **stream) {
-    const int period = options[0];
+int ti_ce_stream_new(TI_REAL const *options, ti_stream **stream_in) {
+    ti_stream_ce **stream = (ti_stream_ce**)stream_in;
+
+    const int period = (int)options[0];
     const TI_REAL coef = options[1];
 
     if (period < 1) {
         return TI_INVALID_OPTION;
     }
-    *stream = malloc(sizeof(ti_stream) + sizeof(TI_REAL[period][2]));
+    *stream = malloc(sizeof(ti_stream_ce) + sizeof(TI_REAL[period][2]) - sizeof(TI_REAL[1][1]));
     if (!*stream) {
         return TI_OUT_OF_MEMORY;
     }
@@ -275,8 +277,7 @@ void ti_ce_stream_free(ti_stream *stream) {
     free(stream);
 }
 
-#undef CALC_TRUERANGE
-#define CALC_TRUERANGE() do {\
+#define CALC_TRUERANGE2() do {\
         const TI_REAL l = low[i];\
         const TI_REAL h = high[i];\
         const TI_REAL c = prev_close;\
@@ -289,7 +290,9 @@ void ti_ce_stream_free(ti_stream *stream) {
 } while (0)
 
 
-int ti_ce_stream_run(ti_stream *stream, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
+int ti_ce_stream_run(ti_stream *stream_in, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
+    ti_stream_ce *stream = (ti_stream_ce*)stream_in;
+
     int progress = stream->progress;
 
     TI_REAL const *high = inputs[0];
@@ -325,8 +328,8 @@ int ti_ce_stream_run(ti_stream *stream, int size, TI_REAL const *const *inputs, 
 
         prev_close = stream->prev_close;
     }
-    for (i; progress < 1 && i < size; ++i, ++progress) { // warm up
-        TI_REAL truerange; CALC_TRUERANGE();
+    for (; progress < 1 && i < size; ++i, ++progress) { // warm up
+        TI_REAL truerange; CALC_TRUERANGE2();
         atr += truerange;
 
         PUSH(*LP_HP, low[i], high[i]);
@@ -339,8 +342,8 @@ int ti_ce_stream_run(ti_stream *stream, int size, TI_REAL const *const *inputs, 
         *ce_high++ = HP - coef * atr;
         *ce_low++ = LP + coef * atr;
     }
-    for (i; i < size; ++i, ++progress) { // continue in normal mode
-        TI_REAL truerange; CALC_TRUERANGE();
+    for (; i < size; ++i, ++progress) { // continue in normal mode
+        TI_REAL truerange; CALC_TRUERANGE2();
         atr = atr * smth + truerange * per;
 
         PUSH(*LP_HP, low[i], high[i]);
@@ -359,3 +362,5 @@ int ti_ce_stream_run(ti_stream *stream, int size, TI_REAL const *const *inputs, 
 
     return TI_OKAY;
 }
+
+#undef CALC_TRUERANGE2

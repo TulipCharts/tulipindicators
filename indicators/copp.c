@@ -24,21 +24,20 @@
 #include "../indicators.h"
 #include "../utils/localbuffer.h"
 
+#define START (roc_longer_period + wma_period - 1.0)
 
 int ti_copp_start(TI_REAL const *options) {
-    const TI_REAL roc_shorter_period = options[0];
-    const TI_REAL roc_longer_period = options[1];
-    const TI_REAL wma_period = options[2];
-    #define START (roc_longer_period + wma_period-1)
-    return START;
+    const int roc_longer_period = (int)options[1];
+    const int wma_period = (int)options[2];
+    return (int)START;
 }
 
 
 int ti_copp(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
     TI_REAL const *real = inputs[0];
-    const TI_REAL roc_shorter_period = options[0];
-    const TI_REAL roc_longer_period = options[1];
-    const TI_REAL wma_period = options[2];
+    const int roc_shorter_period = (int)options[0];
+    const int roc_longer_period = (int)options[1];
+    const int wma_period = (int)options[2];
     TI_REAL *copp = outputs[0];
 
     for (int i = 0; i < 3; ++i) {
@@ -59,7 +58,6 @@ int ti_copp(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_R
     buffers = realloc(buffers, sizeof(*buffers) + sizeof(TI_REAL[BUFFERS_SIZE(buffers)]));
 
     TI_REAL denominator = 1. / (wma_period * (wma_period + 1.) / 2.);
-    TI_REAL rocs_per = 100. / 2.;
     TI_REAL flat_rocs_sum = 0.;
     TI_REAL weighted_rocs_sum = 0.;
 
@@ -135,7 +133,8 @@ int ti_copp_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options, 
         interm[i] = (roc_long[i] + roc_short[i+(roc_short_len-roc_long_len)]) * 100. / 2.;
     }
 
-    ti_wma(roc_long_len, &interm, &wma_period, &copp);
+    const TI_REAL *ti_wma_inputs[] = {interm};
+    ti_wma(roc_long_len, ti_wma_inputs, &wma_period, &copp);
 
     free(roc_short);
     free(roc_long);
@@ -144,15 +143,16 @@ int ti_copp_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options, 
     return TI_OKAY;
 }
 
-struct ti_stream {
+
+
+typedef struct ti_stream_copp {
     int index;
     int progress;
 
     struct {
-        TI_REAL roc_shorter_period;
-        TI_REAL roc_longer_period;
-        TI_REAL wma_period;
-        TI_REAL sma_period;
+        int roc_shorter_period;
+        int roc_longer_period;
+        int wma_period;
     } options;
 
     struct {
@@ -167,12 +167,14 @@ struct ti_stream {
         BUFFER(price)
         BUFFER(rocs)
     )
-};
+} ti_stream_copp;
 
-int ti_copp_stream_new(TI_REAL const *options, ti_stream **stream) {
-    const TI_REAL roc_shorter_period = options[0];
-    const TI_REAL roc_longer_period = options[1];
-    const TI_REAL wma_period = options[2];
+int ti_copp_stream_new(TI_REAL const *options, ti_stream **stream_in) {
+    ti_stream_copp **stream = (ti_stream_copp**)stream_in;
+
+    const int roc_shorter_period = (int)options[0];
+    const int roc_longer_period = (int)options[1];
+    const int wma_period = (int)options[2];
 
     for (int i = 0; i < 3; ++i) {
         if (options[i] < 1) { return TI_INVALID_OPTION; }
@@ -203,15 +205,17 @@ void ti_copp_stream_free(ti_stream *stream) {
     free(stream);
 }
 
-int ti_copp_stream_run(ti_stream *stream, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
+int ti_copp_stream_run(ti_stream *stream_in, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
+    ti_stream_copp* stream = (ti_stream_copp*)stream_in;
+
     int progress = stream->progress;
 
     TI_REAL const *real = inputs[0];
     TI_REAL *copp = outputs[0];
 
-    const TI_REAL roc_shorter_period = stream->options.roc_shorter_period;
-    const TI_REAL roc_longer_period = stream->options.roc_longer_period;
-    const TI_REAL wma_period = stream->options.wma_period;
+    const int roc_shorter_period = stream->options.roc_shorter_period;
+    const int roc_longer_period = stream->options.roc_longer_period;
+    const int wma_period = stream->options.wma_period;
 
     TI_REAL denominator = stream->state.denominator;
     TI_REAL rocs_per = stream->state.rocs_per;
@@ -259,3 +263,6 @@ int ti_copp_stream_run(ti_stream *stream, int size, TI_REAL const *const *inputs
 
     return TI_OKAY;
 }
+
+
+#undef START

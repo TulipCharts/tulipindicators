@@ -25,6 +25,7 @@
 
 
 int ti_tsi_start(TI_REAL const *options) {
+    (void)options;
     return 1;
 }
 
@@ -84,17 +85,19 @@ int ti_tsi_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options, T
 
     TI_REAL _one = 1;
     int outsize = size - ti_mom_start(&_one);
-    TI_REAL *momentum = malloc(sizeof(TI_REAL) * outsize);
+    TI_REAL *momentum = malloc(sizeof(TI_REAL) * (unsigned int)outsize);
     ti_mom(size, &real, &_one, &momentum);
 
-    TI_REAL *absmomentum = malloc(sizeof(TI_REAL) * outsize);
-    ti_abs(outsize, &momentum, 0, &absmomentum);
+    TI_REAL *absmomentum = malloc(sizeof(TI_REAL) * (unsigned int)outsize);
+    const TI_REAL *momentum_input[] = {momentum};
 
-    ti_ema(outsize, &momentum, &y_period, &momentum);
-    ti_ema(outsize, &momentum, &z_period, &momentum);
+    ti_abs(outsize, momentum_input, 0, &absmomentum);
+    ti_ema(outsize, momentum_input, &y_period, &momentum);
+    ti_ema(outsize, momentum_input, &z_period, &momentum);
 
-    ti_ema(outsize, &absmomentum, &y_period, &absmomentum);
-    ti_ema(outsize, &absmomentum, &z_period, &absmomentum);
+    const TI_REAL *absmomentum_input[] = {absmomentum};
+    ti_ema(outsize, absmomentum_input, &y_period, &absmomentum);
+    ti_ema(outsize, absmomentum_input, &z_period, &absmomentum);
 
     for (int i = 0; i < outsize; ++i) {
         *tsi++ = 100. * momentum[i] / absmomentum[i];
@@ -106,7 +109,7 @@ int ti_tsi_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options, T
     return TI_OKAY;
 }
 
-struct ti_stream {
+typedef struct ti_stream_tsi {
     int index;
     int progress;
 
@@ -122,16 +125,18 @@ struct ti_stream {
         TI_REAL y_ema_den;
         TI_REAL z_ema_den;
     } state;
-};
+} ti_stream_tsi;
 
-int ti_tsi_stream_new(TI_REAL const *options, ti_stream **stream) {
+int ti_tsi_stream_new(TI_REAL const *options, ti_stream **stream_in) {
+    ti_stream_tsi **stream = (ti_stream_tsi**)stream_in;
+
     const TI_REAL y_period = options[0];
     const TI_REAL z_period = options[1];
     for (int i = 0; i < 2; ++i) { if (options[i] < 1) { return TI_INVALID_OPTION; } }
 
     *stream = malloc(sizeof(**stream));
     if (!*stream) { return TI_OUT_OF_MEMORY; }
-    
+
     (*stream)->index = TI_INDICATOR_TSI_INDEX;
     (*stream)->progress = -ti_tsi_start(options);
 
@@ -145,7 +150,9 @@ void ti_tsi_stream_free(ti_stream *stream) {
     free(stream);
 }
 
-int ti_tsi_stream_run(ti_stream *stream, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
+int ti_tsi_stream_run(ti_stream *stream_in, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
+    ti_stream_tsi *stream = (ti_stream_tsi*)stream_in;
+
     TI_REAL const *real = inputs[0];
     TI_REAL *tsi = outputs[0];
 

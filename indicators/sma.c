@@ -60,7 +60,7 @@ int ti_sma(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_RE
 }
 
 
-struct ti_stream {
+typedef struct ti_stream_sma {
     int index;
     int progress;
 
@@ -71,14 +71,16 @@ struct ti_stream {
     TI_REAL sum;
     int buffer_idx;
     TI_REAL buffer[];
-};
+} ti_stream_sma;
 
 
-int ti_sma_stream_new(TI_REAL const *options, ti_stream **stream) {
-    int period = options[0];
+int ti_sma_stream_new(TI_REAL const *options, ti_stream **stream_in) {
+    ti_stream_sma **stream = (ti_stream_sma**)stream_in;
+
+    int period = (int)options[0];
     if (period < 1) return TI_INVALID_OPTION;
 
-    *stream = malloc(sizeof(ti_stream) + sizeof(TI_REAL[period]));
+    *stream = malloc(sizeof(ti_stream_sma) + sizeof(TI_REAL[period]));
     if (!stream) {
         return TI_OUT_OF_MEMORY;
     }
@@ -108,7 +110,9 @@ int ti_sma_stream_new(TI_REAL const *options, ti_stream **stream) {
     sum += buffer[buffer_idx] = val; \
 }
 
-int ti_sma_stream_run(ti_stream *stream, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
+int ti_sma_stream_run(ti_stream *stream_in, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
+    ti_stream_sma *stream = (ti_stream_sma*)stream_in;
+
     int progress = stream->progress;
 
     const TI_REAL *real = inputs[0];
@@ -121,15 +125,15 @@ int ti_sma_stream_run(ti_stream *stream, int size, TI_REAL const *const *inputs,
     int buffer_idx = stream->buffer_idx;
     TI_REAL *buffer = stream->buffer;
 
-    int i = 0;
     if (progress == -period + 1) {} else {} // initialize
-    for (i; progress < 1 && i < size; ++i, ++progress) { // warm up
+    int i;
+    for (i = 0; progress < 1 && i < size; ++i, ++progress) { // warm up
         BUFFER_PUSH_NONFULL(real[i] * per);
     }
     if (i > 0 && progress == 1) { // just warmed
         *sma++ = sum;
     }
-    for (i; i < size; ++i, ++progress) { // continue in normal mode
+    for (; i < size; ++i, ++progress) { // continue in normal mode
         BUFFER_PUSH_FULL(real[i] * per);
         *sma++ = sum;
     }

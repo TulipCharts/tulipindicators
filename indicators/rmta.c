@@ -29,7 +29,7 @@ int ti_rmta_start(TI_REAL const *options) {
 
 /* Name: Recursive Moving Trend Average
  * Source: Dennis Meyers. The Japanese Yen, Recursed, 1998. Original description
-/* URL: https://meyersanalytics.com/publications2/jyrecursed.pdf
+ * URL: https://meyersanalytics.com/publications2/jyrecursed.pdf
  */
 
 int ti_rmta(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
