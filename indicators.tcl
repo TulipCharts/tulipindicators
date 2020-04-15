@@ -73,6 +73,7 @@ lappend indicators [list overlay "Triple Exponential Moving Average" tema 1 1 1 
 lappend indicators [list overlay "Triangular Moving Average" trima 1 1 1 {real} {period} {trima}]
 lappend indicators [list overlay "Variable Index Dynamic Average" vidya 1 3 1 {real} {{short period} {long period} alpha} {vidya}]
 lappend indicators [list overlay "Volume Weighted Moving Average" vwma 2 1 1 {close volume} {period} {vwma}]
+lappend indicators [list overlay "Volume Weighted Average Price" vwap 4 1 1 {high low close volume} {period} {vwap} {stream ref}]
 lappend indicators [list overlay "Wilders Smoothing" wilders 1 1 1 {real} {period} {wilders}]
 lappend indicators [list overlay "Weighted Moving Average" wma 1 1 1 {real} {period} {wma}]
 lappend indicators [list overlay "Zero-Lag Exponential Moving Average" zlema 1 1 1 {real} {period} {zlema}]
