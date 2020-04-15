@@ -179,9 +179,8 @@ void bench(const ti_indicator_info *info) {
     if (strcmp(info->name, "ppo") == 0) { options_setter = ppo_option_setter; }
     if (strcmp(info->name, "psar") == 0) { options_setter = psar_option_setter; }
     if (strcmp(info->name, "adosc") == 0) { options_setter = fast_slow_option_setter; }
+    if (strcmp(info->name, "kvo") == 0) { options_setter = fast_slow_option_setter; }
     if (strcmp(info->name, "kst") == 0) { options_setter = kst_option_setter; }
-    if (strcmp(info->name, "kvo") == 0) { options_setter = fast_slow_option_setter; }
-    if (strcmp(info->name, "kvo") == 0) { options_setter = fast_slow_option_setter; }
     if (strcmp(info->name, "rmta") == 0) { options_setter = rmta_option_setter; }
     if (strcmp(info->name, "stoch") == 0) { options_setter = stoch_option_setter; }
     if (strcmp(info->name, "stochrsi") == 0) { options_setter = stochrsi_option_setter; }
@@ -192,6 +191,7 @@ void bench(const ti_indicator_info *info) {
     if (strcmp(info->name, "kc") == 0) { options_setter = kc_option_setter; }
     if (strcmp(info->name, "mama") == 0) { options_setter = mama_option_setter; }
     if (strcmp(info->name, "pfe") == 0) { options_setter = pfe_option_setter; }
+
 
     TI_REAL *inputs[TI_MAXINDPARAMS];
     for (int i = 0; i < info->inputs; ++i) {
