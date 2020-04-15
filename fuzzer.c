@@ -28,7 +28,9 @@
 #include <assert.h>
 
 
-double optionsd[] = {-20,-1,0,.7,100}; // 5 options are the maximum computable amount given TI_MAXINDPARAMS = 10
+double optionsd_small[] = {-20,-1,0,.7,1,2,5,20,100};
+double optionsd_large[] = {-5,0,5};
+
 double dummy_in[] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20};
 double dummy_in0[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 double dummy_ot[] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20};
@@ -123,7 +125,16 @@ void stress(const ti_indicator_info *info) {
     int options_index[TI_MAXINDPARAMS+1] = {0};
     double options[TI_MAXINDPARAMS];
 
-    int choices = sizeof(optionsd) / sizeof(double);
+    int choices;
+    TI_REAL *optionsd;
+    if (opt_count <= 4) {
+        choices = sizeof(optionsd_small) / sizeof(double);
+        optionsd = optionsd_small;
+    } else {
+        choices = sizeof(optionsd_large) / sizeof(double);
+        optionsd = optionsd_large;
+    }
+
     int size = sizeof(dummy_in) / sizeof(double);
 
     int j, count = 0;
