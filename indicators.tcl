@@ -105,6 +105,7 @@ lappend indicators [list indicator "Detrended Price Oscillator" dpo 1 1 1 {real}
 lappend indicators [list indicator "Ease of Movement" emv 3 0 1 {high low volume} {} {emv}]
 lappend indicators [list indicator "Fisher Transform" fisher 2 1 2 {high low} {period} {fisher fisher_signal}]
 lappend indicators [list indicator "Klinger Volume Oscillator" kvo 4 2 1 {high low close volume} {{short period} {long period}} {kvo}]
+lappend indicators [list indicator "Know Sure Thing" kst 1 8 2 {real} {roc1 roc2 roc3 roc4 ma1 ma2 ma3 ma4} {kst kst_signal} {ref}]
 lappend indicators [list indicator "Market Facilitation Index" marketfi 3 0 1 {high low volume} {} {marketfi}]
 lappend indicators [list indicator "Mass Index" mass 2 1 1 {high low} {period} {mass}]
 lappend indicators [list indicator "Money Flow Index" mfi 4 1 1 {high low close volume} {period} {mfi}]
@@ -247,9 +248,9 @@ extern \"C\" {
 #endif
 
 
-const char* ti_version();
-long int ti_build();
-int ti_indicator_count();
+const char* ti_version(void);
+long int ti_build(void);
+int ti_indicator_count(void);
 
 
 "
@@ -290,15 +291,15 @@ typedef void (*ti_indicator_stream_free)($fun_stream_free_args);
 
 
 typedef struct ti_indicator_info {
-    char *name;
-    char *full_name;
+    const char *name;
+    const char *full_name;
     ti_indicator_start_function start;
     ti_indicator_function indicator;
     ti_indicator_function indicator_ref;
     int type, inputs, options, outputs;
-    char *input_names\[TI_MAXINDPARAMS\];
-    char *option_names\[TI_MAXINDPARAMS\];
-    char *output_names\[TI_MAXINDPARAMS\];
+    const char *input_names\[TI_MAXINDPARAMS\];
+    const char *option_names\[TI_MAXINDPARAMS\];
+    const char *output_names\[TI_MAXINDPARAMS\];
     ti_indicator_stream_new stream_new;
     ti_indicator_stream_run stream_run;
     ti_indicator_stream_free stream_free;
@@ -471,9 +472,9 @@ puts $idx "$license
 
 puts $idx "#include \"indicators.h\"\n\n"
 puts $idx "
-const char* ti_version() {return TI_VERSION;}
-long int ti_build() {return TI_BUILD;}
-int ti_indicator_count() {return TI_INDICATOR_COUNT;}
+const char* ti_version(void) {return TI_VERSION;}
+long int ti_build(void) {return TI_BUILD;}
+int ti_indicator_count(void) {return TI_INDICATOR_COUNT;}
 "
 
 puts $idx "\n\n\nstruct ti_indicator_info ti_indicators\[\] = {"
