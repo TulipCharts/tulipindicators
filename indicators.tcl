@@ -213,7 +213,8 @@ lappend indicators [list simple "Vector Degree Conversion" todeg 1 0 1 {real} {}
 lappend indicators [list simple "Vector Radian Conversion" torad 1 0 1 {real} {} {radians}]
 lappend indicators [list simple "Vector Truncate" trunc 1 0 1 {real} {} {trunc}]
 
-
+# Ichimoku
+lappend indicators [list overlay "Ichimoku Tenkan-Sen" ikhts 2 1 1 {high low} {period} {ikhts}]
 
 
 proc ci {a b} {
