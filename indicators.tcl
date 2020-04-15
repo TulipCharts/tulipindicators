@@ -108,6 +108,7 @@ lappend indicators [list indicator "Coppock Curve" copp 1 3 1 {real} {roc_shorte
 lappend indicators [list indicator "Detrended Price Oscillator" dpo 1 1 1 {real} {period} {dpo}]
 lappend indicators [list indicator "Ease of Movement" emv 3 0 1 {high low volume} {} {emv}]
 lappend indicators [list indicator "Fisher Transform" fisher 2 1 2 {high low} {period} {fisher fisher_signal}]
+lappend indicators [list indicator "Force Index" fi 2 1 1 {close volume} {period} {fi} {ref stream}]
 lappend indicators [list indicator "Klinger Volume Oscillator" kvo 4 2 1 {high low close volume} {{short period} {long period}} {kvo}]
 lappend indicators [list indicator "Know Sure Thing" kst 1 8 2 {real} {roc1 roc2 roc3 roc4 ma1 ma2 ma3 ma4} {kst kst_signal} {ref}]
 lappend indicators [list indicator "Market Facilitation Index" marketfi 3 0 1 {high low volume} {} {marketfi}]

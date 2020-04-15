@@ -192,7 +192,6 @@ void bench(const ti_indicator_info *info) {
     if (strcmp(info->name, "mama") == 0) { options_setter = mama_option_setter; }
     if (strcmp(info->name, "pfe") == 0) { options_setter = pfe_option_setter; }
 
-
     TI_REAL *inputs[TI_MAXINDPARAMS];
     for (int i = 0; i < info->inputs; ++i) {
         if (strcmp(info->input_names[i], "open") == 0) { inputs[i] = open; }
