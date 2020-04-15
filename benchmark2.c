@@ -139,6 +139,11 @@ void ce_option_setter(double period, double *options) {
     options[1] = 3;
 }
 
+void copp_option_setter(double period, double *options) {
+    options[0] = 11;
+    options[1] = 14;
+    options[2] = period;
+}
 
 void kc_option_setter(double period, double *options) {
     options[0] = period;
@@ -183,6 +188,7 @@ void bench(const ti_indicator_info *info) {
     if (strcmp(info->name, "ultosc") == 0) { options_setter = ultosc_option_setter; }
     if (strcmp(info->name, "vosc") == 0) { options_setter = fast_slow_option_setter; }
     if (strcmp(info->name, "vidya") == 0) { options_setter = vidya_option_setter; }
+    if (strcmp(info->name, "copp") == 0) { options_setter = copp_option_setter; }
     if (strcmp(info->name, "kc") == 0) { options_setter = kc_option_setter; }
     if (strcmp(info->name, "mama") == 0) { options_setter = mama_option_setter; }
     if (strcmp(info->name, "pfe") == 0) { options_setter = pfe_option_setter; }

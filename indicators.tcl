@@ -103,6 +103,7 @@ lappend indicators [list indicator "Balance of Power" bop 4 0 1 {open high low c
 lappend indicators [list indicator "Chaikin Money Flow" cmf 4 1 1 {high low close volume} {period} {cmf}]
 lappend indicators [list indicator "Chande Momentum Oscillator" cmo 1 1 1 {real} {period} {cmo}]
 lappend indicators [list indicator "Commodity Channel Index" cci 3 1 1 {high low close} {period} {cci}]
+lappend indicators [list indicator "Coppock Curve" copp 1 3 1 {real} {roc_shorter_period roc_longer_period wma_period} {copp} {ref stream}]
 lappend indicators [list indicator "Detrended Price Oscillator" dpo 1 1 1 {real} {period} {dpo}]
 lappend indicators [list indicator "Ease of Movement" emv 3 0 1 {high low volume} {} {emv}]
 lappend indicators [list indicator "Fisher Transform" fisher 2 1 2 {high low} {period} {fisher fisher_signal}]
