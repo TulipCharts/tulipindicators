@@ -139,6 +139,32 @@ void ce_option_setter(double period, double *options) {
     options[1] = 3;
 }
 
+void rmta_option_setter(double period,  double *options) {
+    options[0] = period;
+    options[1] = 1 - (2. / (period + 1));
+}
+
+void kst_option_setter(double period, double *options) {
+    for (int i = 0; i < 4; ++i) {
+        options[i+4] = options[i] = period + period / 4. * i;
+    }
+}
+
+void pfe_option_setter(double period, double *options) {
+    options[0] = period;
+    options[1] = 5;
+}
+
+void mama_option_setter(double period, double *options) {
+    options[0] = 0.5;
+    options[1] = 0.05;
+}
+
+void kc_option_setter(double period, double *options) {
+    options[0] = period;
+    options[1] = 0.77;
+}
+
 void rvi_option_setter(double period, double *options) {
     options[0] = period;
     options[1] = 10;
@@ -159,6 +185,37 @@ void copp_option_setter(double period, double *options) {
     options[2] = period;
 }
 
+void posc_option_setter(double period, double *options) {
+    options[0] = period;
+    options[1] = 3;
+}
+
+void rmi_option_setter(double period, double *options) {
+    options[0] = period;
+    options[1] = 3;
+}
+
+void rvi_option_setter(double period, double *options) {
+    options[0] = period;
+    options[1] = 10;
+}
+
+void frama_option_setter(double period, double* options) {
+	options[0] = (int)period / 2 * 2.;
+	options[1] = 198;
+}
+
+void smi_option_setter(double period, double* options) {
+    options[0] = period;
+    options[1] = 25;
+    options[2] = 3;
+}
+
+void tsi_option_setter(double period, double* options) {
+    options[0] = period;
+    options[1] = 3;
+}
+  
 void kc_option_setter(double period, double *options) {
     options[0] = period;
     options[1] = 0.77;
