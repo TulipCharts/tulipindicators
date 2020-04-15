@@ -13,15 +13,13 @@ AMAL=$(SRCS:%.c=%.ca)
 
 all: libindicators.a sample example1 example2 fuzzer smoke
 
-libindicators.a: indicators_index.o $(OBJS) indicators.h
-	$(AR) rcu $@ $^
-	$(RANLIB) $@
-
-indicators.h indicators_index.c: indicators.tcl
+indicators.h: indicators.tcl
 	tclsh indicators.tcl
 
-indicators_index.o: indicators.h indicators_index.c
-
+libindicators.a: indicators.h $(OBJS)
+	$(CC) -c $(CCFLAGS) indicators_index.c -o indicators_index.o
+	$(AR) rcu $@ $^ indicators_index.o
+	$(RANLIB) $@
 
 smoke: smoke.o libindicators.a
 	$(CC) $(CCFLAGS) -o $@ $^ -lm
@@ -43,10 +41,31 @@ sample: sample.o libindicators.a
 benchmark: benchmark.o libindicators.a
 	$(CC) $(CCFLAGS) -o $@ $^ -lta_lib -lm
 
+#Optional benchmark program, new edition.
+benchmark2: benchmark2.o libindicators.a
+	$(CC) $(CCFLAGS) -o $@ $^ -lm
+
 #This will build all of Tulip Indicators into one .c file.
 tiamalgamation.c: $(AMAL) indicators_index.ca indicators.h
 	echo -e "/*\n * TULIP INDICATORS AMALGAMATION\n * This is all of Tulip Indicators in one file.\n * To get the original sources, go to https://tulipindicators.org\n */\n\n" \
 	    | cat - indicators.h utils/buffer.h utils/minmax.h $(AMAL) indicators_index.ca > $@
+
+
+$(OBJS): indicators.h
+
+smoke.o: indicators.h
+
+example1.o: indicators.h
+
+example2.o: indicators.h
+
+fuzzer.o: indicators.h
+
+sample.o: indicators.h
+
+benchmark.o: indicators.h
+
+$(AMAL): indicators.h
 
 .c.o:
 	$(CC) -c $(CCFLAGS) $< -o $@

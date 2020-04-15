@@ -14,7 +14,7 @@ High quality bindings are available for [Node.js](https://github.com/TulipCharts
 
 ## Features
 
- - **ANSI C with no dependencies**.
+ - **C99 with no dependencies**.
  - Uses fast algorithms.
  - Easy to use programming interface.
  - Release under LGPL license.

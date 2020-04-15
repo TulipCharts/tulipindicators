@@ -33,7 +33,6 @@ int ti_adx_start(TI_REAL const *options) {
 int ti_adx(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
     const TI_REAL *high = inputs[0];
     const TI_REAL *low = inputs[1];
-    const TI_REAL *close = inputs[2];
 
     const int period = (int)options[0];
 
