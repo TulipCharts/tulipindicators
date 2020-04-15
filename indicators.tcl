@@ -67,6 +67,7 @@ set indicators {}
 lappend indicators [list overlay "Double Exponential Moving Average" dema 1 1 1 {real} {period} {dema}]
 lappend indicators [list overlay "Exponential Moving Average" ema 1 1 1 {real} {period} {ema}]
 lappend indicators [list overlay "Hull Moving Average" hma 1 1 1 {real} {period} {hma}]
+lappend indicators [list overlay "MESA Adaptive Moving Average" mama 1 2 2 {real} {fastlimit slowlimit} {mama fama} {ref stream}]
 lappend indicators [list overlay "Simple Moving Average" sma 1 1 1 {real} {period} {sma} {stream}]
 lappend indicators [list overlay "Triple Exponential Moving Average" tema 1 1 1 {real} {period} {tema}]
 lappend indicators [list overlay "Triangular Moving Average" trima 1 1 1 {real} {period} {trima}]
@@ -87,6 +88,7 @@ lappend indicators [list indicator "Forecast Oscillator" fosc 1 1 1 {real} {peri
 #Special moving averages and other overlays
 lappend indicators [list overlay "Acceleration Bands" abands 3 1 3 {high low close} {period} {abands_lower abands_upper abands_middle} {ref}]
 lappend indicators [list overlay "Bollinger Bands" bbands 1 2 3 {real} {period stddev} {bbands_lower bbands_middle bbands_upper}]
+lappend indicators [list overlay "Keltner Channel" kc 3 2 3 {high low close} {period multiple} {kc_lower kc_middle kc_upper} {stream}]
 lappend indicators [list overlay "Kaufman Adaptive Moving Average" kama 1 1 1 {real} {period} {kama}]
 lappend indicators [list overlay "Parabolic SAR" psar 2 2 1 {high low} {{acceleration factor step} {acceleration factor maximum}} {psar}]
 
@@ -106,6 +108,7 @@ lappend indicators [list indicator "Detrended Price Oscillator" dpo 1 1 1 {real}
 lappend indicators [list indicator "Ease of Movement" emv 3 0 1 {high low volume} {} {emv}]
 lappend indicators [list indicator "Fisher Transform" fisher 2 1 2 {high low} {period} {fisher fisher_signal}]
 lappend indicators [list indicator "Klinger Volume Oscillator" kvo 4 2 1 {high low close volume} {{short period} {long period}} {kvo}]
+lappend indicators [list indicator "Know Sure Thing" kst 1 8 2 {real} {roc1 roc2 roc3 roc4 ma1 ma2 ma3 ma4} {kst kst_signal} {ref}]
 lappend indicators [list indicator "Market Facilitation Index" marketfi 3 0 1 {high low volume} {} {marketfi}]
 lappend indicators [list indicator "Mass Index" mass 2 1 1 {high low} {period} {mass}]
 lappend indicators [list indicator "Money Flow Index" mfi 4 1 1 {high low close volume} {period} {mfi}]
@@ -113,6 +116,7 @@ lappend indicators [list indicator "Moving Average Convergence/Divergence" macd 
 lappend indicators [list indicator "Negative Volume Index" nvi 2 0 1 {close volume} {} {nvi}]
 lappend indicators [list indicator "On Balance Volume" obv 2 0 1 {close volume} {} {obv}]
 lappend indicators [list indicator "Percentage Price Oscillator" ppo 1 2 1 {real} {{short period} {long period}} {ppo}]
+lappend indicators [list indicator "Polarized Fractal Efficiency" pfe 1 2 1 {real} {period ema_period} {pfe} {ref stream}]
 lappend indicators [list indicator "Positive Volume Index" pvi 2 0 1 {close volume} {} {pvi}]
 lappend indicators [list indicator "Qstick" qstick 2 1 1 {open close} {period} {qstick}]
 lappend indicators [list indicator "Relative Strength Index" rsi 1 1 1 {real} {period} {rsi}]
@@ -247,9 +251,9 @@ extern \"C\" {
 #endif
 
 
-const char* ti_version();
-long int ti_build();
-int ti_indicator_count();
+const char* ti_version(void);
+long int ti_build(void);
+int ti_indicator_count(void);
 
 
 "
@@ -290,15 +294,15 @@ typedef void (*ti_indicator_stream_free)($fun_stream_free_args);
 
 
 typedef struct ti_indicator_info {
-    char *name;
-    char *full_name;
+    const char *name;
+    const char *full_name;
     ti_indicator_start_function start;
     ti_indicator_function indicator;
     ti_indicator_function indicator_ref;
     int type, inputs, options, outputs;
-    char *input_names\[TI_MAXINDPARAMS\];
-    char *option_names\[TI_MAXINDPARAMS\];
-    char *output_names\[TI_MAXINDPARAMS\];
+    const char *input_names\[TI_MAXINDPARAMS\];
+    const char *option_names\[TI_MAXINDPARAMS\];
+    const char *output_names\[TI_MAXINDPARAMS\];
     ti_indicator_stream_new stream_new;
     ti_indicator_stream_run stream_run;
     ti_indicator_stream_free stream_free;
@@ -471,9 +475,9 @@ puts $idx "$license
 
 puts $idx "#include \"indicators.h\"\n\n"
 puts $idx "
-const char* ti_version() {return TI_VERSION;}
-long int ti_build() {return TI_BUILD;}
-int ti_indicator_count() {return TI_INDICATOR_COUNT;}
+const char* ti_version(void) {return TI_VERSION;}
+long int ti_build(void) {return TI_BUILD;}
+int ti_indicator_count(void) {return TI_INDICATOR_COUNT;}
 "
 
 puts $idx "\n\n\nstruct ti_indicator_info ti_indicators\[\] = {"
