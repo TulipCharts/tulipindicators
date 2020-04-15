@@ -78,7 +78,6 @@ lappend indicators [list overlay "Volume Weighted Average Price" vwap 4 1 1 {hig
 lappend indicators [list overlay "Wilders Smoothing" wilders 1 1 1 {real} {period} {wilders}]
 lappend indicators [list overlay "Weighted Moving Average" wma 1 1 1 {real} {period} {wma}]
 lappend indicators [list overlay "Zero-Lag Exponential Moving Average" zlema 1 1 1 {real} {period} {zlema}]
-lappend indicators [list overlay "Recursive Moving Trend Average" rmta 1 2 1 {real} {period beta} {rmta}]
 
 #Line fitting
 lappend indicators [list overlay "Linear Regression" linreg 1 1 1 {real} {period} {linreg}]
@@ -91,11 +90,11 @@ lappend indicators [list indicator "Forecast Oscillator" fosc 1 1 1 {real} {peri
 lappend indicators [list overlay "Acceleration Bands" abands 3 1 3 {high low close} {period} {abands_lower abands_upper abands_middle} {ref}]
 lappend indicators [list overlay "Bollinger Bands" bbands 1 2 3 {real} {period stddev} {bbands_lower bbands_middle bbands_upper}]
 lappend indicators [list overlay "Donchian Channel" dc 1 1 2 {real} {period} {dc_lower dc_upper} {stream}]
-lappend indicators [list overlay "Keltner Channel" kc 3 2 3 {high low close} {period multiple} {kc_lower kc_middle kc_upper} {stream}]
 lappend indicators [list overlay "Kaufman Adaptive Moving Average" kama 1 1 1 {real} {period} {kama}]
-lappend indicators [list overlay "Parabolic SAR" psar 2 2 1 {high low} {{acceleration factor step} {acceleration factor maximum}} {psar}]
+lappend indicators [list overlay "Keltner Channel" kc 3 2 3 {high low close} {period multiple} {kc_lower kc_middle kc_upper} {stream}]
 lappend indicators [list overlay "Projection Bands" pbands 3 1 2 {high low close} {period} {pbands_lower pbands_upper} {ref stream}]
 lappend indicators [list overlay "Price Channel" pc 2 1 2 {high low} {period} {pc_low pc_high} {stream}]
+lappend indicators [list overlay "Parabolic SAR" psar 2 2 1 {high low} {{acceleration factor step} {acceleration factor maximum}} {psar}]
 
 #Momentum
 lappend indicators [list indicator "Accumulation/Distribution Line" ad 4 0 1 {high low close volume} {} {ad}]
@@ -126,10 +125,11 @@ lappend indicators [list indicator "Polarized Fractal Efficiency" pfe 1 2 1 {rea
 lappend indicators [list indicator "Positive Volume Index" pvi 2 0 1 {close volume} {} {pvi}]
 lappend indicators [list indicator "Projection Oscillator" posc 3 2 1 {high low close} {period ema_period} {posc} {stream ref}]
 lappend indicators [list indicator "Qstick" qstick 2 1 1 {open close} {period} {qstick}]
+lappend indicators [list indicator "Recursive Moving Trend Average" rmta 1 2 1 {real} {period beta} {rmta}]
 lappend indicators [list indicator "Relative Strength Index" rsi 1 1 1 {real} {period} {rsi}]
+lappend indicators [list indicator "Relative Volatility Index" rvi 1 2 1 {real} {period stddev_period} {rvi} {stream}]
 lappend indicators [list indicator "Stochastic Momentum Index" smi 3 3 1 {high low close} {q_period r_period s_period} {smi} {stream ref}]
 lappend indicators [list indicator "True Strength Index" tsi 1 2 1 {real} {y_period z_period} {tsi} {stream ref}]
-lappend indicators [list indicator "Relative Volatility Index" rvi 1 2 1 {real} {period stddev_period} {rvi} {stream}]
 lappend indicators [list indicator "Relative Momentum Index" rmi 1 2 1 {real} {period lookback_period} {rmi} {ref stream}]
 lappend indicators [list indicator "Stochastic Oscillator" stoch 3 3 2 {high low close} {{%k period} {%k slowing period} {%d period}} {stoch_k stoch_d}]
 lappend indicators [list indicator "Stochastic RSI" stochrsi 1 1 1 {real} {period} {stochrsi}]
