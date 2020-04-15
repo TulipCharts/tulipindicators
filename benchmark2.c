@@ -140,6 +140,11 @@ void ce_option_setter(double period, double *options) {
 }
 
 
+void mama_option_setter(double period, double *options) {
+    options[0] = 0.5;
+    options[1] = 0.05;
+}
+
 void pfe_option_setter(double period, double *options) {
     options[0] = period;
     options[1] = 5;
@@ -172,6 +177,7 @@ void bench(const ti_indicator_info *info) {
     if (strcmp(info->name, "ultosc") == 0) { options_setter = ultosc_option_setter; }
     if (strcmp(info->name, "vosc") == 0) { options_setter = fast_slow_option_setter; }
     if (strcmp(info->name, "vidya") == 0) { options_setter = vidya_option_setter; }
+    if (strcmp(info->name, "mama") == 0) { options_setter = mama_option_setter; }
     if (strcmp(info->name, "pfe") == 0) { options_setter = pfe_option_setter; }
 
     TI_REAL *inputs[TI_MAXINDPARAMS];
