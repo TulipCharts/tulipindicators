@@ -2,9 +2,7 @@ CC ?= gcc
 AR ?= ar
 RANLIB ?= ranlib
 
-#CCFLAGS ?= -Wall -Wextra -Werror -Wshadow -Wconversion -O2 -g -pg -fprofile-arcs -ftest-coverage
-#CCFLAGS ?= -Wall -Wextra -Werror -Wshadow -Wconversion -O2 -g -pedantic -std=c99
-CCFLAGS ?= -Wall -Wextra -Wshadow -Wconversion -O2 -g
+CCFLAGS ?= -Wall -Wextra -Wshadow -Wconversion -std=c99 -pedantic -O2 -g
 
 SRCS=$(wildcard indicators/*.c)
 SRCS+=$(wildcard utils/*.c)
@@ -15,13 +13,13 @@ AMAL=$(SRCS:%.c=%.ca)
 
 all: libindicators.a sample example1 example2 fuzzer smoke
 
-libindicators.a: indicators_index.o $(OBJS)
-	$(AR) rcu $@ $^
+indicators.h: indicators.tcl
+	tclsh indicators.tcl
+
+libindicators.a: indicators.h $(OBJS)
+	$(CC) -c $(CCFLAGS) indicators_index.c -o indicators_index.o
+	$(AR) rcu $@ $^ indicators_index.o
 	$(RANLIB) $@
-
-
-indicators_index.o: indicators.h
-
 
 smoke: smoke.o libindicators.a
 	$(CC) $(CCFLAGS) -o $@ $^ -lm
@@ -43,10 +41,31 @@ sample: sample.o libindicators.a
 benchmark: benchmark.o libindicators.a
 	$(CC) $(CCFLAGS) -o $@ $^ -lta_lib -lm
 
+#Optional benchmark program, new edition.
+benchmark2: benchmark2.o libindicators.a
+	$(CC) $(CCFLAGS) -o $@ $^ -lm
+
 #This will build all of Tulip Indicators into one .c file.
 tiamalgamation.c: $(AMAL) indicators_index.ca indicators.h
 	echo -e "/*\n * TULIP INDICATORS AMALGAMATION\n * This is all of Tulip Indicators in one file.\n * To get the original sources, go to https://tulipindicators.org\n */\n\n" \
 	    | cat - indicators.h utils/buffer.h utils/minmax.h $(AMAL) indicators_index.ca > $@
+
+
+$(OBJS): indicators.h
+
+smoke.o: indicators.h
+
+example1.o: indicators.h
+
+example2.o: indicators.h
+
+fuzzer.o: indicators.h
+
+sample.o: indicators.h
+
+benchmark.o: indicators.h
+
+$(AMAL): indicators.h
 
 .c.o:
 	$(CC) -c $(CCFLAGS) $< -o $@
@@ -59,6 +78,8 @@ clean:
 	rm -f *.a
 	rm -f *.exe
 	rm -f *.o
+	rm -f indicators.h
+	rm -f indicators_index.c
 	rm -f indicators/*.o
 	rm -f utils/*.o
 	rm -f *.ca
