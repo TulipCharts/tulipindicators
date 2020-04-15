@@ -26,39 +26,40 @@
 
 
 int ti_ikhts_start(TI_REAL const *options) {
-      return (int)options[0] - 1;
+    return (int)options[0] - 1;
 }
 
 
-int ti_ikhts(int size,
-      TI_REAL const *const *inputs,
-      TI_REAL const *options,
-      TI_REAL *const *outputs) {
-      TI_REAL *output = outputs[0];
+//TODO this should be redone to not call other indicators
+int ti_ikhts(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
+    const int period = (int)options[0];
+    TI_REAL *output = outputs[0];
 
-      const int out_size = size - ti_max_start(options);
+    if (period < 1) return TI_INVALID_OPTION;
+    if (size <= ti_ikhts_start(options)) return TI_OKAY;
 
-      TI_REAL *buff = malloc(sizeof(TI_REAL) * (unsigned long) out_size * 2UL);
-      TI_REAL *max = &buff[0];
-      TI_REAL *min = &buff[out_size];
-      TI_REAL *tmp_outs[1];
-      tmp_outs[0] = max;
-      
-      int ret = ti_max(size, &inputs[0], options, tmp_outs);
-      assert(ret == TI_OKAY);
+    const int out_size = size - ti_max_start(options);
 
-      tmp_outs[0] = min;
-      ret = ti_min(size, &inputs[1], options, tmp_outs);
-      assert(ret == TI_OKAY);
+    TI_REAL *buff = malloc(sizeof(TI_REAL) * (unsigned long) out_size * 2UL);
+    TI_REAL *max = &buff[0];
+    TI_REAL *min = &buff[out_size];
+    TI_REAL *tmp_outs[1];
+    tmp_outs[0] = max;
 
-      
-      int i;
-      for (i = 0; i < out_size; ++i) {
-            *output++ = (*max++ + *min++)/2.0;
-      }
-      
-      free(buff);
-      assert(output - outputs[0] == size - ti_ikhts_start(options));
-      return TI_OKAY;
+    int ret = ti_max(size, &inputs[0], options, tmp_outs);
+    assert(ret == TI_OKAY);
 
+    tmp_outs[0] = min;
+    ret = ti_min(size, &inputs[1], options, tmp_outs);
+    assert(ret == TI_OKAY);
+
+
+    int i;
+    for (i = 0; i < out_size; ++i) {
+        *output++ = (*max++ + *min++)/2.0;
+    }
+
+    free(buff);
+    assert(output - outputs[0] == size - ti_ikhts_start(options));
+    return TI_OKAY;
 }
