@@ -92,6 +92,7 @@ lappend indicators [list overlay "Donchian Channel" dc 1 1 2 {real} {period} {dc
 lappend indicators [list overlay "Keltner Channel" kc 3 2 3 {high low close} {period multiple} {kc_lower kc_middle kc_upper} {stream}]
 lappend indicators [list overlay "Kaufman Adaptive Moving Average" kama 1 1 1 {real} {period} {kama}]
 lappend indicators [list overlay "Parabolic SAR" psar 2 2 1 {high low} {{acceleration factor step} {acceleration factor maximum}} {psar}]
+lappend indicators [list overlay "Price Channel" pc 2 1 2 {high low} {period} {pc_low pc_high} {stream}]
 
 #Momentum
 lappend indicators [list indicator "Accumulation/Distribution Line" ad 4 0 1 {high low close volume} {} {ad}]
