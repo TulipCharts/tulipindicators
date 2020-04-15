@@ -125,6 +125,7 @@ lappend indicators [list indicator "Positive Volume Index" pvi 2 0 1 {close volu
 lappend indicators [list indicator "Projection Oscillator" posc 3 2 1 {high low close} {period ema_period} {posc} {stream ref}]
 lappend indicators [list indicator "Qstick" qstick 2 1 1 {open close} {period} {qstick}]
 lappend indicators [list indicator "Relative Strength Index" rsi 1 1 1 {real} {period} {rsi}]
+lappend indicators [list indicator "Stochastic Momentum Index" smi 3 3 1 {high low close} {q_period r_period s_period} {smi} {stream ref}]
 lappend indicators [list indicator "True Strength Index" tsi 1 2 1 {real} {y_period z_period} {tsi} {stream ref}]
 lappend indicators [list indicator "Relative Volatility Index" rvi 1 2 1 {real} {period stddev_period} {rvi} {stream}]
 lappend indicators [list indicator "Relative Momentum Index" rmi 1 2 1 {real} {period lookback_period} {rmi} {ref stream}]

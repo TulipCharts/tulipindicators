@@ -250,6 +250,7 @@ void bench(const ti_indicator_info *info) {
     if (strcmp(info->name, "psar") == 0) { options_setter = psar_option_setter; }
     if (strcmp(info->name, "adosc") == 0) { options_setter = fast_slow_option_setter; }
     if (strcmp(info->name, "kvo") == 0) { options_setter = fast_slow_option_setter; }
+    if (strcmp(info->name, "smi") == 0) { options_setter = smi_option_setter; }
     if (strcmp(info->name, "rvi") == 0) { options_setter = rvi_option_setter; }
     if (strcmp(info->name, "rmi") == 0) { options_setter = rmi_option_setter; }
     if (strcmp(info->name, "adosc") == 0) { options_setter = fast_slow_option_setter; }
