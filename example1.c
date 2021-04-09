@@ -39,20 +39,20 @@ void print_array(const double *p, const int size) {
 int main()
 {
     const double data_in[] = {5,8,12,11,9,8,7,10,11,13};
-    const int input_length = sizeof(data_in) / sizeof(double);
+    const int input_length = (const int)(sizeof(data_in) / sizeof(double));
 
     printf("We have %d bars of input data.\n", input_length);
     print_array(data_in, input_length);
 
     const double options[] = {3};
     printf("Our option array is: ");
-    print_array(options, sizeof(options) / sizeof(double));
+    print_array(options, (const int)(sizeof(options) / sizeof(double)));
 
     const int start = ti_sma_start(options);
     printf("The start amount is: %d\n", start);
 
     const int output_length = input_length - start;
-    double *data_out = malloc((unsigned int)output_length * sizeof(double));
+    double *data_out = (double*) malloc((unsigned int)output_length * sizeof(double));
     assert(data_out != 0);
     printf("The output length is: %d\n", output_length);
 

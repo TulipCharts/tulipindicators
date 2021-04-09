@@ -112,6 +112,10 @@ struct ti_indicator_info ti_indicators[] = {
     {"obv", "On Balance Volume", ti_obv_start, ti_obv, TI_TYPE_INDICATOR, 2, 0, 1, {"close","volume",0}, {"",0}, {"obv",0}},
     {"ppo", "Percentage Price Oscillator", ti_ppo_start, ti_ppo, TI_TYPE_INDICATOR, 1, 2, 1, {"real",0}, {"short period","long period",0}, {"ppo",0}},
     {"psar", "Parabolic SAR", ti_psar_start, ti_psar, TI_TYPE_OVERLAY, 2, 2, 1, {"high","low",0}, {"acceleration factor step","acceleration factor maximum",0}, {"psar",0}},
+    // begin pti indicators
+    {"pti_rsi", "persistent Relative Strength Index", ti_rsi_start, pst_ti_rsi, TI_TYPE_INDICATOR, 1, 1, 1, {"real",0}, {"period",0}, {"rsi",0}},
+    // {"pti_sma", "persistent Simple Moving Average", ti_sma_start, pst_ti_sma, TI_TYPE_OVERLAY, 1, 1, 1, {"real",0}, {"period",0}, {"sma",0}},    
+    // end pti indicators
     {"pvi", "Positive Volume Index", ti_pvi_start, ti_pvi, TI_TYPE_INDICATOR, 2, 0, 1, {"close","volume",0}, {"",0}, {"pvi",0}},
     {"qstick", "Qstick", ti_qstick_start, ti_qstick, TI_TYPE_INDICATOR, 2, 1, 1, {"open","close",0}, {"period",0}, {"qstick",0}},
     {"roc", "Rate of Change", ti_roc_start, ti_roc, TI_TYPE_INDICATOR, 1, 1, 1, {"real",0}, {"period",0}, {"roc",0}},
@@ -152,15 +156,15 @@ struct ti_indicator_info ti_indicators[] = {
     {"willr", "Williams %R", ti_willr_start, ti_willr, TI_TYPE_INDICATOR, 3, 1, 1, {"high","low","close",0}, {"period",0}, {"willr",0}},
     {"wma", "Weighted Moving Average", ti_wma_start, ti_wma, TI_TYPE_OVERLAY, 1, 1, 1, {"real",0}, {"period",0}, {"wma",0}},
     {"zlema", "Zero-Lag Exponential Moving Average", ti_zlema_start, ti_zlema, TI_TYPE_OVERLAY, 1, 1, 1, {"real",0}, {"period",0}, {"zlema",0}},
-    {0,0,0,0,0,0,0,0,{0,0},{0,0},{0,0}}
+    {0,0,0,0,0,0,0,0,{0,0},{0,0},{0,0}},
 };
 
 
-const ti_indicator_info *ti_find_indicator(const char *name) {
+const ti_indicator_info* ti_find_indicator(const char *name) {
     int imin = 0;
     int imax = sizeof(ti_indicators) / sizeof(ti_indicator_info) - 2;
 
-    /*Binary search.*/
+    // Binary search.
     while (imax >= imin) {
         const int i = (imin + ((imax-imin)/2));
         const int c = strcmp(name, ti_indicators[i].name);
@@ -176,4 +180,6 @@ const ti_indicator_info *ti_find_indicator(const char *name) {
     return 0;
 }
 
-
+int is_null_value(TI_REAL value) {
+    return TI_NULL_VAL == value ? TI_OKAY : TI_INVALID_OPTION; 
+}

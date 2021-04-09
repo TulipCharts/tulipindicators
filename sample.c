@@ -49,9 +49,18 @@ TI_REAL close[] = {81.59,81.06,82.87,83,83.61,83.15,82.84,83.99,84.55,84.36,85.5
 TI_REAL volume[] = {5653100,6447400,7690900,3831400,4455100,3798000,3936200,4732000,4841300,3915300,6830800,6694100,5293600,7985800,4807900};
 TI_REAL alternative[] = {.2,.3,.4,.3,.5,.7,.75,.9,.9,1,1,.2,.1,-.1,-.5};
 
-
+/*--- begin: add by wyc -----------------------------------------------------------------------------*/
+extern int test_pst_all();
+/*--- end: add by wyc -------------------------------------------------------------------------------*/
 
 int main(int argc, char **argv) {
+
+/*--- begin: add by wyc -----------------------------------------------------------------------------*/
+    if (0 != test_pst_all()) {
+        return -1;
+    }
+/*--- end: add by wyc -------------------------------------------------------------------------------*/
+
     const ti_indicator_info *info = ti_indicators;
 
     if (argc < 2) {
@@ -106,8 +115,6 @@ int main(int argc, char **argv) {
         return 0;
     }
 
-
-
     info = ti_find_indicator(argv[1]);
     if (!info) {
         printf("Couldn't find indicator: %s\n", argv[1]);
@@ -145,7 +152,6 @@ int main(int argc, char **argv) {
         };
     }
 
-
     /* See if we need alternative inputs (for the indicators that can't take large numbers. */
     const char *alts[] = {"acos", "asin", "atan", "cosh", "sinh", "tanh", "todeg", 0};
     {
@@ -180,7 +186,6 @@ int main(int argc, char **argv) {
     }
 
     int start = info->start(options);
-
 
     /* Run it. */
     const int ret = info->indicator(INSIZE, inputs, options, outputs);

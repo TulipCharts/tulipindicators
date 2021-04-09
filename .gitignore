@@ -1,0 +1,14 @@
+bin
+*.o
+*.a
+*.ca
+*.so
+/tiamalgamation.c
+smoke
+smoke_so
+smoke_tiamal
+sample_so
+sample
+fuzzer
+example2
+example1

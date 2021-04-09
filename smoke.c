@@ -124,14 +124,14 @@ void test_ind_name(FILE *fp, const char *name, int count) {
 
     int input_size = 0;
     for (i = 0; i < info->inputs; ++i) {
-        inputs[i] = malloc(sizeof(TI_REAL) * 512);
+        inputs[i] = (TI_REAL *)malloc(sizeof(TI_REAL) * 512);
         input_size = get_array(fp, inputs[i]);
     }
 
     int answer_size = 0;
     for (i = 0; i < info->outputs; ++i) {
-        answers[i] = malloc(sizeof(TI_REAL) * 512);
-        outputs[i] = malloc(sizeof(TI_REAL) * 512);
+        answers[i] = (TI_REAL *)malloc(sizeof(TI_REAL) * 512);
+        outputs[i] = (TI_REAL *)malloc(sizeof(TI_REAL) * 512);
         answer_size = get_array(fp, answers[i]);
     }
 
@@ -207,7 +207,6 @@ void test_buffer() {
 
 
 int main() {
-
     printf("TI TEST SUITE\n");
     lrun("buffer", test_buffer());
     lrun("version", test_version());

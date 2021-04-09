@@ -48,6 +48,7 @@
 #include <assert.h>
 #include <string.h>
 #include <stdlib.h>
+#include <float.h>
 #endif
 
 #ifdef __cplusplus
@@ -64,7 +65,7 @@ long int ti_build();
 
 #define TI_REAL double
 
-#define TI_INDICATOR_COUNT 104 /* Total number of indicators. */
+#define TI_INDICATOR_COUNT 105 /* Total number of indicators. */
 
 #define TI_OKAY                    0
 #define TI_INVALID_OPTION          1
@@ -77,6 +78,10 @@ long int ti_build();
 
 #define TI_MAXINDPARAMS 10 /* No indicator will use more than this many inputs, options, or outputs. */
 
+/*is null value or not*/
+/*    return: TI_OKAY means true, otherwise means false*/
+const TI_REAL TI_NULL_VAL = DBL_MAX;
+int is_null_value(TI_REAL vallue);
 
 typedef int (*ti_indicator_start_function)(TI_REAL const *options);
 typedef int (*ti_indicator_function)(int size,
@@ -123,12 +128,48 @@ const ti_indicator_info *ti_find_indicator(const char *name);
  */
 
 
+/*
+ *
+ *    ti EXTENDED indicators
+ *    they have PERSISTENT state
+ *    "pst" means PERSISTENT
+ * 
+ */  
+
+/* initialize a persistent indicator if necessary */
+/*    id: user defined name of pst indicator instance, it is unique in global, such as "pst_ti_1" */
+/*    type: pst indicator type, such as "pst_ti_sma" */
+/*    options: same as options of stateless indicator, such as "ti_sma" options is effective for "pst_ti_sma" */
+/*    return: globa instance no, same id corresponds to same no */
+int pst_ti_init(const char* id, const char* type, TI_REAL const *options);
+
+
+/* ti_rsi in persistet version */
+/*    options: instance no returned by pst_ti_init */
+/*    others args & return: same as ti_rsi*/
+int pst_ti_rsi(int size,
+    TI_REAL const *const *inputs,
+    TI_REAL const *options,
+    TI_REAL *const *outputs);
+
+
+// /* ti_sma in persistet version */
+// /*    options: instance no returned by pst_ti_init */
+// /*    others args & return: same as ti_sma*/
+// int pst_ti_sma(int size,
+//     TI_REAL const *const *inputs,
+//     TI_REAL const *options,
+//     TI_REAL *const *outputs);
 
 
 
-
-
-
+/*
+ *
+ *    ti ORIGINAL indicators
+ *    they are STATELESS
+ * 
+ */  
+ 
 /* Vector Absolute Value */
 /* Type: simple */
 /* Input arrays: 1    Options: 0    Output arrays: 1 */
