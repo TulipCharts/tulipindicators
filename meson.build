@@ -14,7 +14,7 @@ libindicators = library(
     install: true,
     version: '0.8.0'
 )
-libtulip_dep = declare_dependency(
+libindicators_dep = declare_dependency(
   link_with : [libindicators],
   include_directories : include_directories('.')
 )
@@ -30,7 +30,7 @@ pkg.generate(
 smoke_exe = executable(
     'smoke',
     ['smoke.c', 'indicators_index.c'],
-    dependencies: [libtulip_dep]
+    dependencies: [libindicators_dep]
 )
 test(
     'TI TEST SUITE',
@@ -46,7 +46,7 @@ libtalib_dep = cc.find_library(
 benchmark_exe = executable(
     'benchmark_tulip',
     ['benchmark.c', 'indicators_index.c'],
-    dependencies: [libtulip_dep, libtalib_dep]
+    dependencies: [libindicators_dep, libtalib_dep]
 )
 benchmark(
     'tulip benchmark',
