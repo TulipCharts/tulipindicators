@@ -10,6 +10,7 @@ subdir('utils')
 
 libindicators = library(
     'indicators',
+    ['indicators_index.c'],
     dependencies: [libm_dep, tulip_indicators_dep, tulip_util_dep],
     install: true,
     version: '0.8.0'
@@ -29,7 +30,7 @@ pkg.generate(
 
 smoke_exe = executable(
     'smoke',
-    ['smoke.c', 'indicators_index.c'],
+    ['smoke.c'],
     dependencies: [libindicators_dep]
 )
 test(
@@ -45,7 +46,7 @@ libtalib_dep = cc.find_library(
 )
 benchmark_exe = executable(
     'benchmark_tulip',
-    ['benchmark.c', 'indicators_index.c'],
+    ['benchmark.c'],
     dependencies: [libindicators_dep, libtalib_dep]
 )
 benchmark(
