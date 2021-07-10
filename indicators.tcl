@@ -161,6 +161,7 @@ lappend indicators [list indicator "Chaikins Volatility" cvi 2 1 1 {high low} {p
 
 #Utility functions
 lappend indicators [list math "Crossany" crossany 2 0 1 {real real} {} {crossany}]
+lappend indicators [list math "Crossdir" crossdir 2 0 1 {real real} {} {crossdir}]
 lappend indicators [list math "Crossover" crossover 2 0 1 {real real} {} {crossover}]
 lappend indicators [list math "Linear Decay" decay 1 1 1 {real} {period} {decay}]
 lappend indicators [list math "Exponential Decay" edecay 1 1 1 {real} {period} {edecay}]
