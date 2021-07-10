@@ -64,7 +64,7 @@ long int ti_build();
 
 #define TI_REAL double
 
-#define TI_INDICATOR_COUNT 104 /* Total number of indicators. */
+#define TI_INDICATOR_COUNT 105 /* Total number of indicators. */
 
 #define TI_OKAY                    0
 #define TI_INVALID_OPTION          1
@@ -489,6 +489,22 @@ int ti_cosh(int size,
 /* Outputs: crossany */
 int ti_crossany_start(TI_REAL const *options);
 int ti_crossany(int size,
+      TI_REAL const *const *inputs,
+      TI_REAL const *options,
+      TI_REAL *const *outputs);
+
+
+
+
+
+/* Crossdir */
+/* Type: math */
+/* Input arrays: 2    Options: 0    Output arrays: 1 */
+/* Inputs: real, real */
+/* Options: none */
+/* Outputs: crossdir */
+int ti_crossdir_start(TI_REAL const *options);
+int ti_crossdir(int size,
       TI_REAL const *const *inputs,
       TI_REAL const *options,
       TI_REAL *const *outputs);
