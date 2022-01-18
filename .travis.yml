@@ -1,8 +1,11 @@
 language: c
 
+before_install:
+  - sudo apt-get install -y tcl
+
 os:
   - linux
-  - osx
+  #- osx TODO figure out how to get tcl on osx
 
 compiler:
   - clang

@@ -173,6 +173,10 @@ int main(int argc, char **argv) {
         for (i = 0; i < info->options; ++i) {
             if (argc < 3 + i) {
                 printf("*ERROR NOT ENOUGH OPTIONS*\n");
+                for (int k = 1; k < argc; ++k) {
+                    printf("%s ", argv[k]);
+                }
+                printf("\n");
                 return 1;
             }
             options[i] = atof(argv[2+i]);
@@ -233,6 +237,10 @@ int main(int argc, char **argv) {
     } else {
         if (ret == TI_INVALID_OPTION) {
             printf("*ERROR INVALID OPTION*\n");
+            for (int i = 1; i < argc; ++i) {
+                printf("%s ", argv[i]);
+            }
+            printf("\n");
         } else {
             printf("*ERROR*\n");
         }

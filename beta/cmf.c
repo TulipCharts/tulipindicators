@@ -22,73 +22,50 @@
  */
 
 #include "../indicators.h"
-#include "dx.h"
 
+/* Source:
+ * Kirkpatrick, Dahlquist. Technical Analysis: The Complete Resource for Financial Market Technicians (2 ed.)
+ * ISBN 978-0-13-705944-7
+ * pp. 419, 421
+ * */
 
-int ti_dx_start(TI_REAL const *options) {
+int ti_cmf_start(TI_REAL const *options) {
     return (int)options[0]-1;
 }
 
-
-int ti_dx(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
+int ti_cmf(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
     const TI_REAL *high = inputs[0];
     const TI_REAL *low = inputs[1];
-
+    const TI_REAL *close = inputs[2];
+    const TI_REAL *volume = inputs[3];
     const int period = (int)options[0];
-
     TI_REAL *output = outputs[0];
 
     if (period < 1) return TI_INVALID_OPTION;
-    if (size <= ti_dx_start(options)) return TI_OKAY;
+    if (size <= ti_wma_start(options)) return TI_OKAY;
 
-    const TI_REAL per = ((TI_REAL)period-1) / ((TI_REAL)period);
+    #define CHAIKIN_AD(i) (high[i] - low[i] ? volume[i] * ((close[i] - low[i]) - (high[i] - close[i])) / (high[i] - low[i]) : 0.)
 
-    TI_REAL dmup = 0;
-    TI_REAL dmdown = 0;
-
+    TI_REAL period_volume = 0;
+    TI_REAL period_ad_sum = 0;
     int i;
-    for (i = 1; i < period; ++i) {
-
-        TI_REAL dp, dm;
-        CALC_DIRECTION(dp, dm);
-
-        dmup += dp;
-        dmdown += dm;
+    for (i = 0; i < period-1; ++i) {
+        period_ad_sum += CHAIKIN_AD(i);
+        period_volume += volume[i];
     }
 
+    for (i = period-1; i < size; ++i) {
+        period_ad_sum += CHAIKIN_AD(i);
+        period_volume += volume[i];
 
-    {
-        TI_REAL di_up = dmup;
-        TI_REAL di_down = dmdown;
-        TI_REAL dm_diff = fabs(di_up - di_down);
-        TI_REAL dm_sum = di_up + di_down;
-        TI_REAL dx = dm_diff / dm_sum * 100;
+        *output++ = period_ad_sum / period_volume;
 
-        *output++ = dx;
+        period_ad_sum -= CHAIKIN_AD(i-period+1);
+        period_volume -= volume[i-period+1];
     }
 
+    #undef CHAIKIN_AD
 
-    for (i = period; i < size; ++i) {
-
-        TI_REAL dp, dm;
-        CALC_DIRECTION(dp, dm);
-
-
-        dmup = dmup * per + dp;
-        dmdown = dmdown * per + dm;
-
-
-        TI_REAL di_up = dmup;
-        TI_REAL di_down = dmdown;
-        TI_REAL dm_diff = fabs(di_up - di_down);
-        TI_REAL dm_sum = di_up + di_down;
-        TI_REAL dx = dm_diff / dm_sum * 100;
-
-        *output++ = dx;
-    }
-
-
-
-    assert(output - outputs[0] == size - ti_dx_start(options));
+    assert(output - outputs[0] == size - ti_cmf_start(options));
     return TI_OKAY;
 }
