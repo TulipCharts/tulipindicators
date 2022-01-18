@@ -34,7 +34,7 @@ int ti_alma_start(TI_REAL const *options) {
     return window - 1;
 }
 
-int ti_alma(int size, TI_REAL const * const *inputs, TI_REAL const *options, TI_REAL * const *outputs) {
+int ti_alma(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
     const TI_REAL *input = inputs[0];
     const int window = (int)options[0];
     const TI_REAL offset = options[1];

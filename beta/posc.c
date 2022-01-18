@@ -32,9 +32,9 @@ int ti_posc_start(TI_REAL const *options) {
 
 
 int ti_posc(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
-    TI_REAL const *high = inputs[0];
-    TI_REAL const *low = inputs[1];
-    TI_REAL const *close = inputs[2];
+    const TI_REAL *high = inputs[0];
+    const TI_REAL *low = inputs[1];
+    const TI_REAL *close = inputs[2];
     const int period = (int)options[0];
     const int ema_period = (int)options[1];
     TI_REAL *posc = outputs[0];
@@ -107,12 +107,16 @@ int ti_posc(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_R
 }
 
 int ti_posc_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
-    TI_REAL const *high = inputs[0];
-    TI_REAL const *low = inputs[1];
-    TI_REAL const *close = inputs[2];
+    const TI_REAL *high = inputs[0];
+    const TI_REAL *low = inputs[1];
+    const TI_REAL *close = inputs[2];
     const TI_REAL period = options[0];
     const TI_REAL ema_period = options[1];
     TI_REAL *posc = outputs[0];
+
+    if (period < 1) { return TI_INVALID_OPTION; }
+    if (ema_period < 1) { return TI_INVALID_OPTION; }
+    if (size <= ti_posc_start(options)) { return TI_OKAY; }
 
     int start = ti_linregslope_start(options);
     TI_REAL *b = malloc(sizeof(TI_REAL[size - start]));
@@ -212,9 +216,9 @@ void ti_posc_stream_free(ti_stream *stream) {
 int ti_posc_stream_run(ti_stream *stream_in, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
     ti_stream_posc *stream = (ti_stream_posc*)stream_in;
 
-    TI_REAL const *high = inputs[0];
-    TI_REAL const *low = inputs[1];
-    TI_REAL const *close = inputs[2];
+    const TI_REAL *high = inputs[0];
+    const TI_REAL *low = inputs[1];
+    const TI_REAL *close = inputs[2];
     TI_REAL *posc = outputs[0];
 
     int progress = stream->progress;

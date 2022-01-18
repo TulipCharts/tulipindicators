@@ -1,7 +1,7 @@
 /*
  * Tulip Indicators
  * https://tulipindicators.org/
- * Copyright (c) 2010-2019 Tulip Charts LLC
+ * Copyright (c) 2010-2020 Tulip Charts LLC
  * Lewis Van Winkle (LV@tulipcharts.org)
  *
  * This file is part of Tulip Indicators.
@@ -47,9 +47,6 @@ int ti_kc(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REA
     // where atr is ema of trueranges
 
     if (period < 1) {
-        return TI_INVALID_OPTION;
-    }
-    if (multiple < 0 || multiple > 1) {
         return TI_INVALID_OPTION;
     }
 
@@ -106,9 +103,6 @@ int ti_kc_stream_new(TI_REAL const *options, ti_stream **stream_in) {
     const TI_REAL multiple = options[1];
 
     if (period < 0) {
-        return TI_INVALID_OPTION;
-    }
-    if (multiple < 0 || multiple > 1) {
         return TI_INVALID_OPTION;
     }
 

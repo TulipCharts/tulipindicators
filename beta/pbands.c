@@ -32,9 +32,9 @@ int ti_pbands_start(TI_REAL const *options) {
 
 
 int ti_pbands(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
-    TI_REAL const *high = inputs[0];
-    TI_REAL const *low = inputs[1];
-    TI_REAL const *close = inputs[2];
+    const TI_REAL *high = inputs[0];
+    const TI_REAL *low = inputs[1];
+    const TI_REAL *close = inputs[2];
     const int period = (int)options[0];
     TI_REAL *pbands_lower = outputs[0];
     TI_REAL *pbands_upper = outputs[1];
@@ -103,12 +103,15 @@ int ti_pbands(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI
 }
 
 int ti_pbands_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
-    TI_REAL const *high = inputs[0];
-    TI_REAL const *low = inputs[1];
-    TI_REAL const *close = inputs[2];
+    const TI_REAL *high = inputs[0];
+    const TI_REAL *low = inputs[1];
+    const TI_REAL *close = inputs[2];
     const TI_REAL period = options[0];
     TI_REAL *pbands_lower = outputs[0];
     TI_REAL *pbands_upper = outputs[1];
+
+    if (period < 1) { return TI_INVALID_OPTION; }
+    if (size <= ti_pbands_start(options)) { return TI_OKAY; }
 
     int start = ti_linregslope_start(options);
     TI_REAL *b = malloc(sizeof(TI_REAL[size - start]));
@@ -199,9 +202,9 @@ void ti_pbands_stream_free(ti_stream *stream) {
 
 int ti_pbands_stream_run(ti_stream *stream_in, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
     ti_stream_pbands *stream = (ti_stream_pbands*)stream_in;
-    TI_REAL const *high = inputs[0];
-    TI_REAL const *low = inputs[1];
-    TI_REAL const *close = inputs[2];
+    const TI_REAL *high = inputs[0];
+    const TI_REAL *low = inputs[1];
+    const TI_REAL *close = inputs[2];
     TI_REAL *pbands_lower = outputs[0];
     TI_REAL *pbands_upper = outputs[1];
 

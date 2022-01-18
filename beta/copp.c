@@ -34,7 +34,7 @@ int ti_copp_start(TI_REAL const *options) {
 
 
 int ti_copp(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
-    TI_REAL const *real = inputs[0];
+    const TI_REAL *real = inputs[0];
     const int roc_shorter_period = (int)options[0];
     const int roc_longer_period = (int)options[1];
     const int wma_period = (int)options[2];
@@ -102,7 +102,7 @@ int ti_copp(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_R
 }
 
 int ti_copp_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
-    TI_REAL const *real = inputs[0];
+    const TI_REAL *real = inputs[0];
     const TI_REAL roc_shorter_period = options[0];
     const TI_REAL roc_longer_period = options[1];
     const TI_REAL wma_period = options[2];
@@ -210,7 +210,7 @@ int ti_copp_stream_run(ti_stream *stream_in, int size, TI_REAL const *const *inp
 
     int progress = stream->progress;
 
-    TI_REAL const *real = inputs[0];
+    const TI_REAL *real = inputs[0];
     TI_REAL *copp = outputs[0];
 
     const int roc_shorter_period = stream->options.roc_shorter_period;

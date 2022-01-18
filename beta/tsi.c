@@ -30,7 +30,7 @@ int ti_tsi_start(TI_REAL const *options) {
 }
 
 int ti_tsi(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
-    TI_REAL const *real = inputs[0];
+    const TI_REAL *real = inputs[0];
     const TI_REAL y_period = options[0];
     const TI_REAL z_period = options[1];
     TI_REAL *tsi = outputs[0];
@@ -76,7 +76,7 @@ int ti_tsi(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_RE
 }
 
 int ti_tsi_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
-    TI_REAL const *real = inputs[0];
+    const TI_REAL *real = inputs[0];
     const TI_REAL y_period = options[0];
     const TI_REAL z_period = options[1];
     TI_REAL *tsi = outputs[0];
@@ -153,7 +153,7 @@ void ti_tsi_stream_free(ti_stream *stream) {
 int ti_tsi_stream_run(ti_stream *stream_in, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
     ti_stream_tsi *stream = (ti_stream_tsi*)stream_in;
 
-    TI_REAL const *real = inputs[0];
+    const TI_REAL *real = inputs[0];
     TI_REAL *tsi = outputs[0];
 
     const TI_REAL y_period = stream->options.y_period;

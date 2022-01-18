@@ -30,10 +30,10 @@ int ti_vwap_start(TI_REAL const *options) {
 }
 
 int ti_vwap(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
-    TI_REAL const *high = inputs[0];
-    TI_REAL const *low = inputs[1];
-    TI_REAL const *close = inputs[2];
-    TI_REAL const *volume = inputs[3];
+    const TI_REAL *high = inputs[0];
+    const TI_REAL *low = inputs[1];
+    const TI_REAL *close = inputs[2];
+    const TI_REAL *volume = inputs[3];
     const int period = (int)options[0];
     TI_REAL *vwap = outputs[0];
 
@@ -64,7 +64,7 @@ int ti_vwap(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_R
 }
 
 int ti_vwap_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
-    TI_REAL const *volume = inputs[3];
+    const TI_REAL *volume = inputs[3];
     const TI_REAL period = options[0];
     TI_REAL *vwap = outputs[0];
 
@@ -155,10 +155,10 @@ void ti_vwap_stream_free(ti_stream *stream) {
 int ti_vwap_stream_run(ti_stream *stream_in, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
     ti_stream_vwap *stream = (ti_stream_vwap*)stream_in;
 
-    TI_REAL const *high = inputs[0];
-    TI_REAL const *low = inputs[1];
-    TI_REAL const *close = inputs[2];
-    TI_REAL const *volume = inputs[3];
+    const TI_REAL *high = inputs[0];
+    const TI_REAL *low = inputs[1];
+    const TI_REAL *close = inputs[2];
+    const TI_REAL *volume = inputs[3];
     TI_REAL *vwap = outputs[0];
 
     int progress = stream->progress;

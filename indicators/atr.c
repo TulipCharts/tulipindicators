@@ -73,11 +73,12 @@ int ti_atr(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_RE
 
 
 int ti_atr_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
-
-    //atr = ti_wilders(ti_tr)
+    const int period = (int)options[0];
+    if (period < 1) return TI_INVALID_OPTION;
+    if (size <= ti_atr_start(options)) return TI_OKAY;
 
     //First calculate true range.
-    const int tr_start = ti_tr_start(0);
+    const int tr_start = ti_tr_start(options);
     const int tr_size = size - tr_start;
     TI_REAL *truerange = malloc((unsigned int)tr_size * sizeof(TI_REAL));
     if (!truerange) {return TI_OUT_OF_MEMORY;}

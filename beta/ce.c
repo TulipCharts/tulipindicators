@@ -40,9 +40,9 @@ int ti_ce_start(TI_REAL const *options) {
 /*********** Plain implementation ************/
 
 int ti_ce(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
-    TI_REAL const *high = inputs[0];
-    TI_REAL const *low = inputs[1];
-    TI_REAL const *close = inputs[2];
+    const TI_REAL *high = inputs[0];
+    const TI_REAL *low = inputs[1];
+    const TI_REAL *close = inputs[2];
     const int period = (int)options[0];
     const TI_REAL coef = options[1];
     TI_REAL *ce_high = outputs[0];
@@ -128,8 +128,8 @@ int ti_ce(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REA
 /*********** Reference implementation ************/
 
 int ti_ce_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
-    TI_REAL const *high = inputs[0];
-    TI_REAL const *low = inputs[1];
+    const TI_REAL *high = inputs[0];
+    const TI_REAL *low = inputs[1];
     const int period = (int)options[0];
     const TI_REAL coef = options[1];
     TI_REAL *ce_high = outputs[0];
@@ -295,9 +295,9 @@ int ti_ce_stream_run(ti_stream *stream_in, int size, TI_REAL const *const *input
 
     int progress = stream->progress;
 
-    TI_REAL const *high = inputs[0];
-    TI_REAL const *low = inputs[1];
-    TI_REAL const *close = inputs[2];
+    const TI_REAL *high = inputs[0];
+    const TI_REAL *low = inputs[1];
+    const TI_REAL *close = inputs[2];
     const int period = stream->period;
     const TI_REAL coef = stream->coef;
     TI_REAL *ce_high = outputs[0];

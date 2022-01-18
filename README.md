@@ -36,6 +36,17 @@ make
 You should get a static library, `libindicators.a`. You'll need that library
 and the header file `indicators.h` to use Tulip Indicators in your code.
 
+
+## Not Building
+
+If you don't want to build the library, you can simply add the
+`tiamalgamation.c` file to your project, along with `indicators.h` and
+candles.h`. The amalgamation file contains all of Tulip Indicators - you don't
+actually need any of the other source files.
+
+This is the recommended method to import Tulip Indicators into code for
+bindings to other languages, since it makes it very easy to update versions.
+
 ## Usage
 
 For usage information, please see:
@@ -157,9 +168,12 @@ Simple
    todeg               Vector Degree Conversion
    torad               Vector Radian Conversion
    trunc               Vector Truncate
+
 ```
 
 
 ## Special Thanks
 
 The stochrsi indicator was sponsored by: [Gunthy](https://gunthy.org).
+
+The candle pattern recognition was sponsored by: [Algorum](https://algorumsoftware.com)

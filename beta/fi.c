@@ -31,9 +31,9 @@ int ti_fi_start(TI_REAL const *options) {
 
 
 int ti_fi(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
-    TI_REAL const *close = inputs[0];
-    TI_REAL const *volume = inputs[1];
-    TI_REAL const period = options[0];
+    const TI_REAL *close = inputs[0];
+    const TI_REAL *volume = inputs[1];
+    const TI_REAL period = options[0];
     TI_REAL *fi = outputs[0];
 
     if (period < 1) { return TI_INVALID_OPTION; }
@@ -52,9 +52,9 @@ int ti_fi(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REA
 }
 
 int ti_fi_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
-    TI_REAL const *close = inputs[0];
-    TI_REAL const *volume = inputs[1];
-    TI_REAL const period = options[0];
+    const TI_REAL *close = inputs[0];
+    const TI_REAL *volume = inputs[1];
+    const TI_REAL period = options[0];
     TI_REAL *fi = outputs[0];
 
     if (size <= ti_fi_start(options)) { return TI_OKAY; }
@@ -102,8 +102,8 @@ int ti_fi_stream_run(ti_stream *stream_in, int size, TI_REAL const *const *input
 
     int progress = stream->progress;
 
-    TI_REAL const *close = inputs[0];
-    TI_REAL const *volume = inputs[1];
+    const TI_REAL *close = inputs[0];
+    const TI_REAL *volume = inputs[1];
     TI_REAL *fi = outputs[0];
 
     TI_REAL per = stream->per;

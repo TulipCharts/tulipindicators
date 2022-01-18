@@ -31,7 +31,7 @@ int ti_rvi_start(TI_REAL const *options) {
 
 
 int ti_rvi(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
-    TI_REAL const *real = inputs[0];
+    const TI_REAL *real = inputs[0];
     const int sma_period = (int)options[0];
     const int stddev_period = (int)options[1];
     TI_REAL *rvi = outputs[0];
@@ -167,7 +167,7 @@ void ti_rvi_stream_free(ti_stream *stream) {
 int ti_rvi_stream_run(ti_stream *stream_in, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
     ti_stream_rvi *stream = (ti_stream_rvi*)stream_in;
 
-    TI_REAL const *real = inputs[0];
+    const TI_REAL *real = inputs[0];
     TI_REAL *rvi = outputs[0];
 
     int progress = stream->progress;

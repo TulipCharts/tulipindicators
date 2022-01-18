@@ -32,7 +32,7 @@ int ti_mama_start(TI_REAL const *options) {
 
 
 int ti_mama(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
-    TI_REAL const *real = inputs[0];
+    const TI_REAL *real = inputs[0];
     const TI_REAL fastlimit = options[0];
     const TI_REAL slowlimit = options[1];
 
@@ -45,7 +45,7 @@ int ti_mama(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_R
     TI_REAL *mama = outputs[0];
     TI_REAL *fama = outputs[1];
 
-    TI_REAL const *price = real;
+    const TI_REAL *price = real;
 
     struct data {
         BUFFERS(
@@ -69,23 +69,23 @@ int ti_mama(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_R
         )
     } *data;
     data = calloc(1, sizeof(struct data));
-    BUFFER_INIT(data, smooth, 7)
-    BUFFER_INIT(data, detrender, 7)
-    BUFFER_INIT(data, I1, 7)
-    BUFFER_INIT(data, Q1, 7)
-    BUFFER_INIT(data, jI, 1)
-    BUFFER_INIT(data, jQ, 1)
-    BUFFER_INIT(data, I2, 2)
-    BUFFER_INIT(data, Q2, 2)
-    BUFFER_INIT(data, Re, 2)
-    BUFFER_INIT(data, Im, 2)
-    BUFFER_INIT(data, period, 2)
-    BUFFER_INIT(data, smoothperiod, 2)
-    BUFFER_INIT(data, phase, 2)
-    BUFFER_INIT(data, deltaphase, 1)
-    BUFFER_INIT(data, alpha, 1)
-    BUFFER_INIT(data, mama, 1)
-    BUFFER_INIT(data, fama, 1)
+    BUFFER_INIT(data, smooth, 7);
+    BUFFER_INIT(data, detrender, 7);
+    BUFFER_INIT(data, I1, 7);
+    BUFFER_INIT(data, Q1, 7);
+    BUFFER_INIT(data, jI, 1);
+    BUFFER_INIT(data, jQ, 1);
+    BUFFER_INIT(data, I2, 2);
+    BUFFER_INIT(data, Q2, 2);
+    BUFFER_INIT(data, Re, 2);
+    BUFFER_INIT(data, Im, 2);
+    BUFFER_INIT(data, period, 2);
+    BUFFER_INIT(data, smoothperiod, 2);
+    BUFFER_INIT(data, phase, 2);
+    BUFFER_INIT(data, deltaphase, 1);
+    BUFFER_INIT(data, alpha, 1);
+    BUFFER_INIT(data, mama, 1);
+    BUFFER_INIT(data, fama, 1);
     data = realloc(data, sizeof(struct data) + sizeof(TI_REAL[BUFFERS_SIZE(data)]));
 
     for (int i = 0; i < 7; ++i) {
@@ -228,7 +228,7 @@ int ti_mama(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_R
 }
 
 int ti_mama_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
-    TI_REAL const *real = inputs[0];
+    const TI_REAL *real = inputs[0];
     const TI_REAL fastlimit = options[0];
     const TI_REAL slowlimit = options[1];
     TI_REAL *mama = outputs[0];
@@ -241,7 +241,7 @@ int ti_mama_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options, 
     }
 
     // Straightforward translation of the original definition in EasyLanguage
-    TI_REAL const *price = real;
+    const TI_REAL *price = real;
 
     const unsigned int usize = (unsigned int)size;
     TI_REAL *smooth = calloc(usize, sizeof(TI_REAL));
@@ -380,24 +380,24 @@ int ti_mama_stream_new(TI_REAL const *options, ti_stream **stream_in) {
 
     memcpy((*stream)->options, options, sizeof(TI_REAL[2]));
 
-    BUFFER_INIT(*stream, price, 4)
-    BUFFER_INIT(*stream, smooth, 7)
-    BUFFER_INIT(*stream, detrender, 7)
-    BUFFER_INIT(*stream, I1, 7)
-    BUFFER_INIT(*stream, Q1, 7)
-    BUFFER_INIT(*stream, jI, 1)
-    BUFFER_INIT(*stream, jQ, 1)
-    BUFFER_INIT(*stream, I2, 2)
-    BUFFER_INIT(*stream, Q2, 2)
-    BUFFER_INIT(*stream, Re, 2)
-    BUFFER_INIT(*stream, Im, 2)
-    BUFFER_INIT(*stream, period, 2)
-    BUFFER_INIT(*stream, smoothperiod, 2)
-    BUFFER_INIT(*stream, phase, 2)
-    BUFFER_INIT(*stream, deltaphase, 1)
-    BUFFER_INIT(*stream, alpha, 1)
-    BUFFER_INIT(*stream, mama, 1)
-    BUFFER_INIT(*stream, fama, 1)
+    BUFFER_INIT(*stream, price, 4);
+    BUFFER_INIT(*stream, smooth, 7);
+    BUFFER_INIT(*stream, detrender, 7);
+    BUFFER_INIT(*stream, I1, 7);
+    BUFFER_INIT(*stream, Q1, 7);
+    BUFFER_INIT(*stream, jI, 1);
+    BUFFER_INIT(*stream, jQ, 1);
+    BUFFER_INIT(*stream, I2, 2);
+    BUFFER_INIT(*stream, Q2, 2);
+    BUFFER_INIT(*stream, Re, 2);
+    BUFFER_INIT(*stream, Im, 2);
+    BUFFER_INIT(*stream, period, 2);
+    BUFFER_INIT(*stream, smoothperiod, 2);
+    BUFFER_INIT(*stream, phase, 2);
+    BUFFER_INIT(*stream, deltaphase, 1);
+    BUFFER_INIT(*stream, alpha, 1);
+    BUFFER_INIT(*stream, mama, 1);
+    BUFFER_INIT(*stream, fama, 1);
 
     *stream = realloc(*stream, sizeof(ti_stream_mama) + sizeof(TI_REAL[BUFFERS_SIZE(*stream)]));
     if (!*stream) {
@@ -413,13 +413,13 @@ int ti_mama_stream_run(ti_stream *stream_in, int size, TI_REAL const *const *inp
 
     int progress = stream->progress;
 
-    TI_REAL const *real = inputs[0];
+    const TI_REAL *real = inputs[0];
     const TI_REAL fastlimit = stream->options[0];
     const TI_REAL slowlimit = stream->options[1];
     TI_REAL *mama = outputs[0];
     TI_REAL *fama = outputs[1];
 
-    TI_REAL const *price = real;
+    const TI_REAL *price = real;
 
     if (progress == -6) {}
     int i;

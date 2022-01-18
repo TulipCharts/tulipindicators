@@ -41,7 +41,7 @@ int ti_kst_start(TI_REAL const *options) {
 }
 
 int ti_kst(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
-    TI_REAL const *real = inputs[0];
+    const TI_REAL *real = inputs[0];
     const int roc1 = (int)options[0];
     const int roc2 = (int)options[1];
     const int roc3 = (int)options[2];
@@ -113,7 +113,7 @@ int ti_kst(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_RE
 }
 
 int ti_kst_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
-    TI_REAL const *real = inputs[0];
+    const TI_REAL *real = inputs[0];
     const TI_REAL *roc = options;
     const TI_REAL *ma = options + 4;
     TI_REAL *kst = outputs[0];

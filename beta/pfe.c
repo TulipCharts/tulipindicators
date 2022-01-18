@@ -34,7 +34,7 @@ int ti_pfe_start(TI_REAL const *options) {
  */
 
 int ti_pfe(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
-    TI_REAL const *real = inputs[0];
+    const TI_REAL *real = inputs[0];
     const int period = (int)options[0];
     const int ema_period = (int)options[1];
     TI_REAL *pfe = outputs[0];
@@ -77,7 +77,7 @@ int ti_pfe(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_RE
  */
 
 int ti_pfe_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
-    TI_REAL const *real = inputs[0];
+    const TI_REAL *real = inputs[0];
     const int period = (int)options[0];
     const int ema_period = (int)options[1];
     TI_REAL *pfe = outputs[0];
@@ -172,7 +172,7 @@ void ti_pfe_stream_free(ti_stream *stream) {
 int ti_pfe_stream_run(ti_stream *stream_in, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
     ti_stream_pfe *stream = (ti_stream_pfe*)stream_in;
 
-    TI_REAL const *real = inputs[0];
+    const TI_REAL *real = inputs[0];
     const int period = stream->period;
     const TI_REAL ema_period = stream->ema_period;
     TI_REAL *pfe = outputs[0];

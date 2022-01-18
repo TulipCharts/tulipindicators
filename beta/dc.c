@@ -25,34 +25,36 @@
 #include "../utils/localbuffer.h"
 
 
-int ti_pc_start(TI_REAL const *options) {
+int ti_dc_start(TI_REAL const *options) {
     const int period = (int)options[0];
     return period-1;
 }
 
 
-int ti_pc(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
-    TI_REAL const *high = inputs[0];
-    TI_REAL const *low = inputs[1];
-    const TI_REAL period = options[0];
-    TI_REAL *pc_low = outputs[0];
-    TI_REAL *pc_high = outputs[1];
+/* at first, I implemented this by hand, but it turned out to be no better */
+int ti_dc(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
+    const TI_REAL *real = inputs[0];
+    const int period = (int)options[0];
+    TI_REAL *dc_lower = outputs[0];
+    TI_REAL *dc_upper = outputs[1];
 
     if (period < 1) { return TI_INVALID_OPTION; }
-    if (size <= ti_pc_start(options)) { return TI_OKAY; }
+    if (size <= ti_dc_start(options)) { return TI_OKAY; }
 
-    ti_min(size, &low, &period, &pc_low);
-    ti_max(size, &high, &period, &pc_high);
+    /* TODO unacceptable */
+    ti_min(size, &real, options, &dc_lower);
+    ti_max(size, &real, options, &dc_upper);
 
     return TI_OKAY;
 }
 
-typedef struct ti_stream_pc {
+
+typedef struct ti_stream_de {
     int index;
     int progress;
 
     struct {
-        TI_REAL period;
+        int period;
     } options;
 
     struct {
@@ -63,13 +65,12 @@ typedef struct ti_stream_pc {
     } state;
 
     BUFFERS(
-        BUFFER(high)
-        BUFFER(low)
+        BUFFER(price)
     )
-} ti_stream_pc;
+} ti_stream_de;
 
-int ti_pc_stream_new(TI_REAL const *options, ti_stream **stream_in) {
-    ti_stream_pc **stream = (ti_stream_pc**)stream_in;
+int ti_dc_stream_new(TI_REAL const *options, ti_stream **stream_in) {
+    ti_stream_de **stream = (ti_stream_de**)stream_in;
 
     const int period = (int)options[0];
 
@@ -77,33 +78,31 @@ int ti_pc_stream_new(TI_REAL const *options, ti_stream **stream_in) {
 
     *stream = calloc(1, sizeof(**stream));
     if (!*stream) { return TI_OUT_OF_MEMORY; }
-    BUFFER_INIT(*stream, high, period);
-    BUFFER_INIT(*stream, low, period);
+    BUFFER_INIT(*stream, price, period);
     *stream = realloc(*stream, sizeof(**stream) + sizeof(TI_REAL[BUFFERS_SIZE(*stream)]));
     if (!*stream) { return TI_OUT_OF_MEMORY; }
 
-    (*stream)->index = TI_INDICATOR_PC_INDEX;
-    (*stream)->progress = -ti_pc_start(options);
+    (*stream)->index = TI_INDICATOR_DC_INDEX;
+    (*stream)->progress = -ti_dc_start(options);
     (*stream)->options.period = period;
 
     return TI_OKAY;
 }
 
-void ti_pc_stream_free(ti_stream *stream) {
+void ti_dc_stream_free(ti_stream *stream) {
     free(stream);
 }
 
-int ti_pc_stream_run(ti_stream *stream_in, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
-    ti_stream_pc *stream = (ti_stream_pc*)stream_in;
+int ti_dc_stream_run(ti_stream *stream_in, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
+    ti_stream_de *stream = (ti_stream_de*)stream_in;
 
     int progress = stream->progress;
 
-    TI_REAL const *high = inputs[0];
-    TI_REAL const *low = inputs[1];
-    TI_REAL *pc_low = outputs[0];
-    TI_REAL *pc_high = outputs[1];
+    const TI_REAL *real = inputs[0];
+    TI_REAL *dc_lower = outputs[0];
+    TI_REAL *dc_upper = outputs[1];
 
-    TI_REAL period = stream->options.period;
+    const int period = stream->options.period;
 
     TI_REAL max = stream->state.max;
     int max_idx = stream->state.max_idx;
@@ -112,59 +111,56 @@ int ti_pc_stream_run(ti_stream *stream_in, int size, TI_REAL const *const *input
 
     int i = 0;
     for (; i < size && progress == -period+1; ++i, ++progress) {
-        BUFFER_PUSH(stream, high, high[i]);
-        BUFFER_PUSH(stream, low, low[i]);
-        max = high[i];
+        BUFFER_PUSH(stream, price, real[i]);
+        max = real[i];
         max_idx = progress;
-        min = low[i];
+        min = real[i];
         min_idx = progress;
     }
     for (; i < size && progress < 0; ++i, ++progress) {
-        BUFFER_PUSH(stream, high, high[i]);
-        BUFFER_PUSH(stream, low, low[i]);
-        if (max <= high[i]) {
-            max = high[i];
+        BUFFER_PUSH(stream, price, real[i]);
+        if (max <= real[i]) {
+            max = real[i];
             max_idx = progress;
         }
-        if (min >= low[i]) {
-            min = low[i];
+        if (min >= real[i]) {
+            min = real[i];
             min_idx = progress;
         }
     }
     for (; i < size; ++i, ++progress) {
-        BUFFER_PUSH(stream, high, high[i]);
-        BUFFER_PUSH(stream, low, low[i]);
+        BUFFER_PUSH(stream, price, real[i]);
         if (max_idx == progress - period) {
             max_idx = progress;
-            BUFFER_AT(max, stream, high, 0);
+            BUFFER_AT(max, stream, price, 0);
             for (int j = 1; j < period; ++j) {
-                TI_REAL var1; BUFFER_AT(var1, stream, high, -j);
+                TI_REAL var1; BUFFER_AT(var1, stream, price, -j);
                 if (var1 >= max) {
                     max = var1;
                     max_idx = progress-j;
                 }
             }
-        } else if (high[i] >= max) {
-            max = high[i];
+        } else if (real[i] >= max) {
+            max = real[i];
             max_idx = progress;
         }
         if (min_idx == progress - period) {
             min_idx = progress;
-            BUFFER_AT(min, stream, low, 0);
+            BUFFER_AT(min, stream, price, 0);
             for (int j = 1; j < period; ++j) {
-                TI_REAL var1; BUFFER_AT(var1, stream, low, -j);
+                TI_REAL var1; BUFFER_AT(var1, stream, price, -j);
                 if (var1 <= min) {
                     min = var1;
                     min_idx = progress-j;
                 }
             }
-        } else if (low[i] <= min) {
-            min = low[i];
+        } else if (real[i] <= min) {
+            min = real[i];
             min_idx = progress;
         }
 
-        *pc_low++ = min;
-        *pc_high++ = max;
+        *dc_lower++ = min;
+        *dc_upper++ = max;
     }
 
     stream->progress = progress;

@@ -1,7 +1,7 @@
 /*
  * Tulip Indicators
  * https://tulipindicators.org/
- * Copyright (c) 2010-2019 Tulip Charts LLC
+ * Copyright (c) 2010-2020 Tulip Charts LLC
  * Lewis Van Winkle (LV@tulipcharts.org)
  *
  * This file is part of Tulip Indicators.
@@ -107,6 +107,7 @@ int ti_abands_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options
     TI_REAL *middle_point = outputs[2];
 
     if (period < 1) { return TI_INVALID_OPTION; }
+    if (size <= ti_abands_start(options)) return TI_OKAY;
 
     for (int i = period-1; i < size; ++i) {
         TI_REAL upper = 0;

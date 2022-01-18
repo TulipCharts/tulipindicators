@@ -1,18 +1,13 @@
-example1
-example2
-fuzzer
-sample
-smoke
 *.o
 *.a
 *.ca
 
-indicators.h
-indicators_index.c
-tiamalgamation.c
-
+cli
+cli.exe
 smoke
 smoke.exe
+smoke_amal
+smoke_amal.exe
 fuzzer
 fuzzer.exe
 example1

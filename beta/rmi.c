@@ -33,13 +33,14 @@ int ti_rmi_start(TI_REAL const *options) {
 
 
 int ti_rmi(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
-    TI_REAL const *real = inputs[0];
+    const TI_REAL *real = inputs[0];
     const int period = (int)options[0];
     const int lookback_period = (int)options[1];
     TI_REAL *rmi = outputs[0];
 
     if (period < 1) { return TI_INVALID_OPTION; }
     if (lookback_period < 1) { return TI_INVALID_OPTION; }
+    if (size <= ti_rmi_start(options)) { return TI_OKAY; }
 
     TI_REAL gains_ema;
     TI_REAL losses_ema;
@@ -63,13 +64,14 @@ int ti_rmi(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_RE
 }
 
 int ti_rmi_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
-    TI_REAL const *real = inputs[0];
+    const TI_REAL *real = inputs[0];
     const int period = (int)options[0];
     const int lookback_period = (int)options[1];
     TI_REAL *rmi = outputs[0];
 
     if (period < 1) { return TI_INVALID_OPTION; }
     if (lookback_period < 1) { return TI_INVALID_OPTION; }
+    if (size <= ti_rmi_start(options)) { return TI_OKAY; }
 
     int start = ti_rmi_start(options);
     TI_REAL *gains = malloc(sizeof(TI_REAL[size-start]));
@@ -149,7 +151,7 @@ void ti_rmi_stream_free(ti_stream *stream) {
 int ti_rmi_stream_run(ti_stream *stream_in, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
     ti_stream_rmi *stream = (ti_stream_rmi*)stream_in;
 
-    TI_REAL const *real = inputs[0];
+    const TI_REAL *real = inputs[0];
     TI_REAL *rmi = outputs[0];
 
     int progress = stream->progress;

@@ -30,9 +30,9 @@ int ti_smi_start(TI_REAL const *options) {
 }
 
 int ti_smi(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
-    TI_REAL const *high = inputs[0];
-    TI_REAL const *low = inputs[1];
-    TI_REAL const *close = inputs[2];
+    const TI_REAL *high = inputs[0];
+    const TI_REAL *low = inputs[1];
+    const TI_REAL *close = inputs[2];
     const int q_period = (int)options[0];
     const int r_period = (int)options[1];
     const int s_period = (int)options[2];
@@ -129,9 +129,9 @@ int ti_smi(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_RE
 }
 
 int ti_smi_ref(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs) {
-    TI_REAL const *high = inputs[0];
-    TI_REAL const *low = inputs[1];
-    TI_REAL const *close = inputs[2];
+    const TI_REAL *high = inputs[0];
+    const TI_REAL *low = inputs[1];
+    const TI_REAL *close = inputs[2];
     TI_REAL q_period = options[0];
     TI_REAL r_period = options[1];
     TI_REAL s_period = options[2];
@@ -242,9 +242,9 @@ void ti_smi_stream_free(ti_stream *stream) {
 int ti_smi_stream_run(ti_stream *stream_in, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs) {
     ti_stream_smi *stream = (ti_stream_smi*)stream_in;
 
-    TI_REAL const *high = inputs[0];
-    TI_REAL const *low = inputs[1];
-    TI_REAL const *close = inputs[2];
+    const TI_REAL *high = inputs[0];
+    const TI_REAL *low = inputs[1];
+    const TI_REAL *close = inputs[2];
     TI_REAL *smi = outputs[0];
 
     const TI_REAL q_period = stream->options.q_period;
