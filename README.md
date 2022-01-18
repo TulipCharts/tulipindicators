@@ -41,7 +41,7 @@ and the header file `indicators.h` to use Tulip Indicators in your code.
 
 If you don't want to build the library, you can simply add the
 `tiamalgamation.c` file to your project, along with `indicators.h` and
-candles.h`. The amalgamation file contains all of Tulip Indicators - you don't
+`candles.h`. The amalgamation file contains all of Tulip Indicators - you don't
 actually need any of the other source files.
 
 This is the recommended method to import Tulip Indicators into code for

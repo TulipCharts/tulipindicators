@@ -1,0 +1,7 @@
+/*
+ * TULIP INDICATORS AMALGAMATION
+ * This is all of Tulip Indicators in one file.
+ * To get the original sources, go to https://tulipindicators.org
+ */
+
+

@@ -56,8 +56,7 @@ benchmark_talib: benchmark.c libindicators.a
 #This will build all of Tulip Indicators into one .c file.
 #This is recommended to be used with other bindings for ease of build.
 tiamalgamation.c: $(AMAL) indicators.ca indicators.h candles.ca candles.h
-	echo -e "/*\n * TULIP INDICATORS AMALGAMATION\n * This is all of Tulip Indicators in one file.\n * To get the original sources, go to https://tulipindicators.org\n */\n\n" \
-	    | cat - indicators.h candles.h utils/buffer.h utils/localbuffer.h utils/minmax.h $(AMAL) indicators.ca candles.ca > $@
+	cat templates/amal.txt indicators.h candles.h utils/buffer.h utils/localbuffer.h utils/minmax.h $(AMAL) indicators.ca candles.ca > $@
 
 
 $(OBJS): indicators.h candles.h
