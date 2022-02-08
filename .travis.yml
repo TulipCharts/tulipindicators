@@ -3,6 +3,10 @@ language: c
 before_install:
   - sudo apt-get install -y tcl
 
+arch:
+  - amd64
+  - arm64
+
 os:
   - linux
   #- osx TODO figure out how to get tcl on osx
