@@ -31,6 +31,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 #endif
 
 #include "candles.h"
@@ -170,12 +171,14 @@ tc_hit tc_result_get(const tc_result *result, int index) {
 
 tc_set tc_result_at(const tc_result *result, int index) {
     int imin = 0;
-    int imax = result->count;
+    int imax = result->count - 1;
     if (!imax) return 0;
 
     /* Binary search. */
     while (imax >= imin) {
         const int i = (imin + ((imax-imin)/2));
+        assert(i >= 0);
+        assert(i < result->count);
         if (index == result->hits[i].index) {
             return result->hits[i].patterns;
         } else if (index > result->hits[i].index) {

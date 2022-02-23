@@ -29,8 +29,8 @@
 
 /*
  *
- * Version 0.9.1
- * Header Build 1642469817
+ * Version 0.9.2
+ * Header Build 1645649572
  *
  */
 
@@ -43,8 +43,8 @@
 
 
 
-#define TC_VERSION "0.9.1"
-#define TC_BUILD 1642469817
+#define TC_VERSION "0.9.2"
+#define TC_BUILD 1645649572
 
 
 
@@ -80,10 +80,10 @@ typedef uint64_t tc_set; /* Stores a set of candles. */
 
 
 
-#define TC_CANDLE_COUNT 25 /* Total number of recognized candle patterns. */
+#define TC_CANDLE_COUNT 26 /* Total number of recognized candle patterns. */
 
 #define TC_NONE (0)
-#define TC_ALL ((1L<<25)-1)
+#define TC_ALL ((1L<<26)-1)
 
 #define TC_ABANDONED_BABY_BEAR (1L<<0)
 #define TC_ABANDONED_BABY_BULL (1L<<1)
@@ -105,11 +105,12 @@ typedef uint64_t tc_set; /* Stores a set of candles. */
 #define TC_MARUBOZU (1L<<17)
 #define TC_MORNING_DOJI_STAR (1L<<18)
 #define TC_MORNING_STAR (1L<<19)
-#define TC_SPINNING_TOP (1L<<20)
-#define TC_STAR (1L<<21)
-#define TC_THREE_BLACK_CROWS (1L<<22)
-#define TC_THREE_WHITE_SOLDIERS (1L<<23)
-#define TC_WHITE_MARUBOZU (1L<<24)
+#define TC_SHOOTING_STAR (1L<<20)
+#define TC_SPINNING_TOP (1L<<21)
+#define TC_STAR (1L<<22)
+#define TC_THREE_BLACK_CROWS (1L<<23)
+#define TC_THREE_WHITE_SOLDIERS (1L<<24)
+#define TC_WHITE_MARUBOZU (1L<<25)
 
 
 
@@ -215,6 +216,7 @@ int tc_long_legged_doji(int size, TC_REAL const *const *inputs, tc_config const 
 int tc_marubozu(int size, TC_REAL const *const *inputs, tc_config const *options, tc_result *output);
 int tc_morning_doji_star(int size, TC_REAL const *const *inputs, tc_config const *options, tc_result *output);
 int tc_morning_star(int size, TC_REAL const *const *inputs, tc_config const *options, tc_result *output);
+int tc_shooting_star(int size, TC_REAL const *const *inputs, tc_config const *options, tc_result *output);
 int tc_spinning_top(int size, TC_REAL const *const *inputs, tc_config const *options, tc_result *output);
 int tc_star(int size, TC_REAL const *const *inputs, tc_config const *options, tc_result *output);
 int tc_three_black_crows(int size, TC_REAL const *const *inputs, tc_config const *options, tc_result *output);

@@ -29,7 +29,7 @@
 
 
 
-set version 0.9.1
+set version 0.9.2
 set build [clock seconds]
 
 
@@ -401,6 +401,7 @@ lappend candles [list {Star} {i>=1 && STAR(i)}]
 lappend candles [list {Hammer} {i>=1 && BODY_SHORT(i) && WICK_UPPER_NONE(i) && WICK_LOWER_LONG(i) && BOTTOM(i) <= low[i-1] + OPT_NEAR()}]
 lappend candles [list {Hanging Man} {i>=1 && BODY_SHORT(i) && WICK_UPPER_NONE(i) && WICK_LOWER_LONG(i) && BOTTOM(i) >= high[i-1] - OPT_NEAR()}]
 lappend candles [list {Inverted Hammer} {i>=1 && BODY_SHORT(i) && WICK_UPPER_LONG(i) && WICK_LOWER_NONE(i) && GAP_DOWN(i)}]
+lappend candles [list {Shooting Star} {i>=1 && BODY_SHORT(i) && WICK_UPPER_LONG(i) && WICK_LOWER_NONE(i) && GAP_UP(i)}]
 
 lappend candles [list {Marubozu} {BODY_LONG(i) && WICK_UPPER_NONE(i) && WICK_LOWER_NONE(i)}]
 lappend candles [list {White Marubozu} {BODY_LONG(i) && WICK_UPPER_NONE(i) && WICK_LOWER_NONE(i) && WHITE(i)}]

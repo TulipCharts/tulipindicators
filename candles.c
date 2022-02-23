@@ -26,8 +26,8 @@
 
 /*
  *
- * Version 0.9.1
- * Header Build 1642469817
+ * Version 0.9.2
+ * Header Build 1645649572
  *
  */
 
@@ -44,6 +44,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 #endif
 
 #include "candles.h"
@@ -104,6 +105,7 @@ tc_candle_info tc_candles[] = {
 {"marubozu", "Marubozu", TC_MARUBOZU, tc_marubozu},
 {"morning_doji_star", "Morning Doji Star", TC_MORNING_DOJI_STAR, tc_morning_doji_star},
 {"morning_star", "Morning Star", TC_MORNING_STAR, tc_morning_star},
+{"shooting_star", "Shooting Star", TC_SHOOTING_STAR, tc_shooting_star},
 {"spinning_top", "Spinning Top", TC_SPINNING_TOP, tc_spinning_top},
 {"star", "Star", TC_STAR, tc_star},
 {"three_black_crows", "Three Black Crows", TC_THREE_BLACK_CROWS, tc_three_black_crows},
@@ -208,12 +210,14 @@ tc_hit tc_result_get(const tc_result *result, int index) {
 
 tc_set tc_result_at(const tc_result *result, int index) {
     int imin = 0;
-    int imax = result->count;
+    int imax = result->count - 1;
     if (!imax) return 0;
 
     /* Binary search. */
     while (imax >= imin) {
         const int i = (imin + ((imax-imin)/2));
+        assert(i >= 0);
+        assert(i < result->count);
         if (index == result->hits[i].index) {
             return result->hits[i].patterns;
         } else if (index > result->hits[i].index) {
@@ -383,6 +387,7 @@ if (patterns == TC_LONG_LEGGED_DOJI) return tc_long_legged_doji(size, inputs, op
 if (patterns == TC_MARUBOZU) return tc_marubozu(size, inputs, options, output);
 if (patterns == TC_MORNING_DOJI_STAR) return tc_morning_doji_star(size, inputs, options, output);
 if (patterns == TC_MORNING_STAR) return tc_morning_star(size, inputs, options, output);
+if (patterns == TC_SHOOTING_STAR) return tc_shooting_star(size, inputs, options, output);
 if (patterns == TC_SPINNING_TOP) return tc_spinning_top(size, inputs, options, output);
 if (patterns == TC_STAR) return tc_star(size, inputs, options, output);
 if (patterns == TC_THREE_BLACK_CROWS) return tc_three_black_crows(size, inputs, options, output);
@@ -493,6 +498,11 @@ if (patterns == TC_WHITE_MARUBOZU) return tc_white_marubozu(size, inputs, option
     /* Morning Star */
     if ((TC_MORNING_STAR & patterns) && i>=2 && BLACK(i-2) && BODY_LONG(i-2) && GAP_DOWN(i-1) && BODY_SHORT(i-1) && WHITE(i) && GAP_UP(i) && (close[i] >= close[i-2])) {
         HIT(TC_MORNING_STAR);
+    }
+
+    /* Shooting Star */
+    if ((TC_SHOOTING_STAR & patterns) && i>=1 && BODY_SHORT(i) && WICK_UPPER_LONG(i) && WICK_LOWER_NONE(i) && GAP_UP(i)) {
+        HIT(TC_SHOOTING_STAR);
     }
 
     /* Spinning Top */
@@ -720,6 +730,16 @@ int tc_morning_star(int size, TC_REAL const *const *inputs, tc_config const *opt
         LOOP(
             if (i>=2 && BLACK(i-2) && BODY_LONG(i-2) && GAP_DOWN(i-1) && BODY_SHORT(i-1) && WHITE(i) && GAP_UP(i) && (close[i] >= close[i-2])) {
                 HIT(TC_MORNING_STAR);
+            }
+        );
+        return TC_OKAY;
+    }
+
+int tc_shooting_star(int size, TC_REAL const *const *inputs, tc_config const *options, tc_result *output) {
+        SETUP
+        LOOP(
+            if (i>=1 && BODY_SHORT(i) && WICK_UPPER_LONG(i) && WICK_LOWER_NONE(i) && GAP_UP(i)) {
+                HIT(TC_SHOOTING_STAR);
             }
         );
         return TC_OKAY;

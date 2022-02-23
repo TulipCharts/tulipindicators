@@ -29,8 +29,8 @@
 
 /*
  *
- * Version 0.9.1
- * Header Build 1642469817
+ * Version 0.9.2
+ * Header Build 1645649572
  *
  */
 
@@ -43,8 +43,8 @@
 
 
 
-#define TI_VERSION "0.9.1"
-#define TI_BUILD 1642469817
+#define TI_VERSION "0.9.2"
+#define TI_BUILD 1645649572
 
 
 
