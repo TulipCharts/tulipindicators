@@ -299,10 +299,11 @@ void test_candles(FILE *fp, int count) {
     } while (1);
 
 
-
-
-
     tc_result_free(output);
+    free(inputs[0]);
+    free(inputs[1]);
+    free(inputs[2]);
+    free(inputs[3]);
 }
 
 
