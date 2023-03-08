@@ -29,6 +29,7 @@
 #include <ctype.h>
 #include <math.h>
 #include "utils/minmax.h"
+#include <sys/types.h>
 
 #include "indicators.h"
 #include "candles.h"
@@ -866,17 +867,17 @@ void bench_run(FILE *log, const ti_indicator_info *info, const void *run_info, r
 
         fun(run_info, 0, GOAL_FREE);
 
-        const int elapsed = (clock() - start) * 1000 / CLOCKS_PER_SEC;
-        const int performance = elapsed == 0 ? 0 : (iterations * INSIZE) / elapsed / 1000;
+        const ssize_t elapsed = (clock() - start) * 1000 / CLOCKS_PER_SEC;
+        const ssize_t performance = elapsed == 0 ? 0 : (iterations * INSIZE) / elapsed / 1000;
 
         /*Million floats per second input.*/
         if (elapsed)
-            printf("\t%5dms\t%5dmfps\n", elapsed, performance);
+            printf("\t%5dms\t%5dmfps\n", (int)elapsed, (int)performance);
         else
             printf("\n");
 
-        best_e = MIN(elapsed, best_e);
-        best_p = MAX(performance, best_p);
+        best_e = MIN((int)elapsed, best_e);
+        best_p = MAX((int)performance, best_p);
     }
 
     if (log) fprintf(log, ",\n    \"%s\" => array(\"elapsed\" => %d, \"performance\" => %d)", name, best_e, best_p);
@@ -982,17 +983,17 @@ void bench_run_candle(FILE *log, const tc_candle_info *info) {
         }
 
 
-        const int elapsed = (clock() - start) * 1000 / CLOCKS_PER_SEC;
-        const int performance = elapsed == 0 ? 0 : (iterations * INSIZE) / elapsed / 1000;
+        const ssize_t elapsed = (clock() - start) * 1000 / CLOCKS_PER_SEC;
+        const ssize_t performance = elapsed == 0 ? 0 : (iterations * INSIZE) / elapsed / 1000;
 
         /*Million floats per second input.*/
         if (elapsed)
-            printf("\t%5dms\t%5dmfps\n", elapsed, performance);
+            printf("\t%5dms\t%5dmfps\n", (int)elapsed, (int)performance);
         else
             printf("\n");
 
-        best_e = MIN(elapsed, best_e);
-        best_p = MAX(performance, best_p);
+        best_e = MIN((int)elapsed, best_e);
+        best_p = MAX((int)performance, best_p);
     }
 
     if (log) fprintf(log, ",\n    \"%s\" => array(\"elapsed\" => %d, \"performance\" => %d)", name, best_e, best_p);
@@ -1027,8 +1028,8 @@ void bench_run_candle_talib(FILE *log, const tc_candle_info *info, const cnd_cro
             }
         }
 
-        const int elapsed = (clock() - start) * 1000 / CLOCKS_PER_SEC;
-        const int performance = elapsed == 0 ? 0 : (iterations * INSIZE) / elapsed / 1000;
+        const ssize_t elapsed = (clock() - start) * 1000 / CLOCKS_PER_SEC;
+        const ssize_t performance = elapsed == 0 ? 0 : (iterations * INSIZE) / elapsed / 1000;
 
         /*Million floats per second input.*/
         if (elapsed)
@@ -1124,7 +1125,7 @@ void bench_candle(FILE *log, const tc_candle_info *info) {
 
 int main(int argc, char **argv) {
     printf("Tulip Charts Indicator benchmark.\n");
-    printf("Using real size of: %d.\n\n", sizeof(TI_REAL));
+    printf("Using real size of: %d.\n\n", (int)sizeof(TI_REAL));
 
     generate_inputs();
 

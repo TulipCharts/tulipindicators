@@ -266,7 +266,8 @@ void test_candles(FILE *fp, int count) {
     do {
         if (feof(fp)) break;
 
-        fgets(buf, maxline, fp);
+        // (void)! works around the Wunused-warning hit
+        (void)!fgets(buf, maxline, fp);
         if (buf[0] != '!' && (buf[0] < 'a' || buf[0] > 'z')) break;
 
         char *name = strtok(buf, " ");
