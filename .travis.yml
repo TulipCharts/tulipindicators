@@ -5,10 +5,6 @@ before_install:
 
 arch:
   - amd64
-  - arm64
-
-dist:
-  - jammy # Ubuntu Jammy 22.04
 
 os:
   - linux
