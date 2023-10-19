@@ -19,7 +19,7 @@ indicators.h: build.tcl templates/indicators.h templates/indicators.c templates/
 libindicators.a: indicators.h candles.h indicators.c candles.c $(OBJS)
 	$(CC) -c $(CCFLAGS) indicators.c -o indicators.o
 	$(CC) -c $(CCFLAGS) candles.c -o candles.o
-	$(AR) rcu $@ $^ indicators.o candles.o
+	$(AR) rcu $@ $(OBJS) indicators.o candles.o
 	$(RANLIB) $@
 
 smoke: smoke.o libindicators.a
