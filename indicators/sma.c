@@ -80,7 +80,7 @@ int ti_sma_stream_new(TI_REAL const *options, ti_stream **stream_in) {
     int period = (int)options[0];
     if (period < 1) return TI_INVALID_OPTION;
 
-    *stream = malloc(sizeof(ti_stream_sma) + sizeof(TI_REAL[period]));
+    *stream = malloc(sizeof(ti_stream_sma) + sizeof(TI_REAL) * period);
     if (!stream) {
         return TI_OUT_OF_MEMORY;
     }
