@@ -314,6 +314,26 @@ int ti_bop(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_RE
 #define TI_INDICATOR_CCI_INDEX 17
 int ti_cci_start(TI_REAL const *options);
 int ti_cci(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs);
+
+/* CandleStick Patterns */
+/* Type: indicator */
+/* Input arrays: 4    Options: 0    Output arrays: 1 */
+/* Inputs: high, low, close, open */
+/* Options: pattern */
+/* Outputs: cdl */
+int ti_cdl_start(TI_REAL const* options);
+int ti_cdl(int size, TI_REAL const* const* inputs, TI_REAL const* options, TI_REAL* const* outputs);
+
+
+/* CandleStick Patterns */
+/* Type: indicator */
+/* Input arrays: 4    Options: 1    Output arrays: 1 */
+/* Inputs: high, low, close, open */
+/* Options: pattern, penetration */
+/* Outputs: cdl */
+int ti_cdl2(int size, TI_REAL const* const* inputs, TI_REAL const* options, TI_REAL* const* outputs);
+
+
 /* Vector Ceiling */
 /* Type: simple */
 /* Input arrays: 1    Options: 0    Output arrays: 1 */
@@ -332,6 +352,17 @@ int ti_ceil(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_R
 #define TI_INDICATOR_CMO_INDEX 19
 int ti_cmo_start(TI_REAL const *options);
 int ti_cmo(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs);
+
+/* Correlation */
+/* Type: math */
+/* Input arrays: 2    Options: 1    Output arrays: 1 */
+/* Inputs: real */
+/* Options: period */
+/* Outputs: corr */
+int ti_corr_start(TI_REAL const* options);
+int ti_corr(int size, TI_REAL const* const* inputs, TI_REAL const* options, TI_REAL* const* outputs);
+
+
 /* Vector Cosine */
 /* Type: simple */
 /* Input arrays: 1    Options: 0    Output arrays: 1 */
@@ -404,6 +435,9 @@ int ti_dema(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_R
 #define TI_INDICATOR_DI_INDEX 27
 int ti_di_start(TI_REAL const *options);
 int ti_di(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs);
+
+int ti_diff(int size, TI_REAL const* const* inputs, TI_REAL const* options, TI_REAL* const* outputs);
+
 /* Vector Division */
 /* Type: simple */
 /* Input arrays: 2    Options: 0    Output arrays: 1 */
@@ -476,6 +510,17 @@ int ti_emv(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_RE
 #define TI_INDICATOR_EXP_INDEX 35
 int ti_exp_start(TI_REAL const *options);
 int ti_exp(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs);
+
+/* Gap Returns */
+/* Type: indicator */
+/* Input arrays: 2    Options: 1    Output arrays: 1 */
+/* Inputs: open, close */
+/* Options: period */
+/* Outputs: gap */
+int ti_gap_start(TI_REAL const* options);
+int ti_gap(int size, TI_REAL const* const* inputs, TI_REAL const* options, TI_REAL* const* outputs);
+
+
 /* Fisher Transform */
 /* Type: indicator */
 /* Input arrays: 2    Options: 1    Output arrays: 2 */
@@ -784,6 +829,17 @@ int ti_round(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_
 #define TI_INDICATOR_RSI_INDEX 69
 int ti_rsi_start(TI_REAL const *options);
 int ti_rsi(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs);
+
+/* Shift input array */
+/* Type: overlay */
+/* Input arrays: 1    Options: 1    Output arrays: 1 */
+/* Inputs: real */
+/* Options: shift */
+/* Outputs: shifted */
+int ti_shift_start(TI_REAL const* options);
+int ti_shift(int size, TI_REAL const* const* inputs, TI_REAL const* options, TI_REAL* const* outputs);
+
+
 /* Vector Sine */
 /* Type: simple */
 /* Input arrays: 1    Options: 0    Output arrays: 1 */
@@ -814,6 +870,17 @@ int ti_sma(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_RE
 int ti_sma_stream_new(TI_REAL const *options, ti_stream **stream);
 int ti_sma_stream_run(ti_stream *stream, int size, TI_REAL const *const *inputs, TI_REAL *const *outputs);
 void ti_sma_stream_free(ti_stream *stream);
+
+/* CrossOver Simple Moving Average */
+/* Type: overlay */
+/* Input arrays: 1    Options: 1    Output arrays: 1 */
+/* Inputs: real */
+/* Options: period */
+/* Outputs: sma */
+int ti_smacross_start(TI_REAL const* options);
+int ti_smacross(int size, TI_REAL const* const* inputs, TI_REAL const* options, TI_REAL* const* outputs);
+
+
 /* Vector Square Root */
 /* Type: simple */
 /* Input arrays: 1    Options: 0    Output arrays: 1 */
@@ -850,6 +917,17 @@ int ti_stderr(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI
 #define TI_INDICATOR_STOCH_INDEX 76
 int ti_stoch_start(TI_REAL const *options);
 int ti_stoch(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs);
+
+/* Stochastic Fast Oscillator */
+/* Type: indicator */
+/* Input arrays: 3    Options: 2    Output arrays: 2 */
+/* Inputs: high, low, close */
+/* Options: %k fast period, %d fast period */
+/* Outputs: stoch_k, stoch_d */
+int ti_stochf_start(TI_REAL const* options);
+int ti_stochf(int size, TI_REAL const* const* inputs, TI_REAL const* options, TI_REAL* const* outputs);
+
+
 /* Stochastic RSI */
 /* Type: indicator */
 /* Input arrays: 1    Options: 1    Output arrays: 1 */
@@ -1075,6 +1153,17 @@ int ti_wilders(int size, TI_REAL const *const *inputs, TI_REAL const *options, T
 #define TI_INDICATOR_WILLR_INDEX 101
 int ti_willr_start(TI_REAL const *options);
 int ti_willr(int size, TI_REAL const *const *inputs, TI_REAL const *options, TI_REAL *const *outputs);
+
+/* Williams Fractal */
+/* Type: indicator */
+/* Input arrays: 2    Options: 0    Output arrays: 1 */
+/* Inputs: high, low*/
+/* Options: */
+/* Outputs: willf */
+int ti_willf_start(TI_REAL const* options);
+int ti_willf(int size, TI_REAL const* const* inputs, TI_REAL const* options, TI_REAL* const* outputs);
+
+
 /* Weighted Moving Average */
 /* Type: overlay */
 /* Input arrays: 1    Options: 1    Output arrays: 1 */
